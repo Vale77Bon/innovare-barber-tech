@@ -2,8 +2,7 @@
 // Solo Supabase, sin LocalStorage fallback
 
 var SUPABASE_URL = 'https://mbftnsvjnmnsxjsmkoab.supabase.co';
-var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ
-pc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1iZnRuc3Zqbm1uc3hqc21rb2FiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NDEzODcsImV4cCI6MjEwMDIxNzM4N30.RR1-a6RAO1XlkR4IuPfaCNdWXf2hmGFSQFKT2cGVryE';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1iZnRuc3Zqbm1uc3hqc21rb2FiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NDEzODcsImV4cCI6MjEwMDIxNzM4N30.RR1-a6RAO1XlkR4IuPfaCNdWXf2hmGFSQFKT2cGVryE';
 
 var sb = null;
 
