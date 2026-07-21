@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Reservar Cita | Innovare Barber Tech</title>
+  <link rel="stylesheet" href="assets/css/global.css">
+  <style>
+    .reservas-page { padding-top: calc(70px + 2rem); min-height: 100vh; }
+    .reservas-container { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+
+    .calendar-section { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .calendar-header h3 { font-size: 1.1rem; color: #1a1a2e; }
+    .calendar-nav { display: flex; gap: 0.5rem; }
+    .calendar-nav button { width: 36px; height: 36px; background: #f0f0f5; border: 1px solid #e0e0ea; border-radius: 8px; color: #00a0b8; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+    .calendar-nav button:hover { background: #00E5FF; color: #fff; border-color: #00E5FF; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; text-align: center; }
+    .calendar-grid .day-name { font-size: 0.7rem; color: #9e9eae; text-transform: uppercase; letter-spacing: 1px; padding: 0.5rem 0; font-weight: 600; }
+    .calendar-grid .day { padding: 10px 4px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; color: #1a1a2e; border: 1px solid transparent; }
+    .calendar-grid .day:hover:not(.disabled):not(.empty) { background: rgba(0,229,255,0.15); border-color: #00E5FF; }
+    .calendar-grid .day.selected { background: #00E5FF; color: #1a1a2e; font-weight: 700; border-color: #00E5FF; }
+    .calendar-grid .day.today { border-color: #00E5FF; font-weight: 600; background: rgba(0,229,255,0.08); }
+    .calendar-grid .day.disabled { opacity: 0.3; cursor: not-allowed; }
+    .calendar-grid .day.empty { cursor: default; }
+
+    .time-slots { margin-top: 1.5rem; }
+    .time-slots h4 { font-size: 0.95rem; color: #1a1a2e; margin-bottom: 0.75rem; }
+    .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+    .time-slot { padding: 10px 6px; text-align: center; background: #f5f6fa; border: 1px solid #e8eaf0; border-radius: 6px; cursor: pointer; transition: all 0.3s; font-size: 0.8rem; color: #1a1a2e; }
+    .time-slot:hover:not(.disabled) { background: rgba(0,229,255,0.15); border-color: #00E5FF; }
+    .time-slot.selected { background: #00E5FF; color: #1a1a2e; font-weight: 600; border-color: #00E5FF; }
+    .time-slot.disabled { opacity: 0.3; cursor: not-allowed; text-decoration: line-through; }
+
+    .barber-selection { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .barber-selection h3 { color: #00a0b8; margin-bottom: 1rem; }
+    .barber-option { display: flex; align-items: center; gap: 1rem; padding: 0.75rem; margin-bottom: 0.5rem; background: #f8f9fc; border: 1px solid #e8eaf0; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+    .barber-option:hover { background: rgba(0,229,255,0.08); border-color: #00E5FF; }
+    .barber-option.selected { background: rgba(0,229,255,0.12); border-color: #00E5FF; }
+    .barber-option .barber-avatar-sm { width: 44px; height: 44px; border-radius: 50%; background: rgba(0,229,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+    .barber-option .barber-info { flex: 1; }
+    .barber-option .barber-info h4 { font-size: 0.95rem; margin-bottom: 2px; }
+    .barber-option .barber-info p { font-size: 0.8rem; color: #6e6e7e; margin: 0; }
+    .barber-option .barber-status { font-size: 0.7rem; color: #00c853; display: flex; align-items: center; gap: 4px; }
+    .barber-option .barber-status::before { content: ''; width: 8px; height: 8px; background: #00c853; border-radius: 50%; }
+
+    .service-selection { margin-top: 1.5rem; }
+    .service-selection h3 { color: #00a0b8; margin-bottom: 1rem; }
+    .service-option { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; margin-bottom: 0.5rem; background: #f8f9fc; border: 1px solid #e8eaf0; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+    .service-option:hover { background: rgba(0,229,255,0.08); border-color: #00E5FF; }
+    .service-option.selected { background: rgba(0,229,255,0.12); border-color: #00E5FF; }
+    .service-option .service-name { font-weight: 500; font-size: 0.9rem; }
+    .service-option .service-name small { display: block; font-weight: 400; font-size: 0.75rem; color: #6e6e7e; margin-top: 2px; }
+    .service-option .service-price { font-weight: 700; color: #00a0b8; }
+
+    .reservation-summary { margin-top: 1.5rem; background: rgba(0,229,255,0.04); border: 1px solid rgba(0,200,210,0.15); border-radius: 8px; padding: 1.25rem; }
+    .reservation-summary h4 { color: #00a0b8; margin-bottom: 1rem; font-size: 0.95rem; }
+    .summary-item { display: flex; justify-content: space-between; padding: 0.4rem 0; font-size: 0.9rem; border-bottom: 1px solid rgba(0,0,0,0.04); }
+    .summary-item:last-child { border-bottom: none; }
+    .summary-item .label { color: #6e6e7e; }
+    .summary-item .value { font-weight: 500; color: #1a1a2e; }
+
+    @media (max-width: 1024px) { .reservas-container { grid-template-columns: 1fr; } .time-grid { grid-template-columns: repeat(3,1fr); } }
+    @media (max-width: 480px) { .time-grid { grid-template-columns: repeat(2,1fr); } }
+  </style>
+</head>
+<body>
+  <div id="navbar-placeholder"></div>
+  <main class="reservas-page">
+    <section class="section-title">
+      <h2>📅 Reserva tu Cita</h2>
+      <p>Selecciona fecha, hora, barbero y servicio para agendar</p>
+    </section>
+    <div class="reservas-container">
+      <div>
+        <div class="calendar-section">
+          <div class="calendar-header">
+            <h3 id="calendar-title">Julio 2026</h3>
+            <div class="calendar-nav">
+              <button onclick="changeMonth(-1)" aria-label="Mes anterior">‹</button>
+              <button onclick="changeMonth(1)" aria-label="Mes siguiente">›</button>
+            </div>
+          </div>
+          <div class="calendar-grid" id="calendar-grid"></div>
+          <div class="time-slots">
+            <h4>⏰ Horarios Disponibles</h4>
+            <div class="time-grid" id="time-grid"></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="barber-selection">
+          <h3>💈 Elige tu Barbero</h3>
+          <div id="barber-list"></div>
+          <div class="service-selection">
+            <h3>✂️ Selecciona Servicio</h3>
+            <div id="service-list"></div>
+          </div>
+          <div class="reservation-summary">
+            <h4>📋 Resumen de Reserva</h4>
+            <div class="summary-item"><span class="label">Fecha</span><span class="value" id="summary-date">—</span></div>
+            <div class="summary-item"><span class="label">Hora</span><span class="value" id="summary-time">—</span></div>
+            <div class="summary-item"><span class="label">Barbero</span><span class="value" id="summary-barber">—</span></div>
+            <div class="summary-item"><span class="label">Servicio</span><span class="value" id="summary-service">—</span></div>
+            <div class="summary-item"><span class="label">Precio Servicio</span><span class="value" id="summary-price">—</span></div>
+            <div class="summary-item"><span class="label">Depósito (10%)</span><span class="value" id="summary-deposit" style="color:#00a0b8;">—</span></div>
+            <div class="summary-item" style="border-bottom:none;"><span class="label" style="font-weight:700;">Total a Pagar</span><span class="value" id="summary-total" style="font-weight:700;font-size:1.1rem;">—</span></div>
+            <button class="btn btn-primary btn-block mt-2" id="book-btn" disabled>💳 Confirmar y Pagar (Stripe)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div id="footer-placeholder"></div>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/reservas.js"></script>
+</body>
+</html>

@@ -1,0 +1,345 @@
+/* ===== RESERVAS PAGE STYLES - Innovare Barber Tech ===== */
+
+.reservas-page {
+  padding-top: calc(var(--spacing-xxl) + 70px);
+  min-height: 100vh;
+}
+
+.reservas-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+  align-items: start;
+}
+
+/* Calendar */
+.calendar-section {
+  background: rgba(30, 30, 30, 0.8);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-lg);
+}
+
+.calendar-header h3 {
+  font-size: 1.1rem;
+  color: var(--secondary);
+}
+
+.calendar-nav {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.calendar-nav button {
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  color: var(--secondary);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.calendar-nav button:hover {
+  background: var(--secondary);
+  color: var(--primary);
+  border-color: var(--secondary);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+}
+
+.calendar-grid .day-name {
+  font-size: 0.75rem;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: var(--spacing-sm) 0;
+  font-weight: 600;
+}
+
+.calendar-grid .day {
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid transparent;
+}
+
+.calendar-grid .day:hover:not(.disabled):not(.empty) {
+  background: rgba(0, 229, 255, 0.1);
+  border-color: var(--secondary);
+}
+
+.calendar-grid .day.selected {
+  background: var(--secondary);
+  color: var(--primary);
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+}
+
+.calendar-grid .day.today {
+  border-color: var(--secondary);
+  font-weight: 600;
+}
+
+.calendar-grid .day.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.calendar-grid .day.empty {
+  cursor: default;
+}
+
+/* Time Slots */
+.time-slots {
+  margin-top: var(--spacing-lg);
+}
+
+.time-slots h4 {
+  margin-bottom: var(--spacing-md);
+  font-size: 1rem;
+  color: rgba(255,255,255,0.85);
+}
+
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-sm);
+}
+
+.time-slot {
+  padding: 10px;
+  text-align: center;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.75);
+}
+
+.time-slot:hover:not(.disabled) {
+  background: rgba(0, 229, 255, 0.1);
+  border-color: var(--secondary);
+}
+
+.time-slot.selected {
+  background: var(--secondary);
+  color: var(--primary);
+  font-weight: 600;
+  border-color: var(--secondary);
+}
+
+.time-slot.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+/* Barber Selection */
+.barber-selection {
+  background: rgba(30, 30, 30, 0.8);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+}
+
+.barber-selection h3 {
+  color: var(--secondary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.barber-option {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.barber-option:hover {
+  background: rgba(0, 229, 255, 0.06);
+  border-color: rgba(0, 229, 255, 0.2);
+}
+
+.barber-option.selected {
+  background: rgba(0, 229, 255, 0.08);
+  border-color: var(--secondary);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.1);
+}
+
+.barber-option .barber-avatar-sm {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-full);
+  background: rgba(0, 229, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.barber-option .barber-info {
+  flex: 1;
+}
+
+.barber-option .barber-info h4 {
+  font-size: 1rem;
+  margin-bottom: 2px;
+}
+
+.barber-option .barber-info p {
+  font-size: 0.85rem;
+  color: var(--gray);
+  margin: 0;
+}
+
+.barber-option .barber-status {
+  font-size: 0.75rem;
+  color: var(--success);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.barber-option .barber-status::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--success);
+  border-radius: var(--radius-full);
+  display: inline-block;
+}
+
+/* Service Selection */
+.service-selection {
+  margin-top: var(--spacing-lg);
+}
+
+.service-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.service-option:hover {
+  background: rgba(0, 229, 255, 0.06);
+  border-color: rgba(0, 229, 255, 0.2);
+}
+
+.service-option.selected {
+  background: rgba(0, 229, 255, 0.08);
+  border-color: var(--secondary);
+}
+
+.service-option .service-name {
+  font-weight: 500;
+}
+
+.service-option .service-name small {
+  display: block;
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--gray);
+  margin-top: 2px;
+}
+
+.service-option .service-price {
+  font-weight: 700;
+  color: var(--secondary);
+}
+
+/* Reservation Summary */
+.reservation-summary {
+  margin-top: var(--spacing-xl);
+  background: rgba(0, 229, 255, 0.03);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+}
+
+.reservation-summary h4 {
+  color: var(--secondary);
+  margin-bottom: var(--spacing-md);
+  font-size: 1rem;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-sm) 0;
+  font-size: 0.9rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.summary-item .label {
+  color: rgba(255,255,255,0.6);
+}
+
+.summary-item .value {
+  font-weight: 500;
+  color: var(--white);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .reservas-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .time-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .time-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .calendar-grid .day {
+    padding: 6px;
+    font-size: 0.8rem;
+  }
+}

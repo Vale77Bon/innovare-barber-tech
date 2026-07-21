@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Pago - Innovare Barber Tech">
+  <title>Checkout | Innovare Barber Tech</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/global.css">
+  <style>
+    .checkout-page {
+      padding-top: calc(70px + var(--spacing-xxl));
+      min-height: 100vh;
+    }
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-xl);
+      align-items: start;
+    }
+    .checkout-section {
+      background: rgba(45, 45, 74, 0.6);
+      border: 1px solid rgba(201, 168, 76, 0.15);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+    }
+    .checkout-section h3 {
+      color: var(--secondary);
+      margin-bottom: var(--spacing-lg);
+    }
+    .checkout-appointment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-lg);
+    }
+    .checkout-details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-md);
+    }
+    .checkout-detail-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      padding: var(--spacing-md);
+      background: rgba(255,255,255,0.03);
+      border-radius: var(--radius-md);
+    }
+    .checkout-detail-item .detail-icon { font-size: 1.5rem; }
+    .checkout-detail-item small { display: block; color: var(--gray); font-size: 0.75rem; }
+    .checkout-detail-item p { margin: 0; font-weight: 500; }
+    .retail-product {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      padding: var(--spacing-md);
+      margin-bottom: var(--spacing-sm);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-md);
+      transition: all 0.3s ease;
+    }
+    .retail-product:hover { background: rgba(201, 168, 76, 0.1); }
+    .retail-product .product-emoji { font-size: 1.8rem; }
+    .retail-product .product-info { flex: 1; }
+    .retail-product .product-info h4 { font-size: 0.95rem; margin-bottom: 2px; }
+    .retail-product .product-info small { color: var(--gray); font-size: 0.8rem; }
+    .retail-product .product-price { font-weight: 700; color: var(--secondary); }
+    .product-qty { display: flex; align-items: center; gap: 8px; }
+    .qty-btn {
+      width: 28px; height: 28px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.05);
+      color: var(--white);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+    .qty-btn:hover { background: var(--secondary); color: var(--dark); border-color: var(--secondary); }
+    .qty-value { min-width: 20px; text-align: center; font-weight: 600; }
+    .totals-table { width: 100%; }
+    .totals-table tr td { padding: var(--spacing-sm) 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .totals-table tr td:last-child { text-align: right; font-weight: 600; }
+    .totals-table tr.total td { font-size: 1.2rem; color: var(--secondary); font-weight: 700; border-bottom: none; padding-top: var(--spacing-md); }
+    .payment-methods { display: flex; flex-direction: column; gap: var(--spacing-sm); margin: var(--spacing-lg) 0; }
+    .payment-method {
+      display: flex; align-items: center; gap: var(--spacing-md);
+      padding: var(--spacing-md);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .payment-method:hover { background: rgba(201, 168, 76, 0.1); border-color: rgba(201, 168, 76, 0.2); }
+    .payment-method.selected { background: rgba(201, 168, 76, 0.15); border-color: var(--secondary); }
+    .payment-method .pm-icon { font-size: 1.5rem; }
+    .payment-method .pm-info { flex: 1; }
+    .payment-method .pm-info h4 { font-size: 0.95rem; margin-bottom: 2px; }
+    .payment-method .pm-info small { color: var(--gray); font-size: 0.8rem; }
+    .tip-options { display: flex; gap: var(--spacing-sm); margin: var(--spacing-md) 0; }
+    .tip-btn {
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-md);
+      color: var(--white);
+      cursor: pointer;
+      font-family: var(--font-primary);
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    .tip-btn:hover, .tip-btn.selected { background: var(--secondary); color: var(--dark); border-color: var(--secondary); }
+    @media (max-width: 1024px) { .checkout-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 480px) { .checkout-details-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div id="navbar-placeholder"></div>
+  <main class="checkout-page">
+    <section class="section-title">
+      <h2>💳 Checkout</h2>
+      <p>Revisa tu cita, agrega productos y completa el pago</p>
+    </section>
+    <div class="checkout-grid">
+      <div>
+        <div class="checkout-section">
+          <h3>📋 Detalle de Cita</h3>
+          <div id="appointment-info">Cargando...</div>
+        </div>
+        <div class="checkout-section" style="margin-top: var(--spacing-lg);">
+          <h3>🛍️ Productos Retail</h3>
+          <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: var(--spacing-md);">Agrega productos a tu compra</p>
+          <div id="retail-products">Cargando...</div>
+        </div>
+      </div>
+      <div>
+        <div class="checkout-section">
+          <h3>💰 Resumen de Pago</h3>
+          <table class="totals-table">
+            <tr><td>Servicio</td><td id="checkout-service-price">$0</td></tr>
+            <tr><td>Productos</td><td id="checkout-retail-total">$0</td></tr>
+            <tr><td>Subtotal</td><td id="checkout-subtotal">$0</td></tr>
+            <tr><td>Depósito (30%)</td><td id="checkout-deposit" style="color: var(--success);">-$0</td></tr>
+            <tr><td>Propina</td><td id="checkout-tip">$0</td></tr>
+            <tr class="total"><td>Total</td><td id="checkout-total">$0</td></tr>
+          </table>
+          <div style="margin-top: var(--spacing-lg);">
+            <h4 style="font-size: 0.95rem; color: rgba(255,255,255,0.85); margin-bottom: var(--spacing-sm);">💵 Propina</h4>
+            <div class="tip-options">
+              <button class="tip-btn" data-tip="20">$20</button>
+              <button class="tip-btn" data-tip="50">$50</button>
+              <button class="tip-btn" data-tip="100">$100</button>
+              <input type="number" id="custom-tip" class="form-input" placeholder="Otra cantidad" min="0" style="width: 120px;">
+            </div>
+          </div>
+          <div style="margin-top: var(--spacing-lg);">
+            <h4 style="font-size: 0.95rem; color: rgba(255,255,255,0.85); margin-bottom: var(--spacing-sm);">💳 Método de Pago</h4>
+            <div class="payment-methods">
+              <div class="payment-method selected">
+                <span class="pm-icon">💳</span>
+                <div class="pm-info"><h4>Tarjeta de Crédito/Débito</h4><small>Visa, Mastercard, Amex</small></div>
+              </div>
+              <div class="payment-method">
+                <span class="pm-icon">📱</span>
+                <div class="pm-info"><h4>Pago Móvil</h4><small>Apple Pay, Google Pay</small></div>
+              </div>
+              <div class="payment-method">
+                <span class="pm-icon">🏦</span>
+                <div class="pm-info"><h4>Transferencia</h4><small>SPEI / Depósito bancario</small></div>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-block btn-lg mt-2" id="pay-btn">Pagar $0</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div id="footer-placeholder"></div>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/checkout.js"></script>
+</body>
+</html>

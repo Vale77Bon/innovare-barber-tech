@@ -1,0 +1,309 @@
+{
+  "_comment": "Base de datos simulada - Innovare Barber Tech (v1.0 - Proyecto Final)",
+  "version": "1.0.0",
+  "lastUpdated": "2026-07-20",
+  "companyInfo": {
+    "name": "Innovare Barber Tech",
+    "slogan": "Tradición Clásica · Innovación Digital",
+    "address": "Local PB-14, Plaza Solesta, Av. Osa Mayor No. 4931, Reserva Territorial Atlixcáyotl, Puebla, Pue.",
+    "phone": "+52 222 117 5554",
+    "email": "hola@innovarebarber.tech",
+    "whatsapp": "https://wa.me/522221175554",
+    "instagram": "https://www.instagram.com/innovarebarbertech",
+    "facebook": "https://www.facebook.com/InnovareBarberTechPuebla",
+    "tiktok": "https://www.tiktok.com/@innovarebarbertech",
+    "schedule": "Lun - Vie: 9:00 AM - 8:00 PM | Sáb: 9:00 AM - 6:00 PM | Dom: Cerrado",
+    "depositRate": "20% - 50%",
+    "commissionRate": 0.4,
+    "paymentGateway": "Stripe API / Mercado Pago",
+    "posSystem": "Sunmi V2 Pro (NFC / Contactless)"
+  },
+  "barbers": [
+    {
+      "id": 1,
+      "name": "Alex Martínez",
+      "specialty": "Cortes Clásicos",
+      "role": "Master Barber",
+      "rating": 4.9,
+      "experience": 8,
+      "active": true,
+      "color": "#00E5FF"
+    },
+    {
+      "id": 2,
+      "name": "Carlos Gómez",
+      "specialty": "Barbas y Perfilados VIP",
+      "role": "Barber Tech",
+      "rating": 4.8,
+      "experience": 6,
+      "active": true,
+      "color": "#00c853"
+    },
+    {
+      "id": 3,
+      "name": "Miguel Torres",
+      "specialty": "Degradados Modernos / AR Operator",
+      "role": "Operador AR",
+      "rating": 4.9,
+      "experience": 5,
+      "active": true,
+      "color": "#ffd600"
+    },
+    {
+      "id": 4,
+      "name": "David Rojas",
+      "specialty": "Estilos Premium / Diagnóstico Capilar",
+      "role": "Especialista en Diagnóstico",
+      "rating": 4.7,
+      "experience": 10,
+      "active": true,
+      "color": "#ff1744"
+    }
+  ],
+
+  "services": [
+    {
+      "id": 1,
+      "name": "Corte & Estilo Técnico",
+      "price": 180,
+      "duration": 45,
+      "category": "corte",
+      "description": "Desvanecidos degradados avanzados, curly fades y loose crops con asignación automatizada de barbero."
+    },
+    {
+      "id": 2,
+      "name": "Corte Degradado Premium (Fade)",
+      "price": 250,
+      "duration": 50,
+      "category": "corte",
+      "description": "Degradado profesional con difuminado perfecto y detalles técnicos."
+    },
+    {
+      "id": 3,
+      "name": "Perfilado de Barba VIP",
+      "price": 150,
+      "duration": 30,
+      "category": "barba",
+      "description": "Técnica tradicional de toalla caliente con vapor de ozono. Historial estético centralizado."
+    },
+    {
+      "id": 4,
+      "name": "Corte + Barba (Combo Técnico)",
+      "price": 280,
+      "duration": 60,
+      "category": "combo",
+      "description": "Corte completo con asignación de barbero + perfilado de barba con vapor."
+    },
+    {
+      "id": 5,
+      "name": "Escáner Capilar 3D",
+      "price": 200,
+      "duration": 15,
+      "category": "diagnostico",
+      "description": "Microscopía digital 50x en 5 zonas críticas. Algoritmo IA de diagnóstico de salud capilar."
+    },
+    {
+      "id": 6,
+      "name": "Simulación AR (Espejo Inteligente)",
+      "price": 100,
+      "duration": 10,
+      "category": "ar",
+      "description": "Espejo inteligente con segmentación en tiempo real. Previsualiza cortes y colores."
+    },
+    {
+      "id": 7,
+      "name": "Afeitado Clásico con Navaja",
+      "price": 200,
+      "duration": 35,
+      "category": "afeitado",
+      "description": "Afeitado tradicional con navaja libre de máxima higiene y toalla caliente."
+    },
+    {
+      "id": 8,
+      "name": "Lavado Capilar + Masaje + Ozono",
+      "price": 120,
+      "duration": 20,
+      "category": "extra",
+      "description": "Lavado con shampoo premium con aplicación de vapor de ozono para apertura de poros."
+    }
+  ],
+
+  "memberships": [
+    {
+      "id": 1,
+      "name": "The Regular",
+      "price": 349,
+      "period": "mensual",
+      "features": [
+        "1 corte técnico incluido al mes",
+        "1 perfilado de barba VIP incluido",
+        "Prioridad de agendamiento (jueves a sábado)",
+        "Muestra gratis de producto premium al registrarse",
+        "Cargo automático tokenizado vía Stripe"
+      ],
+      "popular": true,
+      "rule": "Uso o pérdida: sesiones no agendadas expiran sin reembolso"
+    },
+    {
+      "id": 2,
+      "name": "VIP Tech",
+      "price": 599,
+      "period": "mensual",
+      "features": [
+        "Servicios ilimitados de corte y estilizado",
+        "Tratamientos capilares avanzados con diagnóstico 3D",
+        "15% descuento permanente en tienda retail",
+        "Acceso prioritario absoluto a agenda Master Barbers",
+        "Cargo automático tokenizado · Sin acumulación"
+      ],
+      "popular": false,
+      "rule": "Uso o pérdida: sesiones no agendadas expiran sin reembolso"
+    }
+  ],
+
+  "appointments": [
+    {
+      "id": 1001,
+      "date": "2026-07-20",
+      "time": "10:00",
+      "barber": { "id": 1, "name": "Alex Martínez" },
+      "service": { "id": 1, "name": "Corte & Estilo Técnico", "price": 180 },
+      "clientName": "Roberto Hernández",
+      "clientPhone": "555-1001",
+      "status": "completed",
+      "createdAt": "2026-07-19T15:00:00Z",
+      "depositPaid": 50,
+      "paymentMethod": "Stripe_Token"
+    },
+    {
+      "id": 1002,
+      "date": "2026-07-20",
+      "time": "11:00",
+      "barber": { "id": 2, "name": "Carlos Gómez" },
+      "service": { "id": 3, "name": "Perfilado de Barba VIP", "price": 150 },
+      "clientName": "Luis Fernández",
+      "clientPhone": "555-1002",
+      "status": "completed",
+      "createdAt": "2026-07-19T16:00:00Z",
+      "depositPaid": 40,
+      "paymentMethod": "NFC_Contactless"
+    },
+    {
+      "id": 1003,
+      "date": "2026-07-20",
+      "time": "12:00",
+      "barber": { "id": 3, "name": "Miguel Torres" },
+      "service": { "id": 2, "name": "Corte Degradado Premium (Fade)", "price": 250 },
+      "clientName": "Andrés López",
+      "clientPhone": "555-1003",
+      "status": "confirmed",
+      "createdAt": "2026-07-20T09:00:00Z",
+      "depositPaid": 75,
+      "paymentMethod": "Stripe_Token"
+    },
+    {
+      "id": 1004,
+      "date": "2026-07-21",
+      "time": "15:00",
+      "barber": { "id": 1, "name": "Alex Martínez" },
+      "service": { "id": 4, "name": "Corte + Barba (Combo Técnico)", "price": 280 },
+      "clientName": "Jorge Ramírez",
+      "clientPhone": "555-1004",
+      "status": "confirmed",
+      "createdAt": "2026-07-20T10:00:00Z",
+      "depositPaid": 60,
+      "paymentMethod": "Stripe_Token"
+    },
+    {
+      "id": 1005,
+      "date": "2026-07-21",
+      "time": "16:30",
+      "barber": { "id": 4, "name": "David Rojas" },
+      "service": { "id": 5, "name": "Escáner Capilar 3D", "price": 200 },
+      "clientName": "Fernando Castillo",
+      "clientPhone": "555-1005",
+      "status": "pending",
+      "createdAt": "2026-07-20T11:00:00Z",
+      "depositPaid": 100,
+      "paymentMethod": "SPEI"
+    },
+    {
+      "id": 1006,
+      "date": "2026-07-22",
+      "time": "09:30",
+      "barber": { "id": 2, "name": "Carlos Gómez" },
+      "service": { "id": 6, "name": "Simulación AR (Espejo Inteligente)", "price": 100 },
+      "clientName": "Sergio Méndez",
+      "clientPhone": "555-1006",
+      "status": "confirmed",
+      "createdAt": "2026-07-20T12:00:00Z",
+      "depositPaid": 20,
+      "paymentMethod": "Stripe_Token"
+    }
+  ],
+
+  "products": [
+    { "id": 1, "name": "Pomada de Fijación Ligera", "price": 180, "category": "Pomadas", "stock": 25, "description": "Fijación suave con acabado natural" },
+    { "id": 2, "name": "Aceite para Barba con Péptidos", "price": 240, "category": "Aceites", "stock": 15, "description": "Enriquecido con péptidos y probióticos" },
+    { "id": 3, "name": "Sérum Capilar Premium", "price": 280, "category": "Sueros", "stock": 12, "description": "Crecimiento saludable de la fibra capilar" },
+    { "id": 4, "name": "Cera Modeladora Técnica", "price": 200, "category": "Ceras", "stock": 18, "description": "Fijación fuerte con brillo natural" },
+    { "id": 5, "name": "Tónico Capilar Refrescante", "price": 190, "category": "Tónicos", "stock": 20, "description": "Con mentol y vitaminas esenciales" },
+    { "id": 6, "name": "Peine Profesional Carbono", "price": 150, "category": "Accesorios", "stock": 30, "description": "Fibra de carbono antiestática" },
+    { "id": 7, "name": "Kit The Regular (Corte + Barba)", "price": 450, "category": "Kits", "stock": 8, "description": "Pomada + aceite + peine profesional" },
+    { "id": 8, "name": "Toalla Caliente Premium", "price": 60, "category": "Extras", "stock": 40, "description": "Toalla de algodón egipcio para vapor" }
+  ],
+
+  "testimonials": [
+    {
+      "id": 1,
+      "name": "Ricardo Mendoza",
+      "text": "La mejor barbería que he visitado. El degradado de Miguel es perfecto, y el diagnóstico 3D del cuero cabelludo es impresionante.",
+      "rating": 5,
+      "membership": "The Regular",
+      "date": "2026-07-15"
+    },
+    {
+      "id": 2,
+      "name": "Ana Sofía García",
+      "text": "Traje a mi esposo y salió transformado. El servicio VIP Tech es excelente, y el espejo AR es una maravilla tecnológica.",
+      "rating": 5,
+      "membership": null,
+      "date": "2026-07-14"
+    },
+    {
+      "id": 3,
+      "name": "Daniel Ortiz",
+      "text": "La membresía VIP Tech es la mejor inversión. Cortes ilimitados más diagnóstico capilar mensual. La reserva web es muy fluida.",
+      "rating": 5,
+      "membership": "VIP Tech",
+      "date": "2026-07-12"
+    }
+  ],
+
+  "stats": {
+    "totalClients": 1250,
+    "monthlyAppointments": 340,
+    "barbersCount": 4,
+    "yearsOfExperience": 8,
+    "avgDaysBetweenVisits": 18,
+    "noShowRate": "4.2%",
+    "recurringRevenueMRR": 45000
+  },
+
+  "tabla_ventas_schema": {
+    "description": "Estructura de la tabla de ventas (Referencia BD del proyecto)",
+    "fields": [
+      { "name": "id_venta", "type": "UUID (PK)", "description": "Identificador único de la transacción" },
+      { "name": "id_cliente", "type": "UUID (FK)", "description": "Enlace al perfil del cliente" },
+      { "name": "id_barbero", "type": "UUID (FK)", "description": "Identificador del barbero para comisiones" },
+      { "name": "tipo_venta", "type": "VARCHAR(20)", "description": "Servicio, Retail, Membresía o Consolidado" },
+      { "name": "monto_servicios", "type": "DECIMAL(10,2)", "description": "Subtotal por servicios estéticos" },
+      { "name": "monto_retail", "type": "DECIMAL(10,2)", "description": "Subtotal por productos retail" },
+      { "name": "deposito_previo", "type": "DECIMAL(10,2)", "description": "Anticipo cobrado en reserva web" },
+      { "name": "monto_total", "type": "DECIMAL(10,2)", "description": "Saldo neto final liquidado" },
+      { "name": "metodo_pago", "type": "VARCHAR(30)", "description": "Stripe_Token, NFC, Efectivo, SPEI" },
+      { "name": "estado_pago", "type": "VARCHAR(15)", "description": "Completado, Pendiente, Reembolsado" },
+      { "name": "fecha_hora", "type": "TIMESTAMP", "description": "Marca temporal de cierre en POS" }
+    ]
+  }
+}

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="description" content="Innovare Barber Tech - Revolucionando la barbería con diagnóstico 3D, simulación AR y membresías digitales.">
+  <title>Innovare Barber Tech | Tecnología en Barbería</title>
+  <link rel="stylesheet" href="assets/css/global.css">
+  <style>
+    .services { padding-top: calc(var(--spacing-xxl) + 70px); }
+    .service-card { text-align: center; }
+    .service-card .service-img {
+      width: 100%; height: 160px; border-radius: var(--radius-md); margin-bottom: var(--spacing-md);
+      background: linear-gradient(135deg, rgba(0,229,255,0.12) 0%, rgba(0,150,200,0.06) 100%);
+      display: flex; align-items: center; justify-content: center; font-size: 3.5rem;
+      border: 1px solid rgba(0,200,210,0.15);
+    }
+    .service-card .price { font-size: 1.4rem; font-weight: 700; color: #00a0b8; margin-bottom: var(--spacing-sm); }
+    .service-card .duration { font-size: 0.85rem; color: #6e6e7e; margin-bottom: var(--spacing-md); }
+    .service-card p { font-size: 0.9rem; color: #4a4a5e; }
+
+    .membership-plans { padding-top: var(--spacing-xxl); }
+    .plan-card { text-align: center; }
+    .plan-card.featured { border: 2px solid #00E5FF; position: relative; box-shadow: 0 0 20px rgba(0,229,255,0.15); }
+    .plan-card.featured::before { content: '★ MÁS POPULAR'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #00E5FF; color: #1a1a2e; padding: 4px 16px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; }
+    .plan-price { font-size: 2.2rem; font-weight: 700; color: #00a0b8; margin: var(--spacing-md) 0; }
+    .plan-price span { font-size: 1rem; font-weight: 400; color: #6e6e7e; }
+    .plan-features { margin: var(--spacing-lg) 0; text-align: left; padding: 0; }
+    .plan-features li { padding: var(--spacing-sm) 0; border-bottom: 1px solid rgba(0,0,0,0.04); font-size: 0.9rem; color: #4a4a5e; }
+    .plan-features li:last-child { border-bottom: none; }
+    .plan-features li::before { content: '✓ '; color: #00c853; font-weight: 700; }
+
+    .barbers { padding-top: var(--spacing-xxl); }
+    .barber-card { text-align: center; }
+    .barber-avatar { width: 110px; height: 110px; border-radius: var(--radius-full); margin: 0 auto var(--spacing-md); background: linear-gradient(135deg, rgba(0,229,255,0.18) 0%, rgba(0,180,210,0.08) 100%); display: flex; align-items: center; justify-content: center; font-size: 3rem; border: 3px solid #00E5FF; box-shadow: 0 0 18px rgba(0,229,255,0.12); }
+    .rating { color: #ffb300; font-size: 0.9rem; margin-bottom: var(--spacing-sm); }
+    .rating span { color: #6e6e7e; margin-left: var(--spacing-xs); }
+
+    .testimonials { padding-top: var(--spacing-xxl); }
+    .testimonial-card { position: relative; }
+    .testimonial-card::before { content: '"'; position: absolute; top: 1.5rem; left: 1.5rem; font-size: 3rem; color: #00E5FF; opacity: 0.25; font-family: var(--font-heading); line-height: 1; }
+    .testimonial-card p { padding-top: 2rem; font-style: italic; color: #4a4a5e; }
+    .client-info { display: flex; align-items: center; margin-top: var(--spacing-md); gap: var(--spacing-md); }
+    .client-img { width: 50px; height: 50px; border-radius: var(--radius-full); background: rgba(0,229,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+    .client-info h4 { margin-bottom: 2px; font-size: 0.95rem; }
+    .client-info small { color: #6e6e7e; }
+
+    .stats-section { background: #1a1a2e; padding: 3rem 2rem; margin: 3rem auto 0; }
+    .stats-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; text-align: center; }
+    .stat-number { font-size: 2.5rem; font-weight: 700; color: #00E5FF; }
+    .stat-label { font-size: 0.85rem; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 1px; }
+
+    .tech-section { padding-top: var(--spacing-xxl); }
+    .tech-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
+    .tech-feature { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem; }
+    .tf-icon { width: 48px; height: 48px; border-radius: 10px; background: rgba(0,229,255,0.12); border: 1px solid rgba(0,180,210,0.2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+    .tf-text h4 { color: #00a0b8; font-size: 1rem; margin-bottom: 4px; }
+    .tf-text p { font-size: 0.85rem; color: #6e6e7e; margin: 0; }
+
+    .cta-section { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, rgba(0,229,255,0.06) 0%, rgba(0,150,200,0.04) 100%); border-radius: var(--radius-lg); border: 1px solid rgba(0,200,210,0.12); margin: 3rem auto; }
+    .cta-section p { max-width: 500px; margin: 0 auto 1.5rem; color: #5a5a6e; }
+
+    @media(max-width:768px){ .tech-grid{grid-template-columns:1fr} .stats-grid{grid-template-columns:repeat(2,1fr)} }
+    @media(max-width:480px){ .stats-grid{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <div id="navbar-placeholder"></div>
+  <section class="hero" id="inicio">
+    <div class="hero-content">
+      <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;background:rgba(0,229,255,0.12);border:1px solid rgba(0,200,210,0.25);border-radius:4px;font-size:0.65rem;color:#00a0b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:1.5rem;">⚡ E-Business 2026</span>
+      <h1><span class="highlight">Innovare</span> Barber Tech</h1>
+      <p>Donde la tradición de la barbería clásica se encuentra con la innovación tecnológica. Diagnóstico capilar 3D, simulación con realidad aumentada y una experiencia premium sin fricciones.</p>
+      <div class="hero-buttons">
+        <a href="reservas.html" class="btn btn-primary btn-lg">📅 Reservar Ahora</a>
+        <a href="#servicios" class="btn btn-outline btn-lg">Ver Servicios</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section class="services" id="servicios">
+    <div class="section-title">
+      <h2>✂️ <span class="highlight">Servicios</span> Especializados</h2>
+      <div class="divider"></div>
+      <p>Catálogo híbrido que combina estética clásica con diagnósticos digitales avanzados</p>
+    </div>
+    <div class="grid-4">
+      <div class="card service-card"><div class="service-img">✂️</div><h3>Corte & Estilo Técnico</h3><p class="price">$180</p><p class="duration">45 min</p><p>Desvanecidos degradados avanzados con asignación automatizada de barbero.</p></div>
+      <div class="card service-card"><div class="service-img">🧔</div><h3>Perfilado de Barba VIP</h3><p class="price">$150</p><p class="duration">30 min</p><p>Toalla caliente con vapor de ozono. Historial estético centralizado.</p></div>
+      <div class="card service-card"><div class="service-img">🔬</div><h3>Escáner Capilar 3D</h3><p class="price">$200</p><p class="duration">15 min</p><p>Microscopía digital 50x en 5 zonas críticas + algoritmo IA.</p></div>
+      <div class="card service-card"><div class="service-img">🪞</div><h3>Simulación AR</h3><p class="price">$100</p><p class="duration">10 min</p><p>Espejo inteligente con segmentación en tiempo real y previsualización.</p></div>
+    </div>
+    <div class="text-center mt-2"><a href="reservas.html" class="btn btn-primary">Ver Todos →</a></div>
+  </section>
+
+  <!-- Memberships -->
+  <section class="membership-plans" id="membresias">
+    <div class="section-title">
+      <h2>👑 <span class="highlight">Membresías</span> Digitales</h2>
+      <div class="divider"></div>
+      <p>Ingresos recurrentes mensuales con cargo automático tokenizado</p>
+    </div>
+    <div class="grid-2" style="max-width:800px;margin:0 auto;">
+      <div class="card plan-card">
+        <h3>The Regular</h3>
+        <div class="plan-price">$349 <span>/mes</span></div>
+        <ul class="plan-features">
+          <li>1 corte técnico al mes</li><li>1 perfilado de barba VIP</li>
+          <li>Prioridad en agenda (jueves a sábado)</li><li>Muestra gratis de producto premium</li>
+          <li>Cargo automático tokenizado vía Stripe</li>
+        </ul>
+        <a href="reservas.html" class="btn btn-outline btn-block">Suscribirme</a>
+      </div>
+      <div class="card plan-card featured">
+        <h3>VIP Tech</h3>
+        <div class="plan-price">$599 <span>/mes</span></div>
+        <ul class="plan-features">
+          <li>Servicios ilimitados de corte y estilizado</li>
+          <li>Tratamientos capilares con diagnóstico 3D</li>
+          <li>15% descuento en tienda retail</li><li>Acceso prioritario Master Barbers</li>
+          <li>Cargo automático · Sin acumulación</li>
+        </ul>
+        <a href="reservas.html" class="btn btn-primary btn-block">Suscribirme</a>
+      </div>
+    </div>
+    <p class="text-center" style="font-size:0.8rem;color:#6e6e7e;margin-top:1rem;">* Uso o pérdida: sesiones no agendadas expiran sin reembolso.</p>
+  </section>
+
+  <!-- Barbers -->
+  <section class="barbers" id="barberos">
+    <div class="section-title">
+      <h2>💈 <span class="highlight">Master Barbers</span></h2>
+      <div class="divider"></div>
+      <p>Profesionales certificados en técnicas clásicas y tecnología digital</p>
+    </div>
+    <div class="grid-4">
+      <div class="card barber-card"><div class="barber-avatar">👨‍🦰</div><h3>Alex Martínez</h3><div class="rating">★★★★★ <span>4.9</span></div><p>Cortes Clásicos · 8 años</p></div>
+      <div class="card barber-card"><div class="barber-avatar">👨‍🦱</div><h3>Carlos Gómez</h3><div class="rating">★★★★★ <span>4.8</span></div><p>Barbas VIP · 6 años</p></div>
+      <div class="card barber-card"><div class="barber-avatar">👨‍🦳</div><h3>Miguel Torres</h3><div class="rating">★★★★★ <span>4.9</span></div><p>Degradados · 5 años</p></div>
+      <div class="card barber-card"><div class="barber-avatar">👨‍🦲</div><h3>David Rojas</h3><div class="rating">★★★★½ <span>4.7</span></div><p>Estilos Premium · 10 años</p></div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <div class="stats-section">
+    <div class="stats-grid">
+      <div><div class="stat-number">1,250+</div><div class="stat-label">Clientes</div></div>
+      <div><div class="stat-number">8+</div><div class="stat-label">Años Exp.</div></div>
+      <div><div class="stat-number">340+</div><div class="stat-label">Citas/Mes</div></div>
+      <div><div class="stat-number">4</div><div class="stat-label">Master Barbers</div></div>
+    </div>
+  </div>
+
+  <!-- Technology -->
+  <section class="tech-section" id="tecnologia">
+    <div class="section-title">
+      <h2>⚡ <span class="highlight">Tecnología</span> Integrada</h2>
+      <div class="divider"></div>
+      <p>Innovación disruptiva aplicada a cada paso de tu experiencia</p>
+    </div>
+    <div class="tech-grid">
+      <div>
+        <div class="tech-feature"><div class="tf-icon">🤖</div><div class="tf-text"><h4>Motor de Reservas 24/7</h4><p>Agenda automatizada con depósito de garantía (10%) vía Stripe API. Sin llamadas, sin fricción.</p></div></div>
+        <div class="tech-feature"><div class="tf-icon">📊</div><div class="tf-text"><h4>Diagnóstico Capilar 3D</h4><p>Microscopía digital 50x con algoritmo IA en 5 zonas críticas.</p></div></div>
+        <div class="tech-feature"><div class="tf-icon">🪞</div><div class="tf-text"><h4>Espejo Inteligente AR</h4><p>Simulación de cortes en tiempo real. Elimina errores de comunicación al 100%.</p></div></div>
+        <div class="tech-feature"><div class="tf-icon">💳</div><div class="tf-text"><h4>Checkout Unificado</h4><p>POS que consolida servicios + retail. Pago contactless, tokenizado o SPEI.</p></div></div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:3rem;margin-bottom:1rem;">📍</div>
+        <h4 style="color:#00a0b8;">Sucursal Matriz</h4>
+        <p style="font-weight:500;">Local PB-14, Plaza Solesta</p>
+        <p>Av. Osa Mayor No. 4931</p>
+        <p>Atlixcáyotl, <strong>Puebla</strong></p>
+        <div class="divider"></div>
+        <p style="font-size:0.8rem;color:#6e6e7e;">Lun-Vie 9-8 PM · Sáb 9-6 PM</p>
+        <a href="https://wa.me/522221175554" class="btn btn-sm btn-primary mt-1" target="_blank">💬 WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials" id="testimonios">
+    <div class="section-title">
+      <h2>⭐ <span class="highlight">Reseñas</span> de Clientes</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="grid-3">
+      <div class="card testimonial-card"><p>"La mejor barbería. El degradado de Miguel es perfecto, y el diagnóstico 3D es impresionante."</p><div class="client-info"><div class="client-img">👨</div><div><h4>Ricardo Mendoza</h4><small>Miembro The Regular</small></div></div></div>
+      <div class="card testimonial-card"><p>"Traje a mi esposo y salió transformado. El servicio VIP Tech es excelente y el espejo AR una maravilla."</p><div class="client-info"><div class="client-img">👩</div><div><h4>Ana Sofía García</h4><small>Cliente frecuente</small></div></div></div>
+      <div class="card testimonial-card"><p>"La membresía VIP Tech es la mejor inversión. Cortes ilimitados más diagnóstico mensual."</p><div class="client-info"><div class="client-img">🧑</div><div><h4>Daniel Ortiz</h4><small>Miembro VIP Tech</small></div></div></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <h2>🚀 ¿Listo para Transformar tu Look?</h2>
+    <p>Reserva tu cita con depósito desde 10% y descubre Innovare Barber Tech</p>
+    <a href="reservas.html" class="btn btn-primary btn-lg">📅 Agendar Ahora</a>
+  </section>
+
+  <div id="footer-placeholder"></div>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

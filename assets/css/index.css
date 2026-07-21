@@ -1,0 +1,336 @@
+/* ===== INDEX PAGE SPECIFIC STYLES ===== */
+
+/* Services Section */
+.services {
+  padding-top: calc(var(--spacing-xxl) + 70px);
+}
+
+.service-card {
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.service-card .service-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+  background: rgba(0, 229, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  border: 1px solid rgba(0, 229, 255, 0.08);
+}
+
+.service-card .price {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.service-card .duration {
+  font-size: 0.85rem;
+  color: var(--gray);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Membership Section */
+.membership-plans {
+  padding-top: var(--spacing-xxl);
+}
+
+.membership-plans .plan-card {
+  text-align: center;
+}
+
+.membership-plans .plan-card.featured {
+  border: 2px solid var(--secondary);
+  position: relative;
+  box-shadow: var(--shadow-glow);
+}
+
+.membership-plans .plan-card.featured::before {
+  content: '★ MÁS POPULAR';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--secondary);
+  color: var(--primary);
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+}
+
+.plan-card .plan-price {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--secondary);
+  margin: var(--spacing-md) 0;
+}
+
+.plan-card .plan-price span {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--gray);
+}
+
+.plan-card .plan-features {
+  margin: var(--spacing-lg) 0;
+}
+
+.plan-card .plan-features li {
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.7);
+}
+
+.plan-card .plan-features li:last-child {
+  border-bottom: none;
+}
+
+.plan-card .plan-features li::before {
+  content: '✓ ';
+  color: var(--secondary);
+  font-weight: 700;
+}
+
+/* Barbers Section */
+.barbers {
+  padding-top: var(--spacing-xxl);
+}
+
+.barber-card {
+  text-align: center;
+}
+
+.barber-card .barber-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius-full);
+  margin: 0 auto var(--spacing-md);
+  background: rgba(0, 229, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  border: 3px solid var(--secondary);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.15);
+}
+
+.barber-card .rating {
+  color: var(--warning);
+  font-size: 0.9rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.barber-card .rating span {
+  color: var(--gray);
+  margin-left: var(--spacing-xs);
+}
+
+/* Testimonials Section */
+.testimonials {
+  padding-top: var(--spacing-xxl);
+}
+
+.testimonial-card {
+  position: relative;
+  padding-top: var(--spacing-xxl);
+  border-color: rgba(0, 229, 255, 0.1);
+}
+
+.testimonial-card::before {
+  content: '"';
+  position: absolute;
+  top: var(--spacing-lg);
+  left: var(--spacing-xl);
+  font-size: 3rem;
+  color: var(--secondary);
+  opacity: 0.4;
+  font-family: var(--font-heading);
+}
+
+.testimonial-card .client-img {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-full);
+  margin-right: var(--spacing-md);
+  background: rgba(0, 229, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.testimonial-card .client-info {
+  display: flex;
+  align-items: center;
+  margin-top: var(--spacing-md);
+}
+
+.testimonial-card .client-info h4 {
+  margin-bottom: 2px;
+}
+
+.testimonial-card .client-info small {
+  color: var(--gray);
+}
+
+/* Stats Counter */
+.stats-section {
+  background: var(--dark);
+  padding: var(--spacing-xxl) var(--spacing-xl);
+  margin: var(--spacing-xxl) auto 0;
+  max-width: 100%;
+  border-top: 1px solid rgba(0, 229, 255, 0.05);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.05);
+}
+
+.stats-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-xl);
+  text-align: center;
+}
+
+.stats-grid .stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--secondary);
+  text-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+}
+
+.stats-grid .stat-label {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.55);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* CTA Section */
+.cta-section {
+  text-align: center;
+  padding: var(--spacing-xxl) var(--spacing-xl);
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.06) 0%, rgba(0, 150, 200, 0.03) 100%);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(0, 229, 255, 0.12);
+  margin: var(--spacing-xxl) auto;
+}
+
+.cta-section h2 {
+  font-size: 2rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.cta-section p {
+  max-width: 500px;
+  margin: 0 auto var(--spacing-lg);
+  color: var(--gray);
+}
+
+/* Tech Radar / Location Section */
+.tech-section {
+  padding-top: var(--spacing-xxl);
+}
+
+.tech-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--spacing-xl);
+  align-items: center;
+}
+
+.tech-feature {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: flex-start;
+  margin-bottom: var(--spacing-lg);
+}
+
+.tech-feature-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.tech-feature-text h4 {
+  color: var(--secondary);
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.tech-feature-text p {
+  font-size: 0.9rem;
+  color: var(--gray);
+  margin: 0;
+}
+
+/* Location Card */
+.location-card {
+  text-align: center;
+}
+
+.location-card .map-placeholder {
+  width: 100%;
+  height: 180px;
+  background: rgba(0, 229, 255, 0.03);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.location-card h4 {
+  color: var(--secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.location-card p {
+  font-size: 0.9rem;
+  color: var(--gray);
+  margin: 0;
+}
+
+.location-card .address {
+  font-weight: 500;
+  color: rgba(255,255,255,0.8);
+  margin-top: var(--spacing-sm);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stats-grid .stat-number {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
