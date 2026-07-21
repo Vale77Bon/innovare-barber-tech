@@ -9,14 +9,14 @@ var EMBEDDED = {
     { id: 4, name: "David Rojas", specialty: "Estilos Premium", rating: 4.7, experience: 10 }
   ],
   services: [
-    { id: 1, name: "Corte & Estilo Técnico", price: 180, duration: 45 },
-    { id: 2, name: "Corte Degradado Premium", price: 250, duration: 50 },
-    { id: 3, name: "Perfilado de Barba VIP", price: 150, duration: 30 },
-    { id: 4, name: "Corte + Barba (Combo)", price: 280, duration: 60 },
-    { id: 5, name: "Escáner Capilar 3D", price: 200, duration: 15 },
-    { id: 6, name: "Simulación AR", price: 100, duration: 10 },
-    { id: 7, name: "Afeitado Clásico", price: 200, duration: 35 },
-    { id: 8, name: "Lavado + Masaje + Ozono", price: 120, duration: 20 }
+    { id: 1, name: "Corte & Estilo Técnico Premium", price: 450, duration: 45 },
+    { id: 2, name: "Corte Degradado Luxury Fade", price: 550, duration: 50 },
+    { id: 3, name: "Perfilado de Barba VIP", price: 350, duration: 30 },
+    { id: 4, name: "Corte + Barba (Combo Ejecutivo)", price: 680, duration: 60 },
+    { id: 5, name: "Escáner Capilar 3D + IA", price: 400, duration: 15 },
+    { id: 6, name: "Simulación AR (Espejo Inteligente)", price: 250, duration: 10 },
+    { id: 7, name: "Afeitado Clásico con Navaja", price: 380, duration: 35 },
+    { id: 8, name: "Lavado + Masaje + Ozono VIP", price: 280, duration: 20 }
   ],
   appointments: [
     { id: 1001, date: "2026-07-20", time: "10:00", barber_id:1, barber_name:"Alex Martínez", service_id:1, service_name:"Corte & Estilo Técnico", price:180, clientName:"Roberto Hernández", estado:"completada" },
