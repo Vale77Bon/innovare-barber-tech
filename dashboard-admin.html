@@ -74,7 +74,8 @@
   <script>
     (function(){
       var u = JSON.parse(localStorage.getItem('innovare_user')||'{}');
-      if(!localStorage.getItem('innovare_token')||u.rol!=='admin') window.location.href='login.html';
+      var userRole = u.user_metadata?.rol || u.rol || 'cliente';
+      if(!localStorage.getItem('innovare_token')||userRole!=='admin') window.location.href='login.html';
       loadData();
     })();
 

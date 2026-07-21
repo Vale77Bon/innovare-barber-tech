@@ -153,6 +153,9 @@
       btn.textContent = 'Registrando...';
       
       try {
+        // Determinar rol: si es el email admin, asignar rol admin
+        var rol = (email === 'admin@innovarebarber.tech') ? 'admin' : 'cliente';
+        
         // 1. Crear el usuario en la bóveda secreta de Supabase Auth
         const { data, error } = await supabase.auth.signUp({
           email: email,
@@ -160,7 +163,7 @@
           options: {
             data: {
               nombre: nombre,
-              rol: 'cliente'
+              rol: rol
             }
           }
         });
@@ -173,9 +176,12 @@
             .from('usuarios')
             .insert([
               { 
-                id: data.user.id, // Vincula el ID de Auth con tu tabla
+                id: data.user.id,
                 nombre: nombre,
-                email: email
+                email: email,
+                telefono: telefono || '',
+                rol: rol,
+                activo: true
               }
             ]);
             
