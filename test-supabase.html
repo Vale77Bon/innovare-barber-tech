@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Test Supabase | Innovare Barber Tech</title>
+  <link rel="stylesheet" href="assets/css/global.css">
+  <style>
+    .test-page { padding-top: 100px; min-height: 100vh; max-width: 800px; margin: 0 auto; }
+    .test-card { background: #fff; border: 1px solid #e0e0ea; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+    .test-card h3 { margin-bottom: 12px; }
+    .ok { color: #00c853; } .fail { color: #ff1744; } .info { color: #00a0b8; }
+    .status-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+    .status-dot.ok { background: #00c853; }
+    .status-dot.fail { background: #ff1744; }
+    .status-dot.loading { background: #ffd600; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    pre { background: #f5f6fa; padding: 12px; border-radius: 8px; font-size: 0.8rem; overflow-x: auto; max-height: 300px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <main class="test-page">
+    <h1>🧪 Test de Conexión Supabase</h1>
+    <p style="color:#6e6e7e;margin-bottom:24px;">Verificando que todo funcione correctamente...</p>
+
+    <div class="test-card">
+      <h3><span class="status-dot loading" id="dot-client"></span> 1. Cliente Supabase</h3>
+      <p id="status-client">Verificando...</p>
+    </div>
+
+    <div class="test-card">
+      <h3><span class="status-dot loading" id="dot-barberos"></span> 2. Tabla Barberos</h3>
+      <p id="status-barberos">Verificando...</p>
+      <pre id="data-barberos" style="display:none;"></pre>
+    </div>
+
+    <div class="test-card">
+      <h3><span class="status-dot loading" id="dot-servicios"></span> 3. Tabla Servicios</h3>
+      <p id="status-servicios">Verificando...</p>
+      <pre id="data-servicios" style="display:none;"></pre>
+    </div>
+
+    <div class="test-card">
+      <h3><span class="status-dot loading" id="dot-citas"></span> 4. Tabla Citas</h3>
+      <p id="status-citas">Verificando...</p>
+      <pre id="data-citas" style="display:none;"></pre>
+    </div>
+
+    <div class="test-card">
+      <h3><span class="status-dot loading" id="dot-auth"></span> 5. Auth (Login)</h3>
+      <p id="status-auth">Verificando...</p>
+    </div>
+
+    <button class="btn btn-primary btn-lg btn-block mt-2" onclick="runAllTests()" style="margin-bottom:40px;">🔄 Re-ejecutar Tests</button>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/supabase.js"></script>
+  <script>
+    function ok(id, msg) {
+      document.getElementById('dot-'+id).className = 'status-dot ok';
+      document.getElementById('status-'+id).textContent = msg;
+    }
+    function fail(id, msg) {
+      document.getElementById('dot-'+id).className = 'status-dot fail';
+      document.getElementById('status-'+id).textContent = msg;
+    }
+    function data(id, json) {
+      document.getElementById('data-'+id).style.display = 'block';
+      document.getElementById('data-'+id).textContent = JSON.stringify(json, null, 2);
+    }
+
+    async function runAllTests() {
+      // Reset dots
+      ['client','barberos','servicios','citas','auth'].forEach(function(id) {
+        document.getElementById('dot-'+id).className = 'status-dot loading';
+        document.getElementById('status-'+id).textContent = 'Verificando...';
+      });
+
+      // Test 1: Cliente
+      if (typeof supabase !== 'undefined' && supabase.createClient) {
+        ok('client', '✅ Supabase JS cargado correctamente');
+      } else {
+        fail('client', '❌ Supabase JS NO cargado. Revisa que el CDN esté en el HTML.');
+        return;
+      }
+
+      // Test 2: Barberos
+      try {
+        var b = await InnovareDB.getBarbers();
+        if (b.length > 0) {
+          ok('barberos', '✅ ' + b.length + ' barberos encontrados');
+          data('barberos', b.slice(0, 3));
+        } else {
+          fail('barberos', '⚠️ 0 barberos - ejecuta el schema SQL en Supabase');
+        }
+      } catch(e) {
+        fail('barberos', '❌ Error: ' + e.message);
+      }
+
+      // Test 3: Servicios
+      try {
+        var s = await InnovareDB.getServices();
+        if (s.length > 0) {
+          ok('servicios', '✅ ' + s.length + ' servicios encontrados');
+          data('servicios', s.slice(0, 3));
+        } else {
+          fail('servicios', '⚠️ 0 servicios - ejecuta el schema SQL');
+        }
+      } catch(e) {
+        fail('servicios', '❌ Error: ' + e.message);
+      }
+
+      // Test 4: Citas
+      try {
+        var sb2 = supabase.createClient(
+          'https://mbftnsvjnmnsxjsmkoab.supabase.co',
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1iZnRuc3Zqbm1uc3hqc21rb2FiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NDEzODcsImV4cCI6MjEwMDIxNzM4N30.RR1-a6RAO1XlkR4IuPfaCNdWXf2hmGFSQFKT2cGVryE'
+        );
+        var r = await sb2.from('citas').select('count', { count: 'exact', head: true });
+        var count = r.count || 0;
+        ok('citas', '✅ Tabla citas accesible (' + count + ' registros)');
+        if (count > 0) {
+          var cit = await sb2.from('citas').select('*').limit(3);
+          data('citas', cit.data);
+        }
+      } catch(e) {
+        fail('citas', '❌ Error: ' + e.message);
+      }
+
+      // Test 5: Auth
+      try {
+        var r2 = await InnovareDB.login('admin@innovarebarber.tech', 'innovare2026');
+        if (r2.user) {
+          ok('auth', '✅ Login exitoso: ' + r2.user.email + ' (rol en user_metadata)');
+        }
+      } catch(e) {
+        if (e.message && e.message.includes('Invalid login')) {
+          fail('auth', '⚠️ Usuario no registrado. Usa SQL Editor para crear el usuario.');
+        } else {
+          fail('auth', '❌ Error: ' + (e.message || JSON.stringify(e)));
+        }
+      }
+    }
+
+    runAllTests();
+  </script>
+</body>
+</html>
