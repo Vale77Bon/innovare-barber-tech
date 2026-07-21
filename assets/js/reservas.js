@@ -35,19 +35,9 @@ var SLOTS = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13
 
 function initReservasPage() {
   state.barbers = EMBEDDED.barbers;
-  
-  // Apply membership discount to services
-  var services = JSON.parse(JSON.stringify(EMBEDDED.services));
+  state.services = JSON.parse(JSON.stringify(EMBEDDED.services));
   var mem = JSON.parse(localStorage.getItem('innovare_membership') || 'null');
-  if (mem && mem.status === 'active' && mem.name === 'VIP Tech') {
-    services = services.map(function(s) {
-      s.originalPrice = s.price;
-      s.price = Math.round(s.price * 0.85); // 15% discount
-      return s;
-    });
-  }
-  state.services = services;
-  
+  state.membership = (mem && mem.status === 'active') ? mem : null;
   var saved = JSON.parse(localStorage.getItem('innovare_appointments')||'[]');
   state.appointments = saved.length ? saved : EMBEDDED.appointments;
   renderAll(); setupBookingBtn();
@@ -100,22 +90,38 @@ function renderBarbers(){
 // ===== SERVICES =====
 function renderServices(){
   var c=$d('service-list');if(!c)return;var h='';
-  state.services.forEach(function(s){var sel=state.selService&&state.selService.id===s.id;h+='<div class="service-option'+(sel?' selected':'')+'" data-id="'+s.id+'"><div class="service-name">'+s.name+'<small>'+s.duration+' min</small></div><div class="service-price">'+fCur(s.price)+'</div></div>';});
+  state.services.forEach(function(s){
+    var sel=state.selService&&state.selService.id===s.id;
+    var disc = state.membership && state.membership.name==='VIP Tech' ? Math.round(s.price*0.85) : null;
+    h+='<div class="service-option'+(sel?' selected':'')+'" data-id="'+s.id+'">';
+    h+='<div class="service-name">'+s.name+'<small>'+s.duration+' min</small></div>';
+    h+='<div class="service-price">'+fCur(s.price);
+    if(disc)h+=' <span style="font-size:0.7rem;color:#00c853;">(-15%)</span>';
+    h+='</div></div>';
+  });
   c.innerHTML=h;
   c.querySelectorAll('.service-option').forEach(function(el){el.onclick=function(){var id=parseInt(el.dataset.id);state.selService=state.services.find(function(s){return s.id===id;});renderServices();updateSummary();};});
 }
 
 // ===== SUMMARY =====
 function updateSummary(){
-  var s=function(id,v){var e=$d(id);if(e)e.textContent=v;};
-  s('summary-date',state.selDate?dFmt(state.selDate):'—');
-  s('summary-time',state.selTime?fTime(state.selTime):'—');
-  s('summary-barber',state.selBarber?state.selBarber.name:'—');
-  s('summary-service',state.selService?state.selService.name:'—');
-  s('summary-price',state.selService?fCur(state.selService.price):'—');
+  var sv=function(id,v){var e=$d(id);if(e)e.textContent=v;};
+  sv('summary-date',state.selDate?dFmt(state.selDate):'—');
+  sv('summary-time',state.selTime?fTime(state.selTime):'—');
+  sv('summary-barber',state.selBarber?state.selBarber.name:'—');
+  sv('summary-service',state.selService?state.selService.name:'—');
   var price=state.selService?state.selService.price:0;
-  s('summary-deposit','10% = '+fCur(price*0.1));
-  s('summary-total',state.selService?fCur(price):'—');
+  sv('summary-price',state.selService?fCur(price):'—');
+  var discount=0;
+  var de=$d('summary-discount-row');
+  if(state.membership&&state.membership.name==='VIP Tech'&&price>0){
+    discount=Math.round(price*0.15);
+    if(de)de.style.display='flex';
+    sv('summary-discount','-15% = -'+fCur(discount));
+  }else{if(de)de.style.display='none';}
+  var fp=price-discount;
+  sv('summary-deposit','10% = '+fCur(fp*0.1));
+  sv('summary-total',state.selService?fCur(fp):'—');
   var btn=$d('book-btn');
   if(btn){var ok=state.selDate&&state.selTime&&state.selBarber&&state.selService;btn.disabled=!ok;btn.style.opacity=ok?'1':'0.5';btn.style.cursor=ok?'pointer':'not-allowed';}
 }
@@ -124,68 +130,47 @@ function setupBookingBtn(){
   var btn=$d('book-btn');if(!btn)return;
   btn.onclick=function(){
     if(!state.selDate||!state.selTime||!state.selBarber||!state.selService){alert('Completa todos los campos');return;}
-
-    // === STRIPE SIMULATION ===
-    var servicePrice=state.selService.price;
-    var deposit=servicePrice*0.1; // 10% del servicio
-    var total=servicePrice;
-
-    showStripeModal(servicePrice,deposit,total);
+    var sp=state.selService.price;
+    var dc=0;
+    if(state.membership&&state.membership.name==='VIP Tech'){dc=Math.round(sp*0.15);}
+    var fpr=sp-dc;
+    var dp=fpr*0.1;
+    showStripeModal(sp,dc,dp,fpr);
   };
 }
 
-// ===== STRIPE MODAL SIMULATION =====
-function showStripeModal(servicePrice,deposit,total){
-  // Remove existing modal
-  var existing=document.getElementById('stripe-modal');
-  if(existing)existing.remove();
-
-  var modal=document.createElement('div');
-  modal.id='stripe-modal';
-  modal.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:10000;display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif;';
-  modal.innerHTML='<div style="background:#fff;border-radius:16px;padding:32px;max-width:440px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2);">'+
-    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">'+
-    '<h3 style="margin:0;color:#1a1a2e;">💳 Stripe Checkout</h3>'+
-    '<span style="font-size:0.75rem;color:#00c853;background:rgba(0,200,83,0.1);padding:4px 12px;border-radius:12px;">🔒 Simulación</span></div>'+
+// ===== STRIPE =====
+function showStripeModal(servicePrice,discount,deposit,total){
+  var ex=document.getElementById('stripe-modal');if(ex)ex.remove();
+  var discHtml=discount>0?'<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:0.9rem;"><span style="color:#00c853;">👑 Descuento VIP (-15%):</span><span style="color:#00c853;font-weight:600;">-'+fCur(discount)+'</span></div>':'';
+  var m=document.createElement('div');m.id='stripe-modal';
+  m.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:10000;display:flex;align-items:center;justify-content:center;font-family:Inter;';
+  m.innerHTML='<div style="background:#fff;border-radius:16px;padding:32px;max-width:440px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2);">'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;"><h3 style="margin:0;color:#1a1a2e;">💳 Stripe Checkout</h3><span style="font-size:0.75rem;color:#00c853;background:rgba(0,200,83,0.1);padding:4px 12px;border-radius:12px;">🔒 Simulación</span></div>'+
     '<div style="background:#f5f6fa;border-radius:12px;padding:20px;margin-bottom:20px;">'+
-    '<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:0.9rem;"><span style="color:#6e6e7e;">Servicio:</span><span style="color:#1a1a2e;font-weight:600;">'+fCur(servicePrice)+'</span></div>'+
+    '<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:0.9rem;"><span style="color:#6e6e7e;">Precio Original:</span><span style="color:#1a1a2e;font-weight:600;">'+fCur(servicePrice)+'</span></div>'+discHtml+
     '<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:0.9rem;"><span style="color:#6e6e7e;">Depósito (10%):</span><span style="color:#00a0b8;font-weight:600;">'+fCur(deposit)+'</span></div>'+
     '<div style="border-top:1px solid #e0e0ea;padding-top:12px;display:flex;justify-content:space-between;font-size:1.1rem;"><span style="color:#1a1a2e;font-weight:700;">Total a pagar:</span><span style="color:#1a1a2e;font-weight:800;">'+fCur(total)+'</span></div></div>'+
     '<div style="margin-bottom:16px;">'+
-    '<label style="display:block;font-size:0.8rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">Número de Tarjeta</label>'+
-    '<input id="cc-number" type="text" class="form-input" placeholder="4242 4242 4242 4242" maxlength="19" value="4242 4242 4242 4242" style="background:#f5f6fa;border:1px solid #e0e0ea;">'+
+    '<label style="display:block;font-size:0.8rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;">Número de Tarjeta</label>'+
+    '<input id="cc-n" type="text" class="form-input" placeholder="4242 4242 4242 4242" maxlength="19" value="4242 4242 4242 4242" style="background:#f5f6fa;border:1px solid #e0e0ea;">'+
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">'+
-    '<div><label style="display:block;font-size:0.8rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">Vencimiento</label><input id="cc-expiry" type="text" class="form-input" placeholder="MM/AA" maxlength="5" value="12/28" style="background:#f5f6fa;border:1px solid #e0e0ea;"></div>'+
-    '<div><label style="display:block;font-size:0.8rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">CVC</label><input id="cc-cvc" type="text" class="form-input" placeholder="123" maxlength="4" value="123" style="background:#f5f6fa;border:1px solid #e0e0ea;"></div>'+
-    '</div>'+
-    '<div style="margin-top:12px;"><label style="display:block;font-size:0.8rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">Nombre en la Tarjeta</label>'+
-    '<input id="cc-name" type="text" class="form-input" placeholder="Nombre del titular" value="Alejandro García" style="background:#f5f6fa;border:1px solid #e0e0ea;"></div>'+
-    '</div>'+
-    '<button id="stripe-pay-btn" style="width:100%;padding:14px;background:#00E5FF;color:#1a1a2e;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;font-family:Inter;">Pagar '+fCur(total)+'</button>'+
-    '<button id="stripe-cancel-btn" style="width:100%;padding:10px;background:none;border:none;color:#6e6e7e;margin-top:8px;cursor:pointer;font-family:Inter;font-size:0.85rem;">Cancelar</button></div>';
-  document.body.appendChild(modal);
-
-  document.getElementById('stripe-pay-btn').onclick=function(){
-    modal.innerHTML='<div style="background:#fff;border-radius:16px;padding:32px;max-width:440px;width:90%;text-align:center;"><div style="font-size:3rem;margin-bottom:16px;">⏳</div><h3 style="color:#1a1a2e;">Procesando pago...</h3><p style="color:#6e6e7e;">Contactando a Stripe API</p></div>';
+    '<div><label style="display:block;font-size:0.8rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;">Vencimiento</label><input id="cc-e" type="text" class="form-input" placeholder="MM/AA" maxlength="5" value="12/28" style="background:#f5f6fa;border:1px solid #e0e0ea;"></div>'+
+    '<div><label style="display:block;font-size:0.8rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;">CVC</label><input id="cc-c" type="text" class="form-input" placeholder="123" maxlength="4" value="123" style="background:#f5f6fa;border:1px solid #e0e0ea;"></div></div>'+
+    '<div style="margin-top:12px;"><label style="display:block;font-size:0.8rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;">Titular</label><input id="cc-na" type="text" class="form-input" value="Alejandro García" style="background:#f5f6fa;border:1px solid #e0e0ea;"></div></div>'+
+    '<button id="spay" style="width:100%;padding:14px;background:#00E5FF;color:#1a1a2e;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;">Pagar '+fCur(total)+'</button>'+
+    '<button id="scancel" style="width:100%;padding:10px;background:none;border:none;color:#6e6e7e;margin-top:8px;cursor:pointer;font-size:0.85rem;">Cancelar</button></div>';
+  document.body.appendChild(m);
+  document.getElementById('spay').onclick=function(){
+    m.innerHTML='<div style="background:#fff;border-radius:16px;padding:32px;max-width:440px;width:90%;text-align:center;"><div style="font-size:3rem;margin-bottom:16px;">⏳</div><h3 style="color:#1a1a2e;">Procesando pago...</h3></div>';
     setTimeout(function(){
-      var apt={
-        id:Date.now(),date:state.selDate,time:state.selTime,
-        barber_name:state.selBarber.name,barber_id:state.selBarber.id,
-        service_name:state.selService.name,service_id:state.selService.id,
-        price:servicePrice,deposit:deposit,total:total,
-        paymentMethod:'Stripe_Token',paymentStatus:'Completado',
-        clientName:'Cliente Demo',estado:'confirmada',createdAt:new Date().toISOString()
-      };
+      var apt={id:Date.now(),date:state.selDate,time:state.selTime,barber_name:state.selBarber.name,barber_id:state.selBarber.id,service_name:state.selService.name,service_id:state.selService.id,price:total,deposit:deposit,total:total,paymentMethod:'Stripe_Token',paymentStatus:'Completado',clientName:'Cliente Demo',estado:'confirmada',createdAt:new Date().toISOString()};
       var aps=JSON.parse(localStorage.getItem('innovare_appointments')||'[]');aps.push(apt);
-      localStorage.setItem('innovare_appointments',JSON.stringify(aps));
-      state.appointments=aps;
-
-      modal.innerHTML='<div style="background:#fff;border-radius:16px;padding:32px;max-width:440px;width:90%;text-align:center;"><div style="font-size:3rem;margin-bottom:16px;">✅</div><h3 style="color:#00c853;">¡Pago exitoso!</h3><p style="color:#6e6e7e;">Tu depósito de '+fCur(deposit)+' fue procesado</p><p style="color:#1a1a2e;font-weight:600;font-size:1.2rem;">Total servicio: '+fCur(total)+'</p><p style="color:#6e6e7e;font-size:0.8rem;">ID: #'+apt.id+'</p><button id="stripe-done-btn" style="width:100%;padding:14px;background:#00E5FF;color:#1a1a2e;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;margin-top:16px;">Ver Mis Citas</button></div>';
-      document.getElementById('stripe-done-btn').onclick=function(){window.location.href='mis-citas.html';};
+      localStorage.setItem('innovare_appointments',JSON.stringify(aps));state.appointments=aps;
+      m.innerHTML='<div style="background:#fff;border-radius:16px;padding:32px;max-width:440px;width:90%;text-align:center;"><div style="font-size:3rem;margin-bottom:16px;">✅</div><h3 style="color:#00c853;">¡Pago exitoso!</h3><p style="color:#6e6e7e;">Depósito: '+fCur(deposit)+'</p><p style="color:#1a1a2e;font-weight:600;font-size:1.2rem;">Total: '+fCur(total)+'</p><p style="color:#6e6e7e;font-size:0.8rem;">ID: #'+apt.id+'</p><button onclick="window.location.href=\'mis-citas.html\'" style="width:100%;padding:14px;background:#00E5FF;color:#1a1a2e;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;margin-top:16px;">Ver Mis Citas</button></div>';
     },2000);
   };
-
-  document.getElementById('stripe-cancel-btn').onclick=function(){modal.remove();};
+  document.getElementById('scancel').onclick=function(){m.remove();};
 }
 
 function fTime(t){if(!t)return'—';var p=t.split(':'),h=parseInt(p[0]),a=h>=12?'PM':'AM';return(h%12||12)+':'+p[1]+' '+a;}
