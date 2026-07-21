@@ -18,6 +18,7 @@
   --white: #ffffff;
   --black: #000000;
   --bg-gradient: linear-gradient(135deg, #fdf6e8 0%, #f5e6c8 30%, #faf3e0 70%, #fdf6e8 100%);
+  --bg-barberia: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.04"><path d="M100 10 L110 90 L190 100 L110 110 L100 190 L90 110 L10 100 L90 90 Z" fill="%231a1a2e"/><circle cx="100" cy="100" r="20" fill="none" stroke="%231a1a2e" stroke-width="2"/><path d="M40 40 L30 30 M160 40 L170 30 M40 160 L30 170 M160 160 L170 170" stroke="%231a1a2e" stroke-width="1.5"/></svg>');
   --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-heading: 'Montserrat', 'Inter', sans-serif;
   --spacing-xs: 0.25rem; --spacing-sm: 0.5rem; --spacing-md: 1rem;

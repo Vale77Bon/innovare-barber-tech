@@ -76,6 +76,8 @@
         html += '<h4>' + (c.service_name || 'Servicio') + '</h4>';
         html += '<p>👤 ' + (c.barber_name || 'Barbero') + ' · ' + fCur(c.price || 0) + '</p>';
         html += '<p class="meta">📅 ' + fDate(c.date) + ' · 🕐 ' + (c.time||'—') + ' · 💰 Depósito: ' + fCur(c.deposit||(c.price*0.1||0)) + '</p>';
+        var pend = c.pendiente || ((c.price||0) - (c.deposit||(c.price*0.1||0)));
+        if (pend > 0 && c.estado !== 'cancelada') html += '<p class="meta" style="color:#e65100;">⚠️ Pendiente en barbería: ' + fCur(pend) + '</p>';
         html += '<span class="cita-status ' + stClass + '">' + stText + '</span>';
         html += '</div></div>';
         if (isActive) {

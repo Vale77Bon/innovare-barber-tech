@@ -143,14 +143,16 @@ function setupBookingBtn(){
 function showStripeModal(servicePrice,discount,deposit,total){
   var ex=document.getElementById('stripe-modal');if(ex)ex.remove();
   var discHtml=discount>0?'<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:0.9rem;"><span style="color:#00c853;">👑 Descuento VIP (-15%):</span><span style="color:#00c853;font-weight:600;">-'+fCur(discount)+'</span></div>':'';
+  var pendiente=total-deposit;
   var m=document.createElement('div');m.id='stripe-modal';
   m.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:10000;display:flex;align-items:center;justify-content:center;font-family:Inter;';
   m.innerHTML='<div style="background:#fff;border-radius:16px;padding:32px;max-width:440px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2);">'+
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;"><h3 style="margin:0;color:#1a1a2e;">💳 Stripe Checkout</h3><span style="font-size:0.75rem;color:#00c853;background:rgba(0,200,83,0.1);padding:4px 12px;border-radius:12px;">🔒 Simulación</span></div>'+
     '<div style="background:#f5f6fa;border-radius:12px;padding:20px;margin-bottom:20px;">'+
-    '<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:0.9rem;"><span style="color:#6e6e7e;">Precio Original:</span><span style="color:#1a1a2e;font-weight:600;">'+fCur(servicePrice)+'</span></div>'+discHtml+
+    '<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:0.9rem;"><span style="color:#6e6e7e;">Precio del Servicio:</span><span style="color:#1a1a2e;font-weight:600;">'+fCur(total)+'</span></div>'+discHtml+
     '<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:0.9rem;"><span style="color:#6e6e7e;">Depósito (10%):</span><span style="color:#00a0b8;font-weight:600;">'+fCur(deposit)+'</span></div>'+
-    '<div style="border-top:1px solid #e0e0ea;padding-top:12px;display:flex;justify-content:space-between;font-size:1.1rem;"><span style="color:#1a1a2e;font-weight:700;">Total a pagar:</span><span style="color:#1a1a2e;font-weight:800;">'+fCur(total)+'</span></div></div>'+
+    '<div style="border-top:1px solid #e0e0ea;padding-top:12px;display:flex;justify-content:space-between;font-size:1.1rem;"><span style="color:#1a1a2e;font-weight:700;">Cobro ahora (Stripe):</span><span style="color:#1a1a2e;font-weight:800;">'+fCur(deposit)+'</span></div>'+
+    '<div style="margin-top:8px;background:#fff3e0;border:1px solid #ffe0b2;border-radius:8px;padding:12px;font-size:0.8rem;color:#e65100;text-align:center;"><strong>💡 Pendiente en barbería:</strong> '+fCur(pendiente)+' (pagas al llegar)</div></div>'+
     '<div style="margin-bottom:16px;">'+
     '<label style="display:block;font-size:0.8rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;">Número de Tarjeta</label>'+
     '<input id="cc-n" type="text" class="form-input" placeholder="4242 4242 4242 4242" maxlength="19" value="4242 4242 4242 4242" style="background:#f5f6fa;border:1px solid #e0e0ea;">'+
@@ -158,16 +160,16 @@ function showStripeModal(servicePrice,discount,deposit,total){
     '<div><label style="display:block;font-size:0.8rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;">Vencimiento</label><input id="cc-e" type="text" class="form-input" placeholder="MM/AA" maxlength="5" value="12/28" style="background:#f5f6fa;border:1px solid #e0e0ea;"></div>'+
     '<div><label style="display:block;font-size:0.8rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;">CVC</label><input id="cc-c" type="text" class="form-input" placeholder="123" maxlength="4" value="123" style="background:#f5f6fa;border:1px solid #e0e0ea;"></div></div>'+
     '<div style="margin-top:12px;"><label style="display:block;font-size:0.8rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;">Titular</label><input id="cc-na" type="text" class="form-input" value="Alejandro García" style="background:#f5f6fa;border:1px solid #e0e0ea;"></div></div>'+
-    '<button id="spay" style="width:100%;padding:14px;background:#00E5FF;color:#1a1a2e;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;">Pagar '+fCur(total)+'</button>'+
+    '<button id="spay" style="width:100%;padding:14px;background:#00E5FF;color:#1a1a2e;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;">Pagar Depósito '+fCur(deposit)+'</button>'+
     '<button id="scancel" style="width:100%;padding:10px;background:none;border:none;color:#6e6e7e;margin-top:8px;cursor:pointer;font-size:0.85rem;">Cancelar</button></div>';
   document.body.appendChild(m);
   document.getElementById('spay').onclick=function(){
     m.innerHTML='<div style="background:#fff;border-radius:16px;padding:32px;max-width:440px;width:90%;text-align:center;"><div style="font-size:3rem;margin-bottom:16px;">⏳</div><h3 style="color:#1a1a2e;">Procesando pago...</h3></div>';
     setTimeout(function(){
-      var apt={id:Date.now(),date:state.selDate,time:state.selTime,barber_name:state.selBarber.name,barber_id:state.selBarber.id,service_name:state.selService.name,service_id:state.selService.id,price:total,deposit:deposit,total:total,paymentMethod:'Stripe_Token',paymentStatus:'Completado',clientName:'Cliente Demo',estado:'confirmada',createdAt:new Date().toISOString()};
+      var apt={id:Date.now(),date:state.selDate,time:state.selTime,barber_name:state.selBarber.name,barber_id:state.selBarber.id,service_name:state.selService.name,service_id:state.selService.id,price:total,deposit:deposit,total:total, pendiente:pendiente, paymentMethod:'Stripe_Token',paymentStatus:'Completado',clientName:'Cliente Demo',estado:'confirmada',createdAt:new Date().toISOString()};
       var aps=JSON.parse(localStorage.getItem('innovare_appointments')||'[]');aps.push(apt);
       localStorage.setItem('innovare_appointments',JSON.stringify(aps));state.appointments=aps;
-      m.innerHTML='<div style="background:#fff;border-radius:16px;padding:32px;max-width:440px;width:90%;text-align:center;"><div style="font-size:3rem;margin-bottom:16px;">✅</div><h3 style="color:#00c853;">¡Pago exitoso!</h3><p style="color:#6e6e7e;">Depósito: '+fCur(deposit)+'</p><p style="color:#1a1a2e;font-weight:600;font-size:1.2rem;">Total: '+fCur(total)+'</p><p style="color:#6e6e7e;font-size:0.8rem;">ID: #'+apt.id+'</p><button onclick="window.location.href=\'mis-citas.html\'" style="width:100%;padding:14px;background:#00E5FF;color:#1a1a2e;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;margin-top:16px;">Ver Mis Citas</button></div>';
+      m.innerHTML='<div style="background:#fff;border-radius:16px;padding:32px;max-width:440px;width:90%;text-align:center;"><div style="font-size:3rem;margin-bottom:16px;">✅</div><h3 style="color:#00c853;">¡Depósito procesado!</h3><p style="color:#6e6e7e;">Se cobró: <strong>'+fCur(deposit)+'</strong></p><div style="background:#fff3e0;border:1px solid #ffe0b2;border-radius:8px;padding:12px;margin:12px 0;font-size:0.85rem;color:#e65100;">💡 <strong>Pendiente en barbería:</strong> '+fCur(pendiente)+'</div><p style="color:#6e6e7e;font-size:0.8rem;">ID: #'+apt.id+'</p><button onclick="window.location.href=\'mis-citas.html\'" style="width:100%;padding:14px;background:#00E5FF;color:#1a1a2e;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;margin-top:16px;">Ver Mis Citas</button></div>';
     },2000);
   };
   document.getElementById('scancel').onclick=function(){m.remove();};
