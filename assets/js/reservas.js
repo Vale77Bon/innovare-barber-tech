@@ -34,7 +34,20 @@ var state = {
 var SLOTS = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
 
 function initReservasPage() {
-  state.barbers = EMBEDDED.barbers; state.services = EMBEDDED.services;
+  state.barbers = EMBEDDED.barbers;
+  
+  // Apply membership discount to services
+  var services = JSON.parse(JSON.stringify(EMBEDDED.services));
+  var mem = JSON.parse(localStorage.getItem('innovare_membership') || 'null');
+  if (mem && mem.status === 'active' && mem.name === 'VIP Tech') {
+    services = services.map(function(s) {
+      s.originalPrice = s.price;
+      s.price = Math.round(s.price * 0.85); // 15% discount
+      return s;
+    });
+  }
+  state.services = services;
+  
   var saved = JSON.parse(localStorage.getItem('innovare_appointments')||'[]');
   state.appointments = saved.length ? saved : EMBEDDED.appointments;
   renderAll(); setupBookingBtn();
