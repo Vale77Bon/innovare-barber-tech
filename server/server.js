@@ -54,7 +54,12 @@ async function initDB() {
 
 initDB();
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://innovare-barber-tech.vercel.app', 'https://*.vercel.app']
+    : 'http://localhost:3000',
+  credentials: true
+}));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, '..')));
 
@@ -98,6 +103,48 @@ app.post('/api/auth/login', async (req, res) => {
     const { password_hash, ...userData } = user;
     res.json({ token, user: userData });
   } catch (err) {
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { nombre, email, telefono, password } = req.body;
+    if (!nombre || !email || !telefono || !password) {
+      return res.status(400).json({ error: 'Todos los campos son requeridos' });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
+    }
+
+    // Verificar si el email ya existe
+    const existing = await pool.query('SELECT id FROM usuarios WHERE email = $1', [email]);
+    if (existing.rows.length > 0) {
+      return res.status(400).json({ error: 'Este correo ya está registrado' });
+    }
+
+    // Hashear contraseña
+    const password_hash = await bcrypt.hash(password, 10);
+    const id = uuidv4();
+
+    // Crear usuario
+    await pool.query(
+      `INSERT INTO usuarios (id, nombre, email, password_hash, telefono, rol, activo) 
+       VALUES ($1, $2, $3, $4, $5, 'cliente', TRUE)`,
+      [id, nombre, email, password_hash, telefono]
+    );
+
+    // Auto-login: generar token
+    const token = jwt.sign(
+      { id, email, nombre, rol: 'cliente' },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    const userData = { id, nombre, email, telefono, rol: 'cliente' };
+    res.status(201).json({ token, user: userData });
+  } catch (err) {
+    console.error('Error en registro:', err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -228,6 +275,12 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`💈 Innovare Barber Tech API corriendo en http://localhost:${PORT}`);
-});
+// Exportar para Vercel (serverless)
+module.exports = app;
+
+// Solo escuchar en puerto si no está en Vercel
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`💈 Innovare Barber Tech API corriendo en http://localhost:${PORT}`);
+  });
+}
