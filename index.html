@@ -101,7 +101,7 @@
       <p>Ingresos recurrentes mensuales con cargo automático tokenizado</p>
     </div>
     <div class="grid-2" style="max-width:800px;margin:0 auto;">
-      <div class="card plan-card">
+      <div class="card plan-card" onclick="openMembership('The Regular',349,['1 corte técnico al mes','1 perfilado de barba VIP','Prioridad en agenda (jueves a sábado)','Muestra gratis de producto premium','Cargo automático tokenizado vía Stripe'])">
         <h3>The Regular</h3>
         <div class="plan-price">$349 <span>/mes</span></div>
         <ul class="plan-features">
@@ -109,9 +109,9 @@
           <li>Prioridad en agenda (jueves a sábado)</li><li>Muestra gratis de producto premium</li>
           <li>Cargo automático tokenizado vía Stripe</li>
         </ul>
-        <a href="reservas.html" class="btn btn-outline btn-block">Suscribirme</a>
+        <span class="btn btn-outline btn-block">Suscribirme</span>
       </div>
-      <div class="card plan-card featured">
+      <div class="card plan-card featured" onclick="openMembership('VIP Tech',599,['Servicios ilimitados de corte y estilizado','Tratamientos capilares con diagnóstico 3D','15% descuento en tienda retail','Acceso prioritario Master Barbers','Cargo automático · Sin acumulación'])">
         <h3>VIP Tech</h3>
         <div class="plan-price">$599 <span>/mes</span></div>
         <ul class="plan-features">
@@ -120,7 +120,7 @@
           <li>15% descuento en tienda retail</li><li>Acceso prioritario Master Barbers</li>
           <li>Cargo automático · Sin acumulación</li>
         </ul>
-        <a href="reservas.html" class="btn btn-primary btn-block">Suscribirme</a>
+        <span class="btn btn-primary btn-block">Suscribirme</span>
       </div>
     </div>
     <p class="text-center" style="font-size:0.8rem;color:#6e6e7e;margin-top:1rem;">* Uso o pérdida: sesiones no agendadas expiran sin reembolso.</p>
@@ -200,5 +200,50 @@
 
   <div id="footer-placeholder"></div>
   <script src="assets/js/main.js"></script>
+  <script>
+    function openMembership(name, price, features) {
+      var existing = document.getElementById('membership-modal');
+      if (existing) existing.remove();
+
+      var modal = document.createElement('div');
+      modal.id = 'membership-modal';
+      modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif;';
+      modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+
+      var deposit = (price * 0.1).toFixed(2);
+      var featuresHtml = features.map(function(f) { return '<li style="padding:6px 0;border-bottom:1px solid #eee;font-size:0.85rem;">✓ ' + f + '</li>'; }).join('');
+
+      modal.innerHTML = '<div style="background:#fff;border-radius:16px;padding:32px;max-width:480px;width:95%;box-shadow:0 20px 60px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">' +
+        '<h3 style="margin:0;color:#1a1a2e;font-size:1.3rem;">👑 ' + name + '</h3>' +
+        '<span style="font-size:0.7rem;background:rgba(0,200,83,0.1);color:#00c853;padding:4px 10px;border-radius:10px;">🔒 Seguro</span></div>' +
+
+        '<div style="background:#f5f6fa;border-radius:12px;padding:20px;margin-bottom:20px;">' +
+        '<div style="text-align:center;margin-bottom:16px;"><span style="font-size:2.5rem;font-weight:800;color:#00a0b8;">$' + price + '</span><span style="color:#6e6e7e;"> /mes</span></div>' +
+        '<ul style="list-style:none;padding:0;">' + featuresHtml + '</ul>' +
+        '<div style="text-align:center;margin-top:12px;font-size:0.8rem;color:#6e6e7e;">Depósito inicial: <strong style="color:#00a0b8;">$' + deposit + '</strong> (10%)</div></div>' +
+
+        '<div style="margin-bottom:16px;">' +
+        '<label style="display:block;font-size:0.75rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;">Número de Tarjeta</label>' +
+        '<input id="mem-cc" type="text" class="form-input" placeholder="4242 4242 4242 4242" maxlength="19" value="4242 4242 4242 4242" style="background:#f5f6fa;">' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">' +
+        '<div><label style="display:block;font-size:0.75rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;">Vencimiento</label><input id="mem-exp" type="text" class="form-input" placeholder="MM/AA" maxlength="5" value="12/28" style="background:#f5f6fa;"></div>' +
+        '<div><label style="display:block;font-size:0.75rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;">CVC</label><input id="mem-cvc" type="text" class="form-input" placeholder="123" maxlength="4" value="123" style="background:#f5f6fa;"></div></div>' +
+        '<div style="margin-top:12px;"><label style="display:block;font-size:0.75rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;">Titular</label><input id="mem-name" type="text" class="form-input" value="Alejandro García" style="background:#f5f6fa;"></div></div>' +
+
+        '<button id="mem-pay-btn" style="width:100%;padding:14px;background:#00E5FF;color:#1a1a2e;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;">Pagar $' + price + ' MXN</button>' +
+        '<button onclick="document.getElementById(\'membership-modal\').remove()" style="width:100%;padding:10px;background:none;border:none;color:#6e6e7e;margin-top:4px;cursor:pointer;font-size:0.85rem;">Cancelar</button></div>';
+
+      document.body.appendChild(modal);
+
+      document.getElementById('mem-pay-btn').onclick = function() {
+        var btn = document.getElementById('mem-pay-btn');
+        btn.disabled = true; btn.textContent = 'Procesando...';
+        setTimeout(function() {
+          modal.innerHTML = '<div style="background:#fff;border-radius:16px;padding:48px 32px;text-align:center;max-width:400px;width:90%;"><div style="font-size:4rem;margin-bottom:20px;">✅</div><h3 style="color:#00c853;">¡Suscripción exitosa!</h3><p style="color:#6e6e7e;">Tu membresía <strong>' + name + '</strong> está activa.</p><p style="color:#1a1a2e;font-weight:600;font-size:1.2rem;">$' + price + ' MXN / mes</p><p style="color:#6e6e7e;font-size:0.85rem;">Depósito cobrado: $' + deposit + '</p><button onclick="window.location.href=\'reservas.html\'" style="width:100%;padding:14px;background:#00E5FF;color:#1a1a2e;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;margin-top:20px;">Reservar Ahora</button></div>';
+        }, 2000);
+      };
+    }
+  </script>
 </body>
 </html>
