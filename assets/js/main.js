@@ -77,7 +77,11 @@ function loadRoleBasedNav() {
       clientLinks.forEach(l => {
         links += `<a href="${l.href}" class="${l.href === currentPath ? 'active' : ''}">${l.label}</a>`;
       });
+      var mem = JSON.parse(localStorage.getItem('innovare_membership') || 'null');
       links += `<span class="user-badge">👤 ${user.nombre.split(' ')[0]}</span>`;
+      if (mem && mem.status === 'active') {
+        links += `<span class="user-badge" style="background:rgba(0,200,83,0.15);border-color:rgba(0,200,83,0.3);color:#00c853;">👑 ${mem.name}</span>`;
+      }
       links += `<button class="logout-btn" onclick="logout()">Salir</button>`;
     }
   } else {
