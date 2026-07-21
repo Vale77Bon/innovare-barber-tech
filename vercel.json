@@ -1,13 +1,17 @@
 {
   "name": "innovare-barber-tech",
   "version": 2,
-  "builds": [{ "src": "**/*", "use": "@vercel/static" }],
+  "builds": [
+    { "src": "server/**/*.js", "use": "@vercel/node" },
+    { "src": "**/*", "use": "@vercel/static" }
+  ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/server/$1" },
     { "src": "/(.*)", "dest": "/$1" }
   ],
   "env": {
     "SUPABASE_URL": "https://YOUR-PROJECT-ID.supabase.co",
-    "SUPABASE_ANON_KEY": "YOUR-ANON-KEY"
+    "SUPABASE_ANON_KEY": "YOUR-ANON-KEY",
+    "NODE_ENV": "production"
   }
 }

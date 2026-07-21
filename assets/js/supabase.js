@@ -97,6 +97,14 @@ var InnovareDB = {
     return r.data;
   },
 
+  // ===== USUARIOS - GUARDAR DATOS ADICIONALES =====
+  saveUserData: async function(userData) {
+    if (!sb) throw new Error('Supabase no conectado');
+    var r = await sb.from('usuarios').insert([userData]);
+    if (r.error) throw r.error;
+    return true;
+  },
+
   // ===== DIAGNÓSTICOS =====
   saveDiagnostico: async function(d) {
     if (!sb) throw new Error('Supabase no conectado');

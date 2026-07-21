@@ -49,10 +49,13 @@
     </div>
   </main>
 
+ <!-- 1. IMPORTANTE: Primero cargar Supabase desde internet -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- 2. Luego cargar tu archivo de configuración -->
   <script src="assets/js/supabase.js"></script>
+  
   <script>
-    // ===== REGISTRO Y LOGIN =====
+    // ===== REGISTRO Y LOGIN CON SUPABASE =====
     let isRegisterMode = false;
     
     // Mostrar/ocultar contraseña
@@ -86,10 +89,6 @@
           <div class="form-group">
             <label class="form-label">Correo Electrónico</label>
             <input type="email" class="form-input" id="reg-email" placeholder="tu@correo.com" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Teléfono</label>
-            <input type="tel" class="form-input" id="reg-telefono" placeholder="222-123-4567" required>
           </div>
           <div class="form-group">
             <label class="form-label">Contraseña</label>
@@ -148,30 +147,20 @@
       const btn = e.target.querySelector('button[type="submit"]');
       const nombre = document.getElementById('reg-nombre').value.trim();
       const email = document.getElementById('reg-email').value.trim();
-      const telefono = document.getElementById('reg-telefono').value.trim();
       const password = document.getElementById('reg-password').value;
       
       btn.disabled = true;
       btn.textContent = 'Registrando...';
       
       try {
-        const r = await fetch(window.location.origin + '/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nombre, email, telefono, password })
-        });
+        // Registrar usuario en Supabase Auth directamente (sin saveUserData)
+        const result = await InnovareDB.register(email, password, nombre, 'cliente');
         
-        if (r.ok) {
-          const d = await r.json();
-          alert('✅ Registro exitoso. Ahora inicia sesión.');
-          isRegisterMode = false;
-          toggleAuthMode();
-        } else {
-          const err = await r.json();
-          alert('❌ Error: ' + (err.message || 'No se pudo registrar'));
-        }
-      } catch(e) {
-        alert('❌ Error de conexión. Por favor intenta más tarde.');
+        alert('✅ Registro exitoso. Ahora inicia sesión.');
+        isRegisterMode = false;
+        toggleAuthMode();
+      } catch(err) {
+        alert('❌ Error al registrar: ' + err.message);
       }
       
       btn.disabled = false;
@@ -190,24 +179,11 @@
       errDiv.style.display = 'none';
       
       try {
-        const r = await fetch(window.location.origin + '/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password: pass })
-        });
-        
-        if (r.ok) {
-          const d = await r.json();
-          doLogin(d.user, d.token);
-        } else {
-          const err = await r.json();
-          errDiv.textContent = '❌ ' + (err.message || 'Credenciales inválidas');
-          errDiv.style.display = 'block';
-          btn.disabled = false;
-          btn.textContent = 'Iniciar Sesión';
-        }
-      } catch(e) {
-        errDiv.textContent = '❌ Error de conexión. Verifica tu internet.';
+        const d = await InnovareDB.login(email, pass);
+        // d.user ya contiene toda la información, no hace falta llamar a getUser() otra vez
+        doLogin(d.user, d.token);
+      } catch(err) {
+        errDiv.textContent = '❌ Credenciales incorrectas o usuario no registrado.';
         errDiv.style.display = 'block';
         btn.disabled = false;
         btn.textContent = 'Iniciar Sesión';
@@ -217,7 +193,12 @@
     function doLogin(user, token) {
       localStorage.setItem('innovare_token', token);
       localStorage.setItem('innovare_user', JSON.stringify(user));
-      window.location.href = user.rol === 'admin' ? 'dashboard-admin.html' : 'index.html';
+      
+      // Supabase guarda el rol dentro de user_metadata
+      const rolDelUsuario = user.user_metadata?.rol || 'cliente';
+      
+      // Redirigir según el rol
+      window.location.href = rolDelUsuario === 'admin' ? 'dashboard-admin.html' : 'index.html';
     }
 
     // Inicializar
