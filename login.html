@@ -153,8 +153,34 @@
       btn.textContent = 'Registrando...';
       
       try {
-        // Registrar usuario en Supabase Auth directamente (sin saveUserData)
-        const result = await InnovareDB.register(email, password, nombre, 'cliente');
+        // 1. Crear el usuario en la bóveda secreta de Supabase Auth
+        const { data, error } = await supabase.auth.signUp({
+          email: email,
+          password: password,
+          options: {
+            data: {
+              nombre: nombre,
+              rol: 'cliente'
+            }
+          }
+        });
+
+        if (error) throw error;
+
+        // 2. Si se creó bien, insertamos sus datos en TU tabla pública "usuarios"
+        if (data.user) {
+          const { error: dbError } = await supabase
+            .from('usuarios')
+            .insert([
+              { 
+                id: data.user.id, // Vincula el ID de Auth con tu tabla
+                nombre: nombre,
+                email: email
+              }
+            ]);
+            
+          if (dbError) throw dbError;
+        }
         
         alert('✅ Registro exitoso. Ahora inicia sesión.');
         isRegisterMode = false;
