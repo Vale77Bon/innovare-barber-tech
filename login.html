@@ -30,35 +30,31 @@
       <form id="login-form">
         <div class="form-group">
           <label class="form-label">Correo Electrónico</label>
-          <input type="email" class="form-input" id="login-email" placeholder="tu@correo.com" value="cliente@demo.com" required>
+          <input type="email" class="form-input" id="login-email" placeholder="tu@correo.com" required>
         </div>
         <div class="form-group">
           <label class="form-label">Contraseña</label>
           <div class="pw-wrap">
-            <input type="password" class="form-input" id="login-password" placeholder="••••••••" value="innovare2026" required>
+            <input type="password" class="form-input" id="login-password" placeholder="••••••••" required>
             <button type="button" class="pw-toggle" id="pw-toggle" tabindex="-1">👁️</button>
           </div>
         </div>
         <button type="submit" class="btn btn-primary btn-block btn-lg" id="login-btn">Iniciar Sesión</button>
       </form>
       
-      <div class="login-credentials">
-        <p><strong>Credenciales de prueba (funcionan offline):</strong></p>
-        <p>👑 <strong>Admin:</strong> <code>admin@innovarebarber.tech</code> / <code>innovare2026</code></p>
-        <p>👤 <strong>Cliente:</strong> <code>cliente@demo.com</code> / <code>innovare2026</code></p>
+      <div style="text-align: center; margin-top: var(--spacing-md);">
+        <p>¿No tienes cuenta? <a href="#" id="show-register" style="color: var(--accent-color);">Regístrate aquí</a></p>
       </div>
+      
     </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/js/supabase.js"></script>
   <script>
-    // ===== LOGIN OFFLINE + ONLINE =====
-    const MOCK_USERS = [
-      { id: 'admin-001', nombre: 'Admin Barber', email: 'admin@innovarebarber.tech', password: 'innovare2026', rol: 'admin', telefono: '2221175554' },
-      { id: 'client-001', nombre: 'Cliente Demo', email: 'cliente@demo.com', password: 'innovare2026', rol: 'cliente', telefono: '5551001000' }
-    ];
-
+    // ===== REGISTRO Y LOGIN =====
+    let isRegisterMode = false;
+    
     // Mostrar/ocultar contraseña
     document.getElementById('pw-toggle').addEventListener('click', function() {
       const i = document.getElementById('login-password');
@@ -67,9 +63,124 @@
       this.textContent = t === 'password' ? '👁️' : '👁️‍🗨️';
     });
 
-    document.getElementById('login-form').addEventListener('submit', async (e) => {
+    // Toggle entre login y registro
+    document.getElementById('show-register').addEventListener('click', (e) => {
       e.preventDefault();
-      const btn = document.getElementById('login-btn');
+      isRegisterMode = !isRegisterMode;
+      toggleAuthMode();
+    });
+
+    function toggleAuthMode() {
+      const form = document.getElementById('login-form');
+      const subtitle = document.querySelector('.login-subtitle');
+      const toggleLink = document.getElementById('show-register');
+      
+      if (isRegisterMode) {
+        subtitle.textContent = 'Crea tu cuenta';
+        toggleLink.textContent = '¿Ya tienes cuenta? Inicia sesión';
+        form.innerHTML = `
+          <div class="form-group">
+            <label class="form-label">Nombre Completo</label>
+            <input type="text" class="form-input" id="reg-nombre" placeholder="Tu nombre completo" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Correo Electrónico</label>
+            <input type="email" class="form-input" id="reg-email" placeholder="tu@correo.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Teléfono</label>
+            <input type="tel" class="form-input" id="reg-telefono" placeholder="222-123-4567" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contraseña</label>
+            <div class="pw-wrap">
+              <input type="password" class="form-input" id="reg-password" placeholder="Mínimo 6 caracteres" required minlength="6">
+              <button type="button" class="pw-toggle" id="pw-toggle-reg" tabindex="-1">👁️</button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg">Registrarse</button>
+        `;
+        
+        // Agregar event listener para toggle de contraseña en registro
+        const pwToggleReg = document.getElementById('pw-toggle-reg');
+        if (pwToggleReg) {
+          pwToggleReg.addEventListener('click', function() {
+            const i = document.getElementById('reg-password');
+            const t = i.type === 'password' ? 'text' : 'password';
+            i.type = t;
+            this.textContent = t === 'password' ? '👁️' : '👁️‍🗨️';
+          });
+        }
+        
+        form.onsubmit = handleRegister;
+      } else {
+        subtitle.textContent = 'Inicia sesión para continuar';
+        toggleLink.textContent = '¿No tienes cuenta? Regístrate aquí';
+        form.innerHTML = `
+          <div class="form-group">
+            <label class="form-label">Correo Electrónico</label>
+            <input type="email" class="form-input" id="login-email" placeholder="tu@correo.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contraseña</label>
+            <div class="pw-wrap">
+              <input type="password" class="form-input" id="login-password" placeholder="••••••••" required>
+              <button type="button" class="pw-toggle" id="pw-toggle" tabindex="-1">👁️</button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg">Iniciar Sesión</button>
+        `;
+        
+        // Re-attach password toggle
+        document.getElementById('pw-toggle').addEventListener('click', function() {
+          const i = document.getElementById('login-password');
+          const t = i.type === 'password' ? 'text' : 'password';
+          i.type = t;
+          this.textContent = t === 'password' ? '👁️' : '👁️‍🗨️';
+        });
+        
+        form.onsubmit = handleLogin;
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('button[type="submit"]');
+      const nombre = document.getElementById('reg-nombre').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const telefono = document.getElementById('reg-telefono').value.trim();
+      const password = document.getElementById('reg-password').value;
+      
+      btn.disabled = true;
+      btn.textContent = 'Registrando...';
+      
+      try {
+        const r = await fetch(window.location.origin + '/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nombre, email, telefono, password })
+        });
+        
+        if (r.ok) {
+          const d = await r.json();
+          alert('✅ Registro exitoso. Ahora inicia sesión.');
+          isRegisterMode = false;
+          toggleAuthMode();
+        } else {
+          const err = await r.json();
+          alert('❌ Error: ' + (err.message || 'No se pudo registrar'));
+        }
+      } catch(e) {
+        alert('❌ Error de conexión. Por favor intenta más tarde.');
+      }
+      
+      btn.disabled = false;
+      btn.textContent = 'Registrarse';
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('button[type="submit"]');
       const errDiv = document.getElementById('login-error');
       const email = document.getElementById('login-email').value.trim();
       const pass = document.getElementById('login-password').value;
@@ -78,41 +189,39 @@
       btn.textContent = 'Ingresando...';
       errDiv.style.display = 'none';
       
-      // Try online API first
-      let loggedIn = false;
       try {
         const r = await fetch(window.location.origin + '/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password: pass })
         });
+        
         if (r.ok) {
           const d = await r.json();
           doLogin(d.user, d.token);
-          loggedIn = true;
+        } else {
+          const err = await r.json();
+          errDiv.textContent = '❌ ' + (err.message || 'Credenciales inválidas');
+          errDiv.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Iniciar Sesión';
         }
-      } catch(e) { /* offline fallback */ }
-      
-      if (loggedIn) return;
-      
-      // OFFLINE MODE
-      const user = MOCK_USERS.find(u => u.email === email && u.password === pass);
-      if (!user) {
-        errDiv.textContent = '❌ Usa: cliente@demo.com / innovare2026';
+      } catch(e) {
+        errDiv.textContent = '❌ Error de conexión. Verifica tu internet.';
         errDiv.style.display = 'block';
         btn.disabled = false;
         btn.textContent = 'Iniciar Sesión';
-        return;
       }
-      const token = btoa(JSON.stringify({ id: user.id, email: user.email, rol: user.rol }));
-      doLogin({ id: user.id, nombre: user.nombre, email: user.email, rol: user.rol, telefono: user.telefono }, token);
-    });
+    }
 
     function doLogin(user, token) {
       localStorage.setItem('innovare_token', token);
       localStorage.setItem('innovare_user', JSON.stringify(user));
       window.location.href = user.rol === 'admin' ? 'dashboard-admin.html' : 'index.html';
     }
+
+    // Inicializar
+    document.getElementById('login-form').onsubmit = handleLogin;
   </script>
 </body>
 </html>
