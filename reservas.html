@@ -58,6 +58,12 @@
     .summary-item:last-child { border-bottom: none; }
     .summary-item .label { color: #6e6e7e; }
     .summary-item .value { font-weight: 500; color: #1a1a2e; }
+    
+    /* Estilos para el formulario de Stripe incrustado */
+    .stripe-container { margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.06); }
+    .stripe-container label { display:block; font-size:0.75rem; font-weight:600; color:#1a1a2e; margin-bottom:6px; text-transform:uppercase; }
+    .stripe-input { background: #fff; width: 100%; padding: 10px 14px; border: 1px solid #e8eaf0; border-radius: 8px; font-size: 0.85rem; color: #1a1a2e; outline: none; margin-bottom: 12px; }
+    .stripe-input:focus { border-color: #00E5FF; }
 
     @media (max-width: 1024px) { .reservas-container { grid-template-columns: 1fr; } .time-grid { grid-template-columns: repeat(3,1fr); } }
     @media (max-width: 480px) { .time-grid { grid-template-columns: repeat(2,1fr); } }
@@ -103,10 +109,33 @@
             <div class="summary-item"><span class="label">Hora</span><span class="value" id="summary-time">—</span></div>
             <div class="summary-item"><span class="label">Barbero</span><span class="value" id="summary-barber">—</span></div>
             <div class="summary-item"><span class="label">Servicio</span><span class="value" id="summary-service">—</span></div>
-            <div class="summary-item"><span class="label">Precio Servicio</span><span class="value" id="summary-price">—</span></div>
-            <div class="summary-item"><span class="label">Depósito (10%)</span><span class="value" id="summary-deposit" style="color:#00a0b8;">—</span></div>
+            <div class="summary-item"><span class="label">Precio Base</span><span class="value" id="summary-price">—</span></div>
+            <div class="summary-item" id="summary-discount-row" style="display:none;"><span class="label" id="summary-discount-name" style="color:#00c853;font-weight:600;">👑 Descuento VIP</span><span class="value" id="summary-discount" style="color:#00c853;font-weight:700;">—</span></div>
+            <div class="summary-item"><span class="label">Depósito requerido (10%)</span><span class="value" id="summary-deposit" style="color:#00a0b8;">—</span></div>
             <div class="summary-item" style="border-bottom:none;"><span class="label" style="font-weight:700;">Total a Pagar hoy</span><span class="value" id="summary-total" style="font-weight:700; font-size:1.1rem; color:#00E5FF;">—</span></div>
-            <button class="btn btn-primary btn-block mt-2" id="book-btn" disabled>💳 Confirmar y Pagar Depósito</button>
+            
+            <!-- Formulario STRIPE Dinámico -->
+            <div id="stripe-payment-form" class="stripe-container" style="display:none;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <label style="margin:0;">💳 Número de Tarjeta</label>
+                <span style="font-size:0.65rem;background:rgba(0,200,83,0.1);color:#00c853;padding:2px 8px;border-radius:10px;">🔒 Seguro</span>
+              </div>
+              <input type="text" class="stripe-input" placeholder="4242 4242 4242 4242" maxlength="19" id="res-cc">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div>
+                  <label>Vencimiento</label>
+                  <input type="text" class="stripe-input" placeholder="MM/AA" maxlength="5" id="res-exp">
+                </div>
+                <div>
+                  <label>CVC</label>
+                  <input type="password" class="stripe-input" placeholder="123" maxlength="4" id="res-cvc">
+                </div>
+              </div>
+              <label>Titular de la Tarjeta</label>
+              <input type="text" class="stripe-input" placeholder="Tu nombre" id="res-name">
+            </div>
+
+            <button class="btn btn-primary btn-block mt-2" id="book-btn" disabled>💳 Confirmar y Pagar</button>
           </div>
         </div>
       </div>
@@ -118,111 +147,79 @@
   <script src="assets/js/supabase.js"></script>
   <script src="assets/js/main.js"></script>
   
-  <!-- SCRIPT INTEGRADO: Reemplaza a reservas.js para conectar directo a Supabase -->
   <script>
-    // Variables de Estado
     let today = new Date();
     let currentMonth = today.getMonth();
     let currentYear = today.getFullYear();
     
-    let state = {
-      date: null,
-      time: null,
-      barberId: null,
-      serviceId: null
-    };
-
+    let state = { date: null, time: null, barberId: null, serviceId: null };
     let barbersData = [];
     let servicesData = [];
-
     const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
-    // 1. Inicialización e Inyección de datos
+    // 1. Inicialización
     document.addEventListener('DOMContentLoaded', async () => {
-      // Verificar sesión antes de permitir la reserva
       const userStr = localStorage.getItem('innovare_user');
       if (!userStr) {
         alert("🔒 Debes iniciar sesión para agendar una cita.");
         window.location.href = "login.html";
         return;
       }
+      
+      // Llenar el nombre en la tarjeta automáticamente si hay usuario logueado
+      const userObj = JSON.parse(userStr);
+      if(userObj.nombre) document.getElementById('res-name').value = userObj.nombre;
 
       await fetchData();
       renderCalendar();
     });
 
-    // 2. Traer Barberos y Servicios de Supabase
     async function fetchData() {
       try {
-        if (!window.InnovareDB || !InnovareDB.isConnected()) {
-          throw new Error("Conexión a Supabase no disponible.");
-        }
+        if (!window.InnovareDB || !InnovareDB.isConnected()) throw new Error("Conexión a Supabase no disponible.");
         barbersData = await InnovareDB.getBarbers();
         servicesData = await InnovareDB.getServices();
-        
         renderBarbers();
         renderServices();
       } catch (error) {
         console.error("Error cargando catálogos:", error);
-        document.getElementById('barber-list').innerHTML = "<p style='color:red;'>Error al cargar barberos.</p>";
-        document.getElementById('service-list').innerHTML = "<p style='color:red;'>Error al cargar servicios.</p>";
       }
     }
 
-    // 3. Renderizar Barberos
     function renderBarbers() {
       const container = document.getElementById('barber-list');
       container.innerHTML = barbersData.map(b => `
         <div class="barber-option" onclick="selectBarber('${b.id}')" id="barber-${b.id}">
           <div class="barber-avatar-sm">💈</div>
-          <div class="barber-info">
-            <h4>${b.nombre}</h4>
-            <p>${b.especialidad}</p>
-          </div>
+          <div class="barber-info"><h4>${b.nombre}</h4><p>${b.especialidad}</p></div>
           <div class="barber-status">Disponible</div>
         </div>
       `).join('');
     }
 
-    // 4. Renderizar Servicios
     function renderServices() {
       const container = document.getElementById('service-list');
       container.innerHTML = servicesData.map(s => `
         <div class="service-option" onclick="selectService('${s.id}')" id="service-${s.id}">
-          <div>
-            <div class="service-name">${s.nombre} <small>${s.duracion_min} min</small></div>
-          </div>
+          <div><div class="service-name">${s.nombre} <small>${s.duracion_min} min</small></div></div>
           <div class="service-price">$${parseFloat(s.precio).toFixed(2)}</div>
         </div>
       `).join('');
     }
 
-    // 5. Lógica de Calendario
     function renderCalendar() {
       document.getElementById('calendar-title').textContent = `${monthNames[currentMonth]} ${currentYear}`;
       const grid = document.getElementById('calendar-grid');
-      
       let html = '<div class="day-name">Dom</div><div class="day-name">Lun</div><div class="day-name">Mar</div><div class="day-name">Mié</div><div class="day-name">Jue</div><div class="day-name">Vie</div><div class="day-name">Sáb</div>';
-      
       const firstDay = new Date(currentYear, currentMonth, 1).getDay();
       const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-      
-      for (let i = 0; i < firstDay; i++) {
-        html += `<div class="day empty"></div>`;
-      }
-      
+      for (let i = 0; i < firstDay; i++) html += `<div class="day empty"></div>`;
       for (let day = 1; day <= daysInMonth; day++) {
         const dateObj = new Date(currentYear, currentMonth, day);
         const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        
         let classes = "day";
-        if (dateObj < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
-          classes += " disabled";
-        }
-        if (state.date === dateStr) {
-          classes += " selected";
-        }
-        
+        if (dateObj < new Date(today.getFullYear(), today.getMonth(), today.getDate())) classes += " disabled";
+        if (state.date === dateStr) classes += " selected";
         html += `<div class="${classes}" onclick="selectDate('${dateStr}', this)">${day}</div>`;
       }
       grid.innerHTML = html;
@@ -235,48 +232,21 @@
       renderCalendar();
     }
 
-    // 6. Generar Horarios
     function renderTimes() {
       const grid = document.getElementById('time-grid');
       const times = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
-      
       grid.innerHTML = times.map(t => {
         const isSelected = state.time === t ? 'selected' : '';
         return `<div class="time-slot ${isSelected}" onclick="selectTime('${t}')">${t}</div>`;
       }).join('');
     }
 
-    // 7. Acciones de Selección
-    function selectDate(dateStr, el) {
-      if (el.classList.contains('disabled')) return;
-      state.date = dateStr;
-      state.time = null; // Reiniciar hora al cambiar día
-      renderCalendar();
-      renderTimes();
-      updateSummary();
-    }
+    function selectDate(dateStr, el) { if (el.classList.contains('disabled')) return; state.date = dateStr; state.time = null; renderCalendar(); renderTimes(); updateSummary(); }
+    function selectTime(timeStr) { state.time = timeStr; renderTimes(); updateSummary(); }
+    function selectBarber(id) { state.barberId = id; document.querySelectorAll('.barber-option').forEach(el => el.classList.remove('selected')); document.getElementById('barber-' + id).classList.add('selected'); updateSummary(); }
+    function selectService(id) { state.serviceId = id; document.querySelectorAll('.service-option').forEach(el => el.classList.remove('selected')); document.getElementById('service-' + id).classList.add('selected'); updateSummary(); }
 
-    function selectTime(timeStr) {
-      state.time = timeStr;
-      renderTimes();
-      updateSummary();
-    }
-
-    function selectBarber(id) {
-      state.barberId = id;
-      document.querySelectorAll('.barber-option').forEach(el => el.classList.remove('selected'));
-      document.getElementById('barber-' + id).classList.add('selected');
-      updateSummary();
-    }
-
-    function selectService(id) {
-      state.serviceId = id;
-      document.querySelectorAll('.service-option').forEach(el => el.classList.remove('selected'));
-      document.getElementById('service-' + id).classList.add('selected');
-      updateSummary();
-    }
-
-    // 8. Actualizar Resumen y Calcular Precios
+    // 8. Actualizar Resumen, Calcular Descuentos de Membresía y Mostrar Stripe
     function updateSummary() {
       document.getElementById('summary-date').textContent = state.date ? state.date : '—';
       document.getElementById('summary-time').textContent = state.time ? state.time : '—';
@@ -287,24 +257,76 @@
       const service = servicesData.find(s => s.id === state.serviceId);
       
       let price = 0;
-      let deposit = 0;
+      let finalPrice = 0;
+      let discountAmount = 0;
+      let discountName = '';
 
       if (service) {
         document.getElementById('summary-service').textContent = service.nombre;
         price = parseFloat(service.precio);
-        deposit = price * 0.1; // Depósito del 10%
+        finalPrice = price;
         
+        // --- LÓGICA DE MEMBRESÍAS ---
+        const memStr = localStorage.getItem('innovare_membership');
+        if (memStr) {
+          const mem = JSON.parse(memStr);
+          if (mem.status === 'active') {
+            const servNameLower = service.nombre.toLowerCase();
+            const servCat = service.categoria ? service.categoria.toLowerCase() : '';
+            
+            // VIP TECH: Todo lo relacionado a cortes y estilizado es gratis (100% off)
+            if (mem.name === 'VIP Tech') {
+              finalPrice = 0;
+              discountName = '👑 Beneficio VIP Tech';
+            } 
+            // THE REGULAR: 1 corte o 1 perfilado gratis
+            else if (mem.name === 'The Regular') {
+              if (servCat.includes('corte') || servCat.includes('barba') || servNameLower.includes('corte') || servNameLower.includes('perfilado')) {
+                finalPrice = 0;
+                discountName = '👑 Beneficio The Regular';
+              }
+            }
+          }
+        }
+        
+        discountAmount = price - finalPrice;
+        let finalDeposit = finalPrice * 0.1; // 10% de lo que quede a pagar
+
+        // Pintar precios en pantalla
         document.getElementById('summary-price').textContent = `$${price.toFixed(2)}`;
-        document.getElementById('summary-deposit').textContent = `$${deposit.toFixed(2)}`;
-        document.getElementById('summary-total').textContent = `$${deposit.toFixed(2)}`;
+        
+        if (discountAmount > 0) {
+          document.getElementById('summary-discount-row').style.display = 'flex';
+          document.getElementById('summary-discount-name').textContent = discountName;
+          document.getElementById('summary-discount').textContent = `-$${discountAmount.toFixed(2)}`;
+        } else {
+          document.getElementById('summary-discount-row').style.display = 'none';
+        }
+
+        document.getElementById('summary-deposit').textContent = `$${finalDeposit.toFixed(2)}`;
+        document.getElementById('summary-total').textContent = `$${finalDeposit.toFixed(2)}`;
+        
+        // Controlar el Formulario de Stripe
+        const stripeForm = document.getElementById('stripe-payment-form');
+        const btn = document.getElementById('book-btn');
+        
+        if (finalDeposit > 0) {
+          stripeForm.style.display = 'block';
+          btn.textContent = '💳 Confirmar y Pagar Depósito';
+        } else {
+          stripeForm.style.display = 'none';
+          btn.textContent = '✅ Confirmar Reserva (Gratis por Membresía)';
+        }
+        
       } else {
         document.getElementById('summary-service').textContent = '—';
         document.getElementById('summary-price').textContent = '—';
+        document.getElementById('summary-discount-row').style.display = 'none';
         document.getElementById('summary-deposit').textContent = '—';
         document.getElementById('summary-total').textContent = '—';
+        document.getElementById('stripe-payment-form').style.display = 'none';
       }
 
-      // Habilitar botón de pago si todo está seleccionado
       const btn = document.getElementById('book-btn');
       btn.disabled = !(state.date && state.time && state.barberId && state.serviceId);
     }
@@ -315,42 +337,59 @@
       const btn = document.getElementById('book-btn');
       
       btn.disabled = true;
-      btn.textContent = 'Procesando validación...';
+      btn.textContent = 'Procesando reserva...';
 
       const service = servicesData.find(s => s.id === state.serviceId);
       const price = parseFloat(service.precio);
-      const deposit = price * 0.1;
-      const pendiente = price - deposit;
+      
+      // Calcular precio final igual que en updateSummary
+      let finalPrice = price;
+      const memStr = localStorage.getItem('innovare_membership');
+      if (memStr) {
+        const mem = JSON.parse(memStr);
+        if (mem.status === 'active') {
+          const sName = service.nombre.toLowerCase();
+          const sCat = service.categoria ? service.categoria.toLowerCase() : '';
+          if (mem.name === 'VIP Tech') {
+            finalPrice = 0;
+          } else if (mem.name === 'The Regular' && (sCat.includes('corte') || sCat.includes('barba') || sName.includes('corte') || sName.includes('perfilado'))) {
+            finalPrice = 0;
+          }
+        }
+      }
+
+      const finalDeposit = finalPrice * 0.1;
+      const pendiente = finalPrice - finalDeposit;
 
       try {
-        // Simulamos el cargo en Stripe de 1.5s
-        await new Promise(r => setTimeout(r, 1500));
+        // Simulamos el proceso de pago si el depósito es mayor a $0
+        if (finalDeposit > 0) {
+          await new Promise(r => setTimeout(r, 1500));
+        }
 
-        // Construir el objeto exacto para la tabla citas
         const nuevaCita = {
           cliente_id: user.id,
           barbero_id: state.barberId,
           servicio_id: state.serviceId,
-          fecha: state.date, // Formato YYYY-MM-DD
-          hora: state.time + ':00', // Formato HH:MM:SS requerido por Postgres
+          fecha: state.date, 
+          hora: state.time + ':00', 
           estado: 'confirmada',
-          deposito_garantia: deposit,
-          precio_total: price,
-          pendiente: pendiente,
-          metodo_pago: 'tarjeta_stripe'
+          deposito_garantia: finalDeposit,
+          precio_total: price, 
+          pendiente: pendiente, 
+          metodo_pago: finalDeposit > 0 ? 'tarjeta_stripe' : 'beneficio_membresia'
         };
 
-        // Insertar en Supabase usando nuestra función existente
         await InnovareDB.createCita(nuevaCita);
         
-        alert('✅ ¡Tu cita ha sido agendada con éxito y el depósito procesado!');
-        window.location.href = 'mis-citas.html'; // Redirigir a sus citas
+        alert('✅ ¡Tu cita ha sido agendada con éxito!');
+        window.location.href = 'mis-citas.html'; 
 
       } catch (error) {
         console.error("Error al agendar cita:", error);
-        alert("❌ Ocurrió un error al guardar tu cita. Inténtalo de nuevo.");
+        alert("❌ Ocurrió un error al guardar tu cita. Verifica la conexión.");
         btn.disabled = false;
-        btn.textContent = '💳 Confirmar y Pagar Depósito';
+        btn.textContent = finalDeposit > 0 ? '💳 Confirmar y Pagar Depósito' : '✅ Confirmar Reserva';
       }
     });
   </script>

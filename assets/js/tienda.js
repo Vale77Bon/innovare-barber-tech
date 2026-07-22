@@ -2,7 +2,7 @@
 let productos = [];
 let cart = JSON.parse(localStorage.getItem('innovare_cart') || '[]');
 
-// Cargar productos
+// 1. Cargar productos
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     const r = await fetch('assets/data/productos.json');
@@ -48,7 +48,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  // Inicializar la lógica visual de los métodos de pago
   initPaymentToggle();
 });
 
@@ -57,15 +56,11 @@ function initPaymentToggle() {
   paymentRadios.forEach(radio => {
     radio.addEventListener('change', (e) => {
       const method = e.target.value;
-      
-      // Ocultar todos los contenedores primero
       const allForms = ['card-form', 'instructions-digital', 'instructions-oxxo', 'instructions-spei'];
       allForms.forEach(id => {
         const el = document.getElementById(id);
         if(el) el.style.display = 'none';
       });
-      
-      // Mostrar solo el seleccionado
       if (method === 'stripe') {
         document.getElementById('card-form').style.display = 'block';
       } else if (method === 'paypal' || method === 'mercado') {
@@ -75,6 +70,32 @@ function initPaymentToggle() {
       }
     });
   });
+}
+
+// 2. Función Helper Centralizada para las matemáticas (Aplica VIP Tech 15%)
+function calcularTotales() {
+  const count = cart.reduce((s, c) => s + (c.qty || 1), 0);
+  const subtotal = cart.reduce((s, c) => s + c.precio * (c.qty || 1), 0);
+  
+  let discount = 0;
+  let isVIP = false;
+  
+  // Verificar Membresía VIP Tech
+  const memStr = localStorage.getItem('innovare_membership');
+  if (memStr) {
+    const mem = JSON.parse(memStr);
+    if (mem.status === 'active' && mem.name === 'VIP Tech') {
+      discount = subtotal * 0.15; // 15% de descuento
+      isVIP = true;
+    }
+  }
+
+  const subtotalFinal = subtotal - discount;
+  // Envío gratis en compras mayores a 500 (después del descuento)
+  const envio = (subtotalFinal >= 500 || subtotalFinal === 0) ? 0 : 59;
+  const total = subtotalFinal + envio;
+
+  return { count, subtotal, discount, isVIP, subtotalFinal, envio, total };
 }
 
 function renderProducts(filter) {
@@ -134,10 +155,17 @@ function saveCart() {
 }
 
 function updateCartUI() {
-  const count = cart.reduce((s, c) => s + (c.qty || 1), 0);
-  const total = cart.reduce((s, c) => s + c.precio * (c.qty || 1), 0);
-  document.getElementById('cart-count').textContent = count;
-  document.getElementById('cart-total').textContent = '$' + total.toFixed(2);
+  const totales = calcularTotales();
+  
+  document.getElementById('cart-count').textContent = totales.count;
+  
+  // Mostrar descuento en el carrito lateral
+  if (totales.isVIP && totales.count > 0) {
+    document.getElementById('cart-total').innerHTML = `<span style="text-decoration:line-through; font-size:0.8rem; color:#9e9eae;">$${totales.subtotal.toFixed(2)}</span> <span style="color:#00E5FF;">$${totales.total.toFixed(2)}</span>`;
+  } else {
+    document.getElementById('cart-total').textContent = '$' + totales.total.toFixed(2);
+  }
+  
   document.querySelector('.cart-footer').style.display = cart.length ? 'block' : 'none';
   
   const items = document.getElementById('cart-items');
@@ -185,7 +213,9 @@ function gotoStep1() {
   document.getElementById('checkout-step-3').style.display = 'none';
   document.querySelectorAll('.step').forEach((s, i) => s.classList.toggle('active', i === 0));
   
+  const totales = calcularTotales();
   const items = document.getElementById('checkout-items');
+  
   items.innerHTML = cart.map(c => `
     <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f4;font-size:0.9rem;">
       <span>${c.img} ${c.nombre} x${c.qty || 1}</span>
@@ -193,13 +223,18 @@ function gotoStep1() {
     </div>
   `).join('');
   
-  const subtotal = cart.reduce((s, c) => s + c.precio * (c.qty || 1), 0);
-  const envio = subtotal >= 500 ? 0 : 59;
-  const total = subtotal + envio;
+  // Agregar fila de descuento si aplica
+  if (totales.isVIP) {
+    items.innerHTML += `
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f4;font-size:0.9rem;color:#00c853;background:rgba(0,200,83,0.05);">
+      <span>👑 Descuento VIP Tech (15%)</span>
+      <span style="font-weight:600;">-$${totales.discount.toFixed(2)}</span>
+    </div>`;
+  }
   
-  document.getElementById('co-subtotal').textContent = '$' + subtotal.toFixed(2);
-  document.getElementById('co-envio').textContent = envio === 0 ? 'Gratis' : '$' + envio.toFixed(2);
-  document.getElementById('co-total').textContent = '$' + total.toFixed(2);
+  document.getElementById('co-subtotal').textContent = '$' + totales.subtotal.toFixed(2);
+  document.getElementById('co-envio').textContent = totales.envio === 0 ? 'Gratis' : '$' + totales.envio.toFixed(2);
+  document.getElementById('co-total').textContent = '$' + totales.total.toFixed(2);
 }
 
 function gotoStep2() {
@@ -208,45 +243,38 @@ function gotoStep2() {
   document.getElementById('checkout-step-3').style.display = 'none';
   document.querySelectorAll('.step').forEach((s, i) => s.classList.toggle('active', i === 1));
   
-  // Corrección del cálculo total
-  const subtotal = cart.reduce((s, c) => s + c.precio * (c.qty || 1), 0);
-  const envio = subtotal >= 500 ? 0 : 59;
-  const total = subtotal + envio;
-  
-  document.getElementById('pay-amount').textContent = total.toFixed(2);
+  const totales = calcularTotales();
+  document.getElementById('pay-amount').textContent = totales.total.toFixed(2);
 }
 
 async function processPayment() {
   const payment = document.querySelector('input[name="payment"]:checked').value;
-  // Ubicamos el botón de pagar para deshabilitarlo temporalmente
   const btn = document.querySelector('#checkout-step-2 button.btn-primary');
   btn.disabled = true;
   btn.textContent = 'Procesando...';
   
   const names = { stripe: 'Stripe', paypal: 'PayPal', mercado: 'Mercado Pago', oxxo: 'OXXO', spei: 'SPEI' };
-  const subtotal = cart.reduce((s, c) => s + c.precio * (c.qty || 1), 0);
-  const envio = subtotal >= 500 ? 0 : 59;
-  const total = subtotal + envio;
+  const totales = calcularTotales();
   
   // Variables dinámicas para el pedido
   let reference = '';
   let status = 'completado';
   let paymentDetailsStr = names[payment];
 
-  // Simulación de códigos OXXO / SPEI
+  // Simulación de códigos
   if (payment === 'oxxo') {
     reference = Math.floor(10000000000000 + Math.random() * 90000000000000).toString(); // 14 dígitos
     status = 'pendiente';
     paymentDetailsStr += `<br><small style="color:#ff9800; font-size: 0.9rem;">Referencia a dictar: <b style="letter-spacing:1px;">${reference}</b></small>`;
   } else if (payment === 'spei') {
-    reference = '646180' + Math.floor(100000000000 + Math.random() * 900000000000).toString(); // 18 dígitos CLABE
+    reference = '646180' + Math.floor(100000000000 + Math.random() * 900000000000).toString(); // 18 dígitos
     status = 'pendiente';
     paymentDetailsStr += `<br><small style="color:#ff9800; font-size: 0.9rem;">CLABE destino: <b style="letter-spacing:1px;">${reference}</b></small>`;
   } else {
     reference = 'TXN-' + Math.floor(100000 + Math.random() * 900000).toString();
   }
 
-  // Recuperar el ID del cliente si está logueado
+  // Si el usuario está logueado
   const userString = localStorage.getItem('innovare_user');
   let clienteId = null;
   if(userString) {
@@ -254,20 +282,21 @@ async function processPayment() {
       clienteId = userData.id || null;
   }
   
-  // Armar el objeto EXACTAMENTE como lo pide la base de datos
+  // Guardar datos con el descuento reflejado en la BD
   const orderDataBD = {
     cliente_id: clienteId,
-    total: total,
+    total: totales.total,
     metodo_pago: payment,
     estado: status,
     referencia_pago: reference,
-    detalles: { items: cart.map(c => ({ id: c.id, nombre: c.nombre, precio: c.precio, qty: c.qty || 1 })) }
+    detalles: { 
+      items: cart.map(c => ({ id: c.id, nombre: c.nombre, precio: c.precio, qty: c.qty || 1 })),
+      descuento_vip: totales.isVIP ? totales.discount : 0
+    }
   };
   
-  // Simular tiempo de carga de 1.5 segundos
   await new Promise(r => setTimeout(r, 1500));
   
-  // Guardar en Supabase
   try {
     if (window.InnovareDB && InnovareDB.isConnected()) {
       await InnovareDB.saveOrder(orderDataBD);
@@ -276,7 +305,7 @@ async function processPayment() {
     console.error('Error guardando pedido en BD:', e);
   }
   
-  // Preparar Paso 3: Confirmación Visual
+  // Preparar Paso 3 Visual
   document.getElementById('checkout-step-1').style.display = 'none';
   document.getElementById('checkout-step-2').style.display = 'none';
   document.getElementById('checkout-step-3').style.display = 'block';
@@ -284,8 +313,8 @@ async function processPayment() {
   
   const orderVisualId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
   document.getElementById('order-number').textContent = orderVisualId;
-  document.getElementById('order-payment').innerHTML = paymentDetailsStr; // Usamos innerHTML para renderizar el texto en color naranja
-  document.getElementById('order-total').textContent = '$' + total.toFixed(2);
+  document.getElementById('order-payment').innerHTML = paymentDetailsStr;
+  document.getElementById('order-total').textContent = '$' + totales.total.toFixed(2);
   document.getElementById('order-date').textContent = new Date().toLocaleDateString('es-MX', { year:'numeric', month:'long', day:'numeric' });
   
   // Limpiar carrito
@@ -293,7 +322,6 @@ async function processPayment() {
   saveCart();
   updateCartUI();
   
-  // Restaurar el botón por si cierran y abren el modal
   btn.disabled = false;
-  btn.textContent = `Pagar $${total.toFixed(2)}`;
+  btn.textContent = `Pagar $${totales.total.toFixed(2)}`;
 }
