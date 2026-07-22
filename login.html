@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es-MX">
 <head>
+  <link rel="icon" href="data:,">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Iniciar Sesión | Innovare Barber Tech</title>
@@ -151,61 +152,66 @@
     }
 
     async function handleRegister(e) {
-      e.preventDefault();
-      const btn = e.target.querySelector('button[type="submit"]');
-      const nombre = document.getElementById('reg-nombre').value.trim();
-      const telefono = document.getElementById('reg-telefono')?.value.trim() || '';
-      const email = document.getElementById('reg-email').value.trim();
-      const password = document.getElementById('reg-password').value;
-      
-      btn.disabled = true;
-      btn.textContent = 'Registrando...';
-      
-      try {
-        // Determinar rol: admin si el email contiene 'admin'
-        var rol = (email === 'admin@innovarebarber.tech') ? 'admin' : 'cliente';
-        
-        // 1. Crear el usuario en Supabase Auth con user_metadata
-        const { data, error } = await supabase.auth.signUp({
-          email: email,
-          password: password,
-          options: {
-            data: {
-              nombre: nombre,
-              telefono: telefono,
-              rol: rol
-            }
-          }
-        });
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]');
+  const nombre = document.getElementById('reg-nombre').value.trim();
+  const telefono = document.getElementById('reg-telefono')?.value.trim() || '';
+  const email = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-password').value;
+  
+  // Validación estricta: Si hay teléfono, debe tener exactamente 10 dígitos
+  if (telefono && telefono.length !== 10) {
+    alert('❌ El número de teléfono debe tener exactamente 10 dígitos.');
+    return; // Detiene el proceso si no cumple la condición
+  }
 
-        if (error) throw error;
-
-        // 2. Insertar datos en la tabla "usuarios" de Supabase
-        if (data.user) {
-          const { error: dbError } = await supabase
-            .from('usuarios')
-            .insert([{ 
-              id: data.user.id,
-              nombre: nombre,
-              email: email,
-              telefono: telefono
-            }]);
-              
-          if (dbError) throw dbError;
+  btn.disabled = true;
+  btn.textContent = 'Registrando...';
+  
+  try {
+    var rol = (email === 'admin@innovarebarber.tech') ? 'admin' : 'cliente';
+    
+    // 1. Crear el usuario en Supabase Auth
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
+          nombre: nombre,
+          telefono: telefono,
+          rol: rol
         }
-        
-        // 3. Indicar que debe confirmar el correo
-        alert('✅ Registro exitoso. Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada (o spam) y haz clic en el enlace. Después podrás iniciar sesión.');
-        isRegisterMode = false;
-        toggleAuthMode();
-      } catch(err) {
-        alert('❌ Error al registrar: ' + err.message);
       }
-      
-      btn.disabled = false;
-      btn.textContent = 'Registrarse';
-    }
+    });
 
+    if (error) throw error;
+
+    // 2. Insertar datos en la tabla pública "usuarios"
+    if (data.user) {
+      const { error: dbError } = await supabase
+        .from('usuarios')
+        .insert([{ 
+            id: data.user.id,
+            nombre: nombre,
+            email: email,
+            telefono: telefono
+          }]);
+          
+      if (dbError) throw dbError;
+    }
+    
+    alert('✅ Registro exitoso. Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada (o spam) y haz clic en el enlace. Después podrás iniciar sesión.');
+    isRegisterMode = false;
+    toggleAuthMode();
+  } catch(err) {
+    alert('❌ Error al registrar: ' + err.message);
+  }
+  
+  btn.disabled = false;
+  btn.textContent = 'Registrarse';
+}
+        
+        
     async function handleLogin(e) {
       e.preventDefault();
       const btn = e.target.querySelector('button[type="submit"]');
