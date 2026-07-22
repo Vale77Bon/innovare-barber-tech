@@ -105,6 +105,39 @@ var InnovareDB = {
     return true;
   },
 
+  // ===== PEDIDOS / ÓRDENES =====
+  saveOrder: async function(orderData) {
+    if (!sb) throw new Error('Supabase no conectado');
+    var r = await sb.from('pedidos').insert([orderData]);
+    if (r.error) throw r.error;
+    return true;
+  },
+
+  getOrders: async function() {
+    if (!sb) throw new Error('Supabase no conectado');
+    var r = await sb.from('pedidos').select('*').order('fecha', { ascending: false });
+    if (r.error) throw r.error;
+    return r.data;
+  },
+
+  // ===== CITAS =====
+  saveCitaToSupabase: async function(citaData) {
+    if (!sb) throw new Error('Supabase no conectado');
+    citaData.id = citaData.id || (Date.now().toString(36) + Math.random().toString(36).substr(2));
+    var r = await sb.from('citas').insert([citaData]);
+    if (r.error) throw r.error;
+    return true;
+  },
+
+  // ===== DIAGNÓSTICOS 3D =====
+  saveDiagnosticoToSupabase: async function(diagData) {
+    if (!sb) throw new Error('Supabase no conectado');
+    diagData.id = diagData.id || (Date.now().toString(36) + Math.random().toString(36).substr(2));
+    var r = await sb.from('diagnosticos_3d').insert([diagData]);
+    if (r.error) throw r.error;
+    return true;
+  },
+
   // ===== DIAGNÓSTICOS =====
   saveDiagnostico: async function(d) {
     if (!sb) throw new Error('Supabase no conectado');

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Tienda | Innovare Barber Tech</title>
+  <link rel="stylesheet" href="assets/css/global.css">
+  <link rel="stylesheet" href="assets/css/tienda.css">
+</head>
+<body>
+  <div id="navbar-placeholder"></div>
+
+  <!-- Header tienda -->
+  <section class="store-header">
+    <div class="store-header-content">
+      <h1>🛒 <span class="highlight">Tienda</span> Profesional</h1>
+      <p>Productos premium para el cuidado de tu cabello y barba</p>
+    </div>
+  </section>
+
+  <!-- Filtros -->
+  <section class="store-filters">
+    <div class="filter-container">
+      <button class="filter-btn active" data-filter="todas">Todas</button>
+      <button class="filter-btn" data-filter="shampoo">Shampoos</button>
+      <button class="filter-btn" data-filter="acondicionador">Acondicionadores</button>
+      <button class="filter-btn" data-filter="pomada">Pomadas</button>
+      <button class="filter-btn" data-filter="cera">Ceras</button>
+      <button class="filter-btn" data-filter="aceite">Aceites</button>
+      <button class="filter-btn" data-filter="tonico">Tónicos</button>
+      <button class="filter-btn" data-filter="accesorio">Accesorios</button>
+    </div>
+    <div class="cart-badge" onclick="toggleCart()">
+      🛒 <span id="cart-count">0</span>
+    </div>
+  </section>
+
+  <!-- Grid productos -->
+  <section class="store-grid" id="product-grid">
+    <div class="loading-spinner"></div>
+  </section>
+
+  <!-- Carrito lateral -->
+  <div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+  <div class="cart-sidebar" id="cart-sidebar">
+    <div class="cart-header">
+      <h3>🛒 Tu Carrito</h3>
+      <button class="cart-close" onclick="toggleCart()">✕</button>
+    </div>
+    <div class="cart-items" id="cart-items">
+      <p style="color:#6e6e7e;text-align:center;padding:2rem;">Carrito vacío</p>
+    </div>
+    <div class="cart-footer" id="cart-footer" style="display:none;">
+      <div class="cart-total">
+        <span>Total:</span>
+        <span id="cart-total">$0</span>
+      </div>
+      <button class="btn btn-primary btn-block btn-lg" onclick="showCheckout()">Proceder al Pago</button>
+    </div>
+  </div>
+
+  <!-- Modal checkout -->
+  <div class="modal-overlay" id="checkout-modal" style="display:none;">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeCheckout()">✕</button>
+      <h2>💳 Finalizar Compra</h2>
+      
+      <div class="checkout-steps">
+        <div class="step active" id="step-1">1. Resumen</div>
+        <div class="step" id="step-2">2. Pago</div>
+        <div class="step" id="step-3">3. Confirmación</div>
+      </div>
+
+      <!-- Paso 1: Resumen del pedido -->
+      <div id="checkout-step-1">
+        <div class="checkout-section">
+          <h3>📋 Resumen del Pedido</h3>
+          <div id="checkout-items"></div>
+          <div class="checkout-total-line">
+            <span>Subtotal:</span><span id="co-subtotal">$0</span>
+          </div>
+          <div class="checkout-total-line">
+            <span>Envío:</span><span id="co-envio">$0</span>
+          </div>
+          <div class="checkout-total-line checkout-total-final">
+            <span>Total:</span><span id="co-total">$0</span>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block btn-lg" onclick="gotoStep2()">Continuar al Pago →</button>
+      </div>
+
+      <!-- Paso 2: Método de pago -->
+      <div id="checkout-step-2" style="display:none;">
+        <div class="checkout-section">
+          <h3>💳 Selecciona Método de Pago</h3>
+          <div class="payment-methods">
+            <label class="payment-option">
+              <input type="radio" name="payment" value="stripe" checked>
+              <div class="payment-card">
+                <span class="pm-icon">💳</span>
+                <div><strong>Stripe</strong><small>Tarjeta de crédito/débito</small></div>
+              </div>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment" value="paypal">
+              <div class="payment-card">
+                <span class="pm-icon">🅿️</span>
+                <div><strong>PayPal</strong><small>Cuenta PayPal</small></div>
+              </div>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment" value="mercado">
+              <div class="payment-card">
+                <span class="pm-icon">🟢</span>
+                <div><strong>Mercado Pago</strong><small>Tarjeta/EFECTY</small></div>
+              </div>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment" value="oxxo">
+              <div class="payment-card">
+                <span class="pm-icon">🏪</span>
+                <div><strong>OXXO</strong><small>Pago en efectivo</small></div>
+              </div>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment" value="spei">
+              <div class="payment-card">
+                <span class="pm-icon">🏦</span>
+                <div><strong>SPEI</strong><small>Transferencia bancaria</small></div>
+              </div>
+            </label>
+          </div>
+
+          <!-- Datos de tarjeta (solo Stripe) -->
+          <div id="card-form" class="mt-1">
+            <div class="form-group">
+              <label class="form-label">Número de Tarjeta</label>
+              <input type="text" class="form-input" id="cc-number" placeholder="4242 4242 4242 4242">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+              <div class="form-group">
+                <label class="form-label">Vencimiento</label>
+                <input type="text" class="form-input" id="cc-exp" placeholder="MM/AA">
+              </div>
+              <div class="form-group">
+                <label class="form-label">CVC</label>
+                <input type="text" class="form-input" id="cc-cvc" placeholder="123">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:1rem;">
+          <button class="btn btn-outline btn-lg" onclick="gotoStep1()" style="flex:1;">← Atrás</button>
+          <button class="btn btn-primary btn-lg" onclick="processPayment()" style="flex:1;">Pagar $<span id="pay-amount">0</span></button>
+        </div>
+      </div>
+
+      <!-- Paso 3: Confirmación -->
+      <div id="checkout-step-3" style="display:none;text-align:center;">
+        <div style="font-size:4rem;margin-bottom:1rem;">✅</div>
+        <h3 style="color:#00c853;">¡Compra Exitosa!</h3>
+        <p>Tu pedido ha sido registrado.</p>
+        <div class="checkout-section" style="text-align:left;">
+          <p><strong>Pedido #:</strong> <span id="order-number"></span></p>
+          <p><strong>Método de pago:</strong> <span id="order-payment"></span></p>
+          <p><strong>Total pagado:</strong> <span id="order-total"></span></p>
+          <p><strong>Fecha:</strong> <span id="order-date"></span></p>
+        </div>
+        <div style="margin-top:1rem;">
+          <a href="tienda.html" class="btn btn-primary">Seguir Comprando</a>
+          <a href="index.html" class="btn btn-outline" style="margin-left:1rem;">Ir al Inicio</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/supabase.js"></script>
+  <script src="assets/js/tienda.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

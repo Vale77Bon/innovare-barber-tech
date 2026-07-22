@@ -62,6 +62,7 @@ function loadRoleBasedNav() {
       const adminLinks = [
         { href: 'dashboard-admin.html', label: 'Dashboard' },
         { href: 'index.html', label: 'Inicio' },
+        { href: 'tienda.html', label: 'Tienda' },
         { href: 'reservas.html', label: 'Reservar' },
         { href: 'escaneo-ar.html', label: 'Smart Mirror' }
       ];
@@ -74,6 +75,7 @@ function loadRoleBasedNav() {
       // === CLIENT NAV ===
       const clientLinks = [
         { href: 'index.html', label: 'Inicio' },
+        { href: 'tienda.html', label: 'Tienda' },
         { href: 'reservas.html', label: 'Reservar' },
         { href: 'escaneo-ar.html', label: 'Smart Mirror' },
         { href: 'mis-citas.html', label: 'Mis Citas' }
@@ -93,6 +95,7 @@ function loadRoleBasedNav() {
     // No auth: login + public pages
     const publicLinks = [
       { href: 'index.html', label: 'Inicio' },
+      { href: 'tienda.html', label: 'Tienda' },
       { href: 'reservas.html', label: 'Reservar' },
       { href: 'escaneo-ar.html', label: 'Smart Mirror' }
     ];
