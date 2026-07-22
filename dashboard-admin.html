@@ -55,8 +55,12 @@
       </div>
       
       <div class="sec">
-        <h3>📊 Ventas de la Semana</h3>
-        <canvas id="salesChart" style="max-height:300px;"></canvas>
+        <h3>✂️ Ventas de Servicios (Semana)</h3>
+        <canvas id="servicesChart" style="max-height:250px;"></canvas>
+      </div>
+      <div class="sec">
+        <h3>📦 Ventas de Productos (Semana)</h3>
+        <canvas id="productsChart" style="max-height:250px;"></canvas>
       </div>
     </div>
     <div>
@@ -67,7 +71,13 @@
           <button class="qbtn" onclick="loadData()"><span class="ic">🔄</span>Actualizar</button>
           <button class="qbtn" onclick="window.location='escaneo-ar.html'"><span class="ic">🪞</span>Smart Mirror</button>
           <button class="qbtn" onclick="window.location='mis-citas.html'"><span class="ic">📋</span>Mis Citas</button>
+          <button class="qbtn" onclick="window.location='mis-pedidos.html'"><span class="ic">📦</span>Pedidos</button>
         </div>
+      </div>
+      
+      <div class="stats" style="grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1rem;">
+        <div class="st"><div class="n" id="s-pedidos">0</div><div class="l">Pedidos</div></div>
+        <div class="st"><div class="n" id="s-prod-revenue">$0</div><div class="l">Ventas Prod.</div></div>
       </div>
       
       <div class="sec">
@@ -136,47 +146,61 @@
     var salesChartInstance = null;
     var revenueChartInstance = null;
     
-    function getWeekSales(citas) {
+    function getDayIndex(dateStr) {
+      if (!dateStr) return -1;
+      var d = new Date(dateStr);
+      var day = d.getDay();
+      return day === 0 ? 6 : day - 1; // domingo->6, lunes->0
+    }
+
+    function loadCharts() {
       var days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-      var servicesData = [0, 0, 0, 0, 0, 0, 0];
-      var productsData = [0, 0, 0, 0, 0, 0, 0];
-      var productItems = ['Pomada', 'Aceite', 'Shampoo', 'Cera', 'Tónico', 'Peine', 'Brocha'];
       
+      // Datos de servicios desde citas
+      var servicesData = [0, 0, 0, 0, 0, 0, 0];
+      var citas = JSON.parse(localStorage.getItem('innovare_appointments')||'[]');
+      var hoy = new Date();
+      var inicioSemana = new Date(hoy);
+      inicioSemana.setDate(hoy.getDate() - hoy.getDay() + 1); // lunes
+      inicioSemana.setHours(0,0,0,0);
+
       citas.forEach(function(c) {
         if (c.estado !== 'completada' && c.paymentStatus !== 'Completado') return;
-        var dayIndex = c.date ? new Date(c.date).getDay() : -1;
-        // Ajustar: domingo=0 -> index 6, lunes=1 -> index 0
-        if (dayIndex >= 0) {
-          var idx = dayIndex === 0 ? 6 : dayIndex - 1;
-          var price = parseFloat(c.price || c.total || 0);
-          servicesData[idx] += price;
-          // Productos aleatorios simulados (basados en el id de la cita)
-          var productTotal = Math.floor(Math.random() * 300) + 50;
-          productsData[idx] += productTotal;
+        var cDate = new Date(c.date);
+        if (cDate >= inicioSemana && cDate <= hoy) {
+          var idx = getDayIndex(c.date);
+          if (idx >= 0) servicesData[idx] += parseFloat(c.price || c.total || 0);
         }
       });
       
-      // Si no hay citas, usar datos de demostración
-      var hasData = servicesData.some(function(v) { return v > 0; });
-      if (!hasData) {
-        servicesData = [1200, 1900, 800, 2100, 2400, 3200, 1800];
-        productsData = [300, 500, 200, 600, 800, 1200, 400];
-      }
-      
-      return { days: days, services: servicesData, products: productsData, productItems: productItems };
-    }
-    
-    function loadCharts() {
-      var citas = JSON.parse(localStorage.getItem('innovare_appointments')||'[]');
-      var sales = getWeekSales(citas);
-      var days = sales.days;
-      var servicesData = sales.services;
-      var productsData = sales.products;
+      // Datos de productos desde pedidos
+      var productsData = [0, 0, 0, 0, 0, 0, 0];
+      var orders = JSON.parse(localStorage.getItem('innovare_orders')||'[]');
+      orders.forEach(function(o) {
+        if (o.status !== 'completado') return;
+        var oDate = new Date(o.fecha);
+        if (oDate >= inicioSemana && oDate <= hoy) {
+          var idx = getDayIndex(o.fecha);
+          if (idx >= 0) productsData[idx] += parseFloat(o.total || 0);
+        }
+      });
 
-      // Gráfica de ventas de la semana
-      var ctx1 = document.getElementById('salesChart');
-      if (ctx1) {
-        new Chart(ctx1, {
+      // Mostrar stats de pedidos
+      var totalPedidos = orders.filter(function(o) { return o.status === 'completado'; }).length;
+      var totalProdRevenue = orders.reduce(function(s, o) { return s + (o.total || 0); }, 0);
+      document.getElementById('s-pedidos').textContent = totalPedidos;
+      document.getElementById('s-prod-revenue').textContent = '$' + totalProdRevenue.toFixed(2);
+
+      // Datos demo si no hay nada
+      var hasServices = servicesData.some(function(v) { return v > 0; });
+      var hasProducts = productsData.some(function(v) { return v > 0; });
+      if (!hasServices) servicesData = [1200, 1900, 800, 2100, 2400, 3200, 1800];
+      if (!hasProducts) productsData = [300, 500, 200, 600, 800, 1200, 400];
+
+      // Gráfica SOLO servicios
+      var ctxSvc = document.getElementById('servicesChart');
+      if (ctxSvc) {
+        new Chart(ctxSvc, {
           type: 'bar',
           data: {
             labels: days,
@@ -186,7 +210,24 @@
               backgroundColor: 'rgba(0, 229, 255, 0.8)',
               borderColor: 'rgba(0, 229, 255, 1)',
               borderWidth: 1
-            }, {
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { callback: function(v){ return '$'+v; } } } }
+          }
+        });
+      }
+
+      // Gráfica SOLO productos
+      var ctxProd = document.getElementById('productsChart');
+      if (ctxProd) {
+        new Chart(ctxProd, {
+          type: 'bar',
+          data: {
+            labels: days,
+            datasets: [{
               label: 'Productos',
               data: productsData,
               backgroundColor: 'rgba(0, 200, 83, 0.8)',
@@ -195,64 +236,34 @@
             }]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'top',
-              }
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: {
-                  callback: function(value) {
-                    return '$' + value;
-                  }
-                }
-              }
-            }
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { callback: function(v){ return '$'+v; } } } }
           }
         });
       }
 
-      // Gráfica de ingresos por tipo
-      var ctx2 = document.getElementById('revenueChart');
-      if (ctx2) {
-        var totalServices = servicesData.reduce((a, b) => a + b, 0);
-        var totalProducts = productsData.reduce((a, b) => a + b, 0);
-        
-        new Chart(ctx2, {
+      // Gráfica donut ingresos por tipo
+      var ctxRev = document.getElementById('revenueChart');
+      if (ctxRev) {
+        var totalS = servicesData.reduce(function(a,b){ return a+b; }, 0);
+        var totalP = productsData.reduce(function(a,b){ return a+b; }, 0);
+        new Chart(ctxRev, {
           type: 'doughnut',
           data: {
             labels: ['Servicios', 'Productos'],
             datasets: [{
-              data: [totalServices, totalProducts],
-              backgroundColor: [
-                'rgba(0, 229, 255, 0.8)',
-                'rgba(0, 200, 83, 0.8)'
-              ],
-              borderColor: [
-                'rgba(0, 229, 255, 1)',
-                'rgba(0, 200, 83, 1)'
-              ],
+              data: [totalS, totalP],
+              backgroundColor: ['rgba(0,229,255,0.8)', 'rgba(0,200,83,0.8)'],
+              borderColor: ['rgba(0,229,255,1)', 'rgba(0,200,83,1)'],
               borderWidth: 2
             }]
           },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'bottom',
-              }
-            }
-          }
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
         });
       }
     }
 
-    // Cargar gráficas después de cargar los datos
     setTimeout(loadCharts, 500);
   </script>
 </body>

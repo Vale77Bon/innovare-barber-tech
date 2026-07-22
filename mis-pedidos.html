@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Mis Pedidos | Innovare Barber Tech</title>
+  <link rel="stylesheet" href="assets/css/global.css">
+  <style>
+    .orders-page { padding-top: calc(70px + 2rem); min-height: 100vh; }
+    .orders-container { max-width: 900px; margin: 0 auto; padding: 0 var(--spacing-xl) var(--spacing-xxl); }
+    .orders-container h1 { margin-bottom: 0.5rem; }
+    .orders-container > p { color: #6e6e7e; margin-bottom: var(--spacing-xl); }
+    .order-card {
+      background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: var(--radius-lg);
+      margin-bottom: var(--spacing-lg); overflow: hidden; box-shadow: var(--shadow-sm);
+      transition: all 0.3s;
+    }
+    .order-card:hover { box-shadow: var(--shadow-md); }
+    .order-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: var(--spacing-md) var(--spacing-lg);
+      background: #f8f9fc; border-bottom: 1px solid #e8eaf0;
+      cursor: pointer;
+    }
+    .order-header-left { display: flex; align-items: center; gap: var(--spacing-md); }
+    .order-id { font-weight: 700; color: #1a1a2e; font-size: 0.9rem; }
+    .order-date { color: #6e6e7e; font-size: 0.8rem; }
+    .order-status {
+      padding: 4px 12px; border-radius: 12px; font-size: 0.7rem; font-weight: 600;
+    }
+    .status-completado { background: rgba(0,200,83,0.12); color: #00c853; }
+    .status-pendiente { background: rgba(255,214,0,0.15); color: #b8a000; }
+    .status-cancelado { background: rgba(255,23,68,0.1); color: #ff1744; }
+    .order-total-header { font-weight: 700; color: #00a0b8; font-size: 1.1rem; }
+    .expand-icon { font-size: 0.8rem; color: #6e6e7e; transition: transform 0.3s; }
+    .order-card.expanded .expand-icon { transform: rotate(180deg); }
+    .order-body { display: none; padding: var(--spacing-lg); }
+    .order-card.expanded .order-body { display: block; }
+    .order-tracking {
+      display: flex; align-items: center; gap: 0; margin-bottom: var(--spacing-lg);
+      padding: var(--spacing-md); background: #f5f6fa; border-radius: var(--radius-md);
+    }
+    .tracking-step { flex: 1; text-align: center; position: relative; }
+    .tracking-step .ts-icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+    .tracking-step .ts-label { font-size: 0.7rem; color: #6e6e7e; display: block; }
+    .tracking-step.completed .ts-icon { filter: none; }
+    .tracking-step.completed .ts-label { color: #00c853; font-weight: 600; }
+    .tracking-line {
+      position: absolute; top: 12px; right: -50%; width: 100%; height: 2px;
+      background: #e0e0ea; z-index: 0;
+    }
+    .tracking-step.completed .tracking-line { background: #00c853; }
+    .order-items { margin-bottom: var(--spacing-lg); }
+    .order-item {
+      display: flex; align-items: center; gap: var(--spacing-md);
+      padding: var(--spacing-sm) 0; border-bottom: 1px solid #f0f0f4;
+    }
+    .order-item-img { font-size: 2rem; }
+    .order-item-info { flex: 1; }
+    .order-item-name { font-weight: 600; font-size: 0.9rem; }
+    .order-item-qty { font-size: 0.8rem; color: #6e6e7e; }
+    .order-item-price { font-weight: 600; color: #1a1a2e; }
+    .order-summary {
+      background: #f8f9fc; border-radius: var(--radius-md); padding: var(--spacing-md);
+    }
+    .order-summary-line { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.85rem; color: #4a4a5e; }
+    .order-summary-total { border-top: 2px solid #e0e0ea; margin-top: 8px; padding-top: 8px; font-weight: 700; font-size: 1rem; color: #1a1a2e; }
+    .no-orders { text-align: center; padding: 4rem 2rem; }
+    .no-orders .big-icon { font-size: 4rem; margin-bottom: 1rem; }
+    @media(max-width:768px){
+      .orders-container { padding: 0 var(--spacing-md) var(--spacing-xl); }
+      .order-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-placeholder"></div>
+  <main class="orders-page">
+    <div class="orders-container">
+      <h1>📦 <span class="highlight">Mis Pedidos</span></h1>
+      <p>Historial de tus compras en la tienda</p>
+      <div id="orders-list">
+        <div class="loading-spinner"></div>
+      </div>
+    </div>
+  </main>
+  <div id="footer-placeholder"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/supabase.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    (function(){
+      var orders = JSON.parse(localStorage.getItem('innovare_orders') || '[]');
+      var list = document.getElementById('orders-list');
+      
+      if (!orders.length) {
+        list.innerHTML = '<div class="no-orders"><div class="big-icon">🛒</div><h3>No tienes pedidos aún</h3><p style="color:#6e6e7e;">Visita nuestra tienda para comprar productos premium</p><a href="tienda.html" class="btn btn-primary" style="margin-top:1rem;">Ir a la Tienda</a></div>';
+        return;
+      }
+      
+      list.innerHTML = orders.map(function(o, idx) {
+        var statusClass = 'status-completado';
+        var statusText = 'Entregado';
+        if (o.status === 'pendiente') { statusClass = 'status-pendiente'; statusText = 'En proceso'; }
+        if (o.status === 'cancelado') { statusClass = 'status-cancelado'; statusText = 'Cancelado'; }
+        
+        var fecha = new Date(o.fecha);
+        var fechaStr = fecha.toLocaleDateString('es-MX', { year:'numeric', month:'long', day:'numeric' });
+        var horaStr = fecha.toLocaleTimeString('es-MX', { hour:'2-digit', minute:'2-digit' });
+        var paymentNames = { stripe:'💳 Stripe', paypal:'🅿️ PayPal', mercado:'🟢 Mercado Pago', oxxo:'🏪 OXXO', spei:'🏦 SPEI' };
+        var paymentIcon = paymentNames[o.paymentMethod] || '💳 ' + o.paymentMethodName;
+        
+        var itemsHtml = (o.items || []).map(function(item) {
+          return '<div class="order-item"><div class="order-item-img">' + (item.img || '📦') + '</div><div class="order-item-info"><div class="order-item-name">' + item.nombre + '</div><div class="order-item-qty">Cant: ' + item.qty + '</div></div><div class="order-item-price">$' + (item.precio * item.qty).toFixed(2) + '</div></div>';
+        }).join('');
+        
+        return '<div class="order-card" onclick="toggleOrder(this)">' +
+          '<div class="order-header">' +
+            '<div class="order-header-left">' +
+              '<span class="order-id">#' + o.id + '</span>' +
+              '<span class="order-date">' + fechaStr + ' - ' + horaStr + '</span>' +
+              '<span class="order-status ' + statusClass + '">' + statusText + '</span>' +
+            '</div>' +
+            '<div style="display:flex;align-items:center;gap:1rem;">' +
+              '<span class="order-total-header">$' + (o.total || 0).toFixed(2) + '</span>' +
+              '<span class="expand-icon">▼</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="order-body">' +
+            '<div class="order-tracking">' +
+              '<div class="tracking-step completed"><span class="ts-icon">🛒</span><span class="ts-label">Pedido</span><span class="tracking-line"></span></div>' +
+              '<div class="tracking-step completed"><span class="ts-icon">💳</span><span class="ts-label">Pago</span><span class="tracking-line"></span></div>' +
+              '<div class="tracking-step completed"><span class="ts-icon">📦</span><span class="ts-label">Preparando</span><span class="tracking-line"></span></div>' +
+              '<div class="tracking-step completed"><span class="ts-icon">🚚</span><span class="ts-label">Envío</span><span class="tracking-line"></span></div>' +
+              '<div class="tracking-step completed"><span class="ts-icon">✅</span><span class="ts-label">Entregado</span></div>' +
+            '</div>' +
+            '<div class="order-items">' + itemsHtml + '</div>' +
+            '<div class="order-summary">' +
+              '<div class="order-summary-line"><span>Subtotal</span><span>$' + (o.subtotal || 0).toFixed(2) + '</span></div>' +
+              '<div class="order-summary-line"><span>Envío</span><span>' + (o.envio === 0 ? 'Gratis' : '$' + (o.envio || 0).toFixed(2)) + '</span></div>' +
+              '<div class="order-summary-line"><span>Método de pago</span><span>' + paymentIcon + '</span></div>' +
+              '<div class="order-summary-line order-summary-total"><span>Total</span><span style="color:#00a0b8;">$' + (o.total || 0).toFixed(2) + '</span></div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    })();
+    
+    function toggleOrder(el) {
+      el.classList.toggle('expanded');
+    }
+  </script>
+</body>
+</html>

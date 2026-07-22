@@ -78,7 +78,8 @@ function loadRoleBasedNav() {
         { href: 'tienda.html', label: 'Tienda' },
         { href: 'reservas.html', label: 'Reservar' },
         { href: 'escaneo-ar.html', label: 'Smart Mirror' },
-        { href: 'mis-citas.html', label: 'Mis Citas' }
+        { href: 'mis-citas.html', label: 'Mis Citas' },
+        { href: 'mis-pedidos.html', label: 'Mis Pedidos' }
       ];
       clientLinks.forEach(l => {
         links += `<a href="${l.href}" class="${l.href === currentPath ? 'active' : ''}">${l.label}</a>`;
