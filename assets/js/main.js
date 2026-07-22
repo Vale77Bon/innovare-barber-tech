@@ -53,8 +53,12 @@ function loadRoleBasedNav() {
   let links = '';
   
   if (token && user) {
-    if (user.rol === 'admin') {
-      // Admin nav: Dashboard, Inicio, Reservar, Smart Mirror
+    // Determinar rol del usuario (verificar en raíz o en user_metadata)
+    var userRole = user.rol || (user.user_metadata && user.user_metadata.rol) || 'cliente';
+    
+    if (userRole === 'admin') {
+      // === ADMIN NAV ===
+      // Dashboard SIEMPRE visible para admin cuando navega
       const adminLinks = [
         { href: 'dashboard-admin.html', label: 'Dashboard' },
         { href: 'index.html', label: 'Inicio' },
@@ -67,7 +71,7 @@ function loadRoleBasedNav() {
       links += `<span class="user-badge">👑 Admin</span>`;
       links += `<button class="logout-btn" onclick="logout()">Salir</button>`;
     } else {
-      // Client nav: Inicio, Reservar, Smart Mirror
+      // === CLIENT NAV ===
       const clientLinks = [
         { href: 'index.html', label: 'Inicio' },
         { href: 'reservas.html', label: 'Reservar' },
@@ -78,26 +82,13 @@ function loadRoleBasedNav() {
         links += `<a href="${l.href}" class="${l.href === currentPath ? 'active' : ''}">${l.label}</a>`;
       });
       var mem = JSON.parse(localStorage.getItem('innovare_membership') || 'null');
-      var userName = user?.nombre ? user.nombre.split(' ')[0] : 'Usuario';
+      var userName = user.nombre ? user.nombre.split(' ')[0] : 'Usuario';
       links += `<span class="user-badge">👤 ${userName}</span>`;
       if (mem && mem.status === 'active') {
         links += `<span class="user-badge" style="background:rgba(0,200,83,0.15);border-color:rgba(0,200,83,0.3);color:#00c853;">👑 ${mem.name}</span>`;
       }
       links += `<button class="logout-btn" onclick="logout()">Salir</button>`;
     }
-  } else if (token && user && user.rol === 'admin') {
-    // Admin nav: Dashboard siempre visible
-    const adminLinks = [
-      { href: 'dashboard-admin.html', label: 'Dashboard' },
-      { href: 'index.html', label: 'Inicio' },
-      { href: 'reservas.html', label: 'Reservar' },
-      { href: 'escaneo-ar.html', label: 'Smart Mirror' }
-    ];
-    adminLinks.forEach(l => {
-      links += `<a href="${l.href}" class="${l.href === currentPath ? 'active' : ''}">${l.label}</a>`;
-    });
-    links += `<span class="user-badge">👑 Admin</span>`;
-    links += `<button class="logout-btn" onclick="logout()">Salir</button>`;
   } else {
     // No auth: login + public pages
     const publicLinks = [

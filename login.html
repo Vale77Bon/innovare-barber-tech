@@ -223,14 +223,24 @@
     }
 
     function doLogin(user, token) {
-      localStorage.setItem('innovare_token', token);
-      localStorage.setItem('innovare_user', JSON.stringify(user));
+      // Extraer rol de Supabase (user_metadata) y guardarlo también en la raíz
+      const userMetadata = user.user_metadata || {};
+      const userRole = userMetadata.rol || 'cliente';
       
-      // Supabase guarda el rol dentro de user_metadata
-      const rolDelUsuario = user.user_metadata?.rol || 'cliente';
+      // Crear objeto user con rol en la raíz para compatibilidad con localStorage
+      const userData = {
+        id: user.id || user.sub,
+        email: user.email,
+        nombre: userMetadata.nombre || user.email?.split('@')[0] || 'Usuario',
+        rol: userRole,
+        telefono: user.phone || ''
+      };
+      
+      localStorage.setItem('innovare_token', token);
+      localStorage.setItem('innovare_user', JSON.stringify(userData));
       
       // Redirigir según el rol
-      window.location.href = rolDelUsuario === 'admin' ? 'dashboard-admin.html' : 'index.html';
+      window.location.href = userRole === 'admin' ? 'dashboard-admin.html' : 'index.html';
     }
 
     // Inicializar
