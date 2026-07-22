@@ -205,8 +205,17 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/js/supabase.js"></script>
   <script src="assets/js/main.js"></script>
+  
   <script>
     function openMembership(name, price, features) {
+      // 1. Verificar si el usuario inició sesión ANTES de abrir el modal
+      const userString = localStorage.getItem('innovare_user');
+      if (!userString) {
+        alert("🔒 Debes iniciar sesión para poder suscribirte a una membresía.");
+        window.location.href = 'login.html';
+        return; // Detiene el código si no hay sesión
+      }
+
       var existing = document.getElementById('membership-modal');
       if (existing) existing.remove();
 
@@ -241,20 +250,47 @@
 
       document.body.appendChild(modal);
 
-      document.getElementById('mem-pay-btn').onclick = function() {
+      // 2. Lógica para procesar el pago y guardarlo en Supabase
+      document.getElementById('mem-pay-btn').onclick = async function() {
         var btn = document.getElementById('mem-pay-btn');
-        btn.disabled = true; btn.textContent = 'Procesando...';
-        setTimeout(function() {
-          // Guardar membresía en LocalStorage
+        btn.disabled = true; 
+        btn.textContent = 'Procesando validación...';
+        
+        try {
+          const usuario = JSON.parse(userString); // Recuperamos los datos del usuario logueado
+
+          // Simular tiempo de validación bancaria (1.5 segundos)
+          await new Promise(r => setTimeout(r, 1500));
+
+          // Guardar en la tabla 'suscripciones' de Supabase
+          if (window.sb) {
+            const { error } = await sb.from('suscripciones').insert([{
+              cliente_id: usuario.id,
+              plan: name,
+              precio: price,
+              estado: 'activa'
+            }]);
+            
+            if (error) throw error;
+          }
+
+          // Guardar en LocalStorage para actualizar visualmente el menú/perfil
           localStorage.setItem('innovare_membership', JSON.stringify({
             name: name, price: price, date: new Date().toISOString(),
             deposit: parseFloat(deposit), status: 'active'
           }));
-          // Actualizar navbar si existe
+          
           if (typeof window.updateNavBar === 'function') window.updateNavBar();
 
-          modal.innerHTML = '<div style="background:#fff;border-radius:16px;padding:48px 32px;text-align:center;max-width:400px;width:90%;"><div style="font-size:4rem;margin-bottom:20px;">✅</div><h3 style="color:#00c853;">¡Suscripción exitosa!</h3><p style="color:#6e6e7e;">Tu membresía <strong>' + name + '</strong> está activa.</p><p style="color:#1a1a2e;font-weight:600;font-size:1.2rem;">$' + price + ' MXN / mes</p><p style="color:#6e6e7e;font-size:0.85rem;">Depósito cobrado: $' + deposit + '</p><div style="margin-top:16px;padding:12px;background:rgba(0,200,83,0.08);border:1px solid rgba(0,200,83,0.2);border-radius:8px;font-size:0.8rem;color:#00c853;font-weight:600;">👑 Ahora eres miembro <strong>' + name + '</strong></div><button onclick="window.location.href=\'reservas.html\'" style="width:100%;padding:14px;background:#00E5FF;color:#1a1a2e;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;margin-top:20px;">Reservar Ahora</button></div>';
-        }, 2000);
+          // Mostrar pantalla de éxito
+          modal.innerHTML = '<div style="background:#fff;border-radius:16px;padding:48px 32px;text-align:center;max-width:400px;width:90%;"><div style="font-size:4rem;margin-bottom:20px;">✅</div><h3 style="color:#00c853;">¡Suscripción exitosa!</h3><p style="color:#6e6e7e;">Tu membresía <strong>' + name + '</strong> está activa y registrada en tu cuenta.</p><p style="color:#1a1a2e;font-weight:600;font-size:1.2rem;">$' + price + ' MXN / mes</p><p style="color:#6e6e7e;font-size:0.85rem;">Depósito cobrado: $' + deposit + '</p><div style="margin-top:16px;padding:12px;background:rgba(0,200,83,0.08);border:1px solid rgba(0,200,83,0.2);border-radius:8px;font-size:0.8rem;color:#00c853;font-weight:600;">👑 Ahora eres miembro <strong>' + name + '</strong></div><button onclick="window.location.href=\'reservas.html\'" style="width:100%;padding:14px;background:#00E5FF;color:#1a1a2e;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;margin-top:20px;">Ir a Reservar Ahora</button></div>';
+          
+        } catch(error) {
+          console.error("Error guardando suscripción:", error);
+          alert("Hubo un error al procesar tu suscripción. Intenta de nuevo.");
+          btn.disabled = false;
+          btn.textContent = 'Pagar $' + price + ' MXN';
+        }
       };
     }
   </script>
