@@ -166,9 +166,11 @@
         return;
       }
       
-      // Llenar el nombre en la tarjeta automáticamente si hay usuario logueado
       const userObj = JSON.parse(userStr);
-      if(userObj.nombre) document.getElementById('res-name').value = userObj.nombre;
+      if(userObj.nombre) {
+        const nameInput = document.getElementById('res-name');
+        if(nameInput) nameInput.value = userObj.nombre;
+      }
 
       await fetchData();
       renderCalendar();
@@ -246,7 +248,7 @@
     function selectBarber(id) { state.barberId = id; document.querySelectorAll('.barber-option').forEach(el => el.classList.remove('selected')); document.getElementById('barber-' + id).classList.add('selected'); updateSummary(); }
     function selectService(id) { state.serviceId = id; document.querySelectorAll('.service-option').forEach(el => el.classList.remove('selected')); document.getElementById('service-' + id).classList.add('selected'); updateSummary(); }
 
-    // 8. Actualizar Resumen y Calcular Descuento (15%)
+    // 8. Actualizar Resumen y Habilitar Botón de forma inmediata
     function updateSummary() {
       document.getElementById('summary-date').textContent = state.date ? state.date : '—';
       document.getElementById('summary-time').textContent = state.time ? state.time : '—';
@@ -266,7 +268,7 @@
         price = parseFloat(service.precio);
         finalPrice = price;
         
-        // --- LÓGICA DE MEMBRESÍAS (15% OFF) ---
+        // Membresía VIP Tech o Regular
         const memStr = localStorage.getItem('innovare_membership');
         if (memStr) {
           const mem = JSON.parse(memStr);
@@ -274,15 +276,12 @@
             const servNameLower = service.nombre.toLowerCase();
             const servCat = service.categoria ? service.categoria.toLowerCase() : '';
             
-            // Si tiene VIP Tech o The Regular aplicamos el 15% de descuento al servicio
             if (mem.name === 'VIP Tech') {
-              finalPrice = price * 0.85; // Aplica 15% de descuento
+              finalPrice = price * 0.85; // 15% OFF
               discountName = '👑 Beneficio VIP Tech (15%)';
             } 
             else if (mem.name === 'The Regular') {
               if (servCat.includes('corte') || servCat.includes('barba') || servNameLower.includes('corte') || servNameLower.includes('perfilado')) {
-                // Si quieres que el Regular sea 100% gratis el primero, aquí era finalPrice = 0, pero a petición aplicamos la misma lógica del 15% o dejarlo gratis según prefieras.
-                // Lo dejaremos como 100% gratis (1 corte/barba al mes) como marcaban tus beneficios, o si querías que TODO fuera 15%, usamos esto:
                 finalPrice = 0; 
                 discountName = '👑 Beneficio The Regular (Gratis)';
               }
@@ -291,9 +290,8 @@
         }
         
         discountAmount = price - finalPrice;
-        let finalDeposit = finalPrice * 0.10; // 10% del precio descontado
+        let finalDeposit = finalPrice * 0.10;
 
-        // Pintar precios en pantalla
         document.getElementById('summary-price').textContent = `$${price.toFixed(2)}`;
         
         if (discountAmount > 0) {
@@ -307,7 +305,6 @@
         document.getElementById('summary-deposit').textContent = `$${finalDeposit.toFixed(2)}`;
         document.getElementById('summary-total').textContent = `$${finalDeposit.toFixed(2)}`;
         
-        // Mostrar u Ocultar Formulario Stripe
         const stripeForm = document.getElementById('stripe-payment-form');
         const btn = document.getElementById('book-btn');
         
@@ -318,7 +315,6 @@
           stripeForm.style.display = 'none';
           btn.textContent = '✅ Confirmar Reserva (Gratis)';
         }
-        
       } else {
         document.getElementById('summary-service').textContent = '—';
         document.getElementById('summary-price').textContent = '—';
@@ -328,17 +324,19 @@
         document.getElementById('stripe-payment-form').style.display = 'none';
       }
 
+      // Habilitar el botón en cuanto los 4 elementos obligatorios estén seleccionados
       const btn = document.getElementById('book-btn');
-      btn.disabled = !(state.date && state.time && state.barberId && state.serviceId);
+      const isValid = (state.date && state.time && state.barberId && state.serviceId);
+      btn.disabled = !isValid;
     }
 
-    // 9. Guardar la Cita
+    // 9. Ejecutar Reserva directamente al hacer clic
     document.getElementById('book-btn').addEventListener('click', async () => {
       const user = JSON.parse(localStorage.getItem('innovare_user'));
       const btn = document.getElementById('book-btn');
       
       btn.disabled = true;
-      btn.textContent = 'Procesando reserva...';
+      btn.textContent = 'Procesando en Supabase...';
 
       const service = servicesData.find(s => s.id === state.serviceId);
       const price = parseFloat(service.precio);
@@ -350,11 +348,10 @@
         if (mem.status === 'active') {
           const sName = service.nombre.toLowerCase();
           const sCat = service.categoria ? service.categoria.toLowerCase() : '';
-          
           if (mem.name === 'VIP Tech') {
-            finalPrice = price * 0.85; // 15% OFF
+            finalPrice = price * 0.85;
           } else if (mem.name === 'The Regular' && (sCat.includes('corte') || sCat.includes('barba') || sName.includes('corte') || sName.includes('perfilado'))) {
-            finalPrice = 0; // Gratis
+            finalPrice = 0;
           }
         }
       }
@@ -364,7 +361,7 @@
 
       try {
         if (finalDeposit > 0) {
-          await new Promise(r => setTimeout(r, 1500));
+          await new Promise(r => setTimeout(r, 1200)); // Simulación de pasarela Stripe
         }
 
         const nuevaCita = {
@@ -380,6 +377,7 @@
           metodo_pago: finalDeposit > 0 ? 'tarjeta_stripe' : 'beneficio_membresia'
         };
 
+        // Guardar directo en la BD
         await InnovareDB.createCita(nuevaCita);
         
         alert('✅ ¡Tu cita ha sido agendada con éxito!');
@@ -387,7 +385,7 @@
 
       } catch (error) {
         console.error("Error al agendar cita:", error);
-        alert("❌ Ocurrió un error al guardar tu cita. Verifica la conexión.");
+        alert("❌ Error: " + error.message);
         btn.disabled = false;
         btn.textContent = finalDeposit > 0 ? `💳 Pagar Depósito ($${finalDeposit.toFixed(2)})` : '✅ Confirmar Reserva';
       }
