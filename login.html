@@ -91,8 +91,8 @@
             <input type="text" class="form-input" id="reg-nombre" placeholder="Tu nombre completo" required>
           </div>
           <div class="form-group">
-            <label class="form-label">Teléfono (opcional)</label>
-            <input type="tel" class="form-input" id="reg-telefono" placeholder="222-123-4567">
+            <label class="form-label">Teléfono (10 dígitos)</label>
+            <input type="tel" class="form-input" id="reg-telefono" placeholder="2221175554" pattern="[0-9]{10}" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')" title="Solo 10 dígitos numéricos">
           </div>
           <div class="form-group">
             <label class="form-label">Correo Electrónico</label>
