@@ -74,77 +74,172 @@
 </head>
 <body>
   <div id="navbar-placeholder"></div>
+  
   <main class="orders-page">
     <div class="orders-container">
       <h1>📦 <span class="highlight">Mis Pedidos</span></h1>
       <p>Historial de tus compras en la tienda</p>
       <div id="orders-list">
-        <div class="loading-spinner"></div>
+        <div class="loading-spinner" style="text-align: center; padding: 3rem;">Cargando pedidos...</div>
       </div>
     </div>
   </main>
+  
   <div id="footer-placeholder"></div>
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/js/supabase.js"></script>
   <script src="assets/js/main.js"></script>
+  
   <script>
-    (function(){
-      var orders = JSON.parse(localStorage.getItem('innovare_orders') || '[]');
-      var list = document.getElementById('orders-list');
+    async function loadOrders() {
+      const list = document.getElementById('orders-list');
       
-      if (!orders.length) {
-        list.innerHTML = '<div class="no-orders"><div class="big-icon">🛒</div><h3>No tienes pedidos aún</h3><p style="color:#6e6e7e;">Visita nuestra tienda para comprar productos premium</p><a href="tienda.html" class="btn btn-primary" style="margin-top:1rem;">Ir a la Tienda</a></div>';
+      // 1. Verificar si el usuario está logueado
+      const userString = localStorage.getItem('innovare_user');
+      if (!userString) {
+        list.innerHTML = `
+          <div class="no-orders">
+            <div class="big-icon">🔒</div>
+            <h3>Inicia sesión para ver tus pedidos</h3>
+            <p style="color:#6e6e7e;">Necesitas una cuenta para acceder a tu historial.</p>
+            <a href="login.html" class="btn btn-primary" style="margin-top:1rem;">Ir a Iniciar Sesión</a>
+          </div>`;
         return;
       }
       
-      list.innerHTML = orders.map(function(o, idx) {
-        var statusClass = 'status-completado';
-        var statusText = 'Entregado';
-        if (o.status === 'pendiente') { statusClass = 'status-pendiente'; statusText = 'En proceso'; }
-        if (o.status === 'cancelado') { statusClass = 'status-cancelado'; statusText = 'Cancelado'; }
-        
-        var fecha = new Date(o.fecha);
-        var fechaStr = fecha.toLocaleDateString('es-MX', { year:'numeric', month:'long', day:'numeric' });
-        var horaStr = fecha.toLocaleTimeString('es-MX', { hour:'2-digit', minute:'2-digit' });
-        var paymentNames = { stripe:'💳 Stripe', paypal:'🅿️ PayPal', mercado:'🟢 Mercado Pago', oxxo:'🏪 OXXO', spei:'🏦 SPEI' };
-        var paymentIcon = paymentNames[o.paymentMethod] || '💳 ' + o.paymentMethodName;
-        
-        var itemsHtml = (o.items || []).map(function(item) {
-          return '<div class="order-item"><div class="order-item-img">' + (item.img || '📦') + '</div><div class="order-item-info"><div class="order-item-name">' + item.nombre + '</div><div class="order-item-qty">Cant: ' + item.qty + '</div></div><div class="order-item-price">$' + (item.precio * item.qty).toFixed(2) + '</div></div>';
+      const user = JSON.parse(userString);
+      
+      try {
+        // Asegurarnos que la variable 'sb' de supabase.js existe
+        if (!window.sb) {
+            throw new Error("Supabase no está inicializado. Verifica tu archivo supabase.js.");
+        }
+
+        // 2. Extraer los pedidos REALES desde Supabase
+        const { data: orders, error } = await sb
+          .from('pedidos')
+          .select('*')
+          .eq('cliente_id', user.id)
+          .order('created_at', { ascending: false });
+          
+        if (error) throw error;
+
+        // Si no tiene pedidos en la base de datos
+        if (!orders || orders.length === 0) {
+          list.innerHTML = `
+            <div class="no-orders">
+              <div class="big-icon">🛒</div>
+              <h3>No tienes pedidos aún</h3>
+              <p style="color:#6e6e7e;">Visita nuestra tienda para comprar productos premium</p>
+              <a href="tienda.html" class="btn btn-primary" style="margin-top:1rem;">Ir a la Tienda</a>
+            </div>`;
+          return;
+        }
+
+        // 3. Renderizar cada pedido dinámicamente
+        list.innerHTML = orders.map(function(o) {
+          // Lógica de estados
+          let statusClass = 'status-completado';
+          let statusText = 'Entregado';
+          const isPending = o.estado === 'pendiente';
+          const isCanceled = o.estado === 'cancelado';
+          
+          if (isPending) { statusClass = 'status-pendiente'; statusText = 'Pendiente de Pago'; }
+          if (isCanceled) { statusClass = 'status-cancelado'; statusText = 'Cancelado'; }
+          
+          // Formateo de fechas
+          const fecha = new Date(o.created_at);
+          const fechaStr = fecha.toLocaleDateString('es-MX', { year:'numeric', month:'long', day:'numeric' });
+          const horaStr = fecha.toLocaleTimeString('es-MX', { hour:'2-digit', minute:'2-digit' });
+          
+          // Iconos de pago
+          const paymentNames = { stripe:'💳 Stripe', paypal:'🅿️ PayPal', mercado:'🟢 Mercado Pago', oxxo:'🏪 OXXO', spei:'🏦 SPEI' };
+          const paymentIcon = paymentNames[o.metodo_pago] || '💳 ' + (o.metodo_pago ? o.metodo_pago.toUpperCase() : 'TARJETA');
+          
+          // Cálculo de items, subtotal y envío
+          const items = (o.detalles && o.detalles.items) ? o.detalles.items : [];
+          const subtotal = items.reduce((sum, item) => sum + (item.precio * (item.qty || 1)), 0);
+          let envio = o.total - subtotal;
+          if (envio < 0) envio = 0;
+          
+          // Render de los productos comprados
+          const itemsHtml = items.map(function(item) {
+            return `<div class="order-item">
+                      <div class="order-item-img">${item.img || '📦'}</div>
+                      <div class="order-item-info">
+                        <div class="order-item-name">${item.nombre}</div>
+                        <div class="order-item-qty">Cant: ${item.qty || 1}</div>
+                      </div>
+                      <div class="order-item-price">$${(item.precio * (item.qty || 1)).toFixed(2)}</div>
+                    </div>`;
+          }).join('');
+
+          // ALERTA NARANJA PARA OXXO Y SPEI PENDIENTES
+          let referenciaHtml = '';
+          if (isPending && o.referencia_pago) {
+            const tipoRef = o.metodo_pago === 'spei' ? 'CLABE para Transferencia' : 'Dicta este código al cajero (OXXO)';
+            referenciaHtml = `
+              <div style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 1rem; margin-bottom: 1rem; border-radius: 4px;">
+                <p style="margin: 0; color: #e65100; font-size: 0.95rem; font-weight: bold;">⚠️ Falta completar tu pago</p>
+                <p style="margin: 5px 0 0; font-size: 0.9rem; color: #555;">${tipoRef}: <br>
+                <span style="font-size: 1.3rem; font-weight: 900; letter-spacing: 2px; color: #000;">${o.referencia_pago}</span></p>
+              </div>
+            `;
+          }
+
+          // Lógica de Tracking de Envío
+          const tPago = isPending ? '' : 'completed';
+          const tPrep = (!isPending && !isCanceled) ? 'completed' : '';
+          const tEnv  = (!isPending && !isCanceled) ? 'completed' : ''; 
+          const tEnt  = (!isPending && !isCanceled) ? 'completed' : '';
+
+          // ID Corto visual (Ej: UUID d0bf16cd... se convierte en D0BF16CD)
+          const shortId = o.id ? o.id.split('-')[0].toUpperCase() : '1A2B3C';
+
+          return `
+            <div class="order-card" onclick="toggleOrder(this)">
+              <div class="order-header">
+                <div class="order-header-left">
+                  <span class="order-id">#${shortId}</span>
+                  <span class="order-date">${fechaStr} - ${horaStr}</span>
+                  <span class="order-status ${statusClass}">${statusText}</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:1rem;">
+                  <span class="order-total-header">$${Number(o.total || 0).toFixed(2)}</span>
+                  <span class="expand-icon">▼</span>
+                </div>
+              </div>
+              <div class="order-body" onclick="event.stopPropagation()">
+                ${referenciaHtml}
+                <div class="order-tracking">
+                  <div class="tracking-step completed"><span class="ts-icon">🛒</span><span class="ts-label">Pedido</span><span class="tracking-line"></span></div>
+                  <div class="tracking-step ${tPago}"><span class="ts-icon">💳</span><span class="ts-label">Pago</span><span class="tracking-line"></span></div>
+                  <div class="tracking-step ${tPrep}"><span class="ts-icon">📦</span><span class="ts-label">Preparando</span><span class="tracking-line"></span></div>
+                  <div class="tracking-step ${tEnv}"><span class="ts-icon">🚚</span><span class="ts-label">Envío</span><span class="tracking-line"></span></div>
+                  <div class="tracking-step ${tEnt}"><span class="ts-icon">✅</span><span class="ts-label">Entregado</span></div>
+                </div>
+                <div class="order-items">${itemsHtml}</div>
+                <div class="order-summary">
+                  <div class="order-summary-line"><span>Subtotal</span><span>$${subtotal.toFixed(2)}</span></div>
+                  <div class="order-summary-line"><span>Envío</span><span>${envio <= 0 ? 'Gratis' : '$' + envio.toFixed(2)}</span></div>
+                  <div class="order-summary-line"><span>Método de pago</span><span>${paymentIcon}</span></div>
+                  <div class="order-summary-line order-summary-total"><span>Total</span><span style="color:#00a0b8;">$${Number(o.total || 0).toFixed(2)}</span></div>
+                </div>
+              </div>
+            </div>`;
         }).join('');
         
-        return '<div class="order-card" onclick="toggleOrder(this)">' +
-          '<div class="order-header">' +
-            '<div class="order-header-left">' +
-              '<span class="order-id">#' + o.id + '</span>' +
-              '<span class="order-date">' + fechaStr + ' - ' + horaStr + '</span>' +
-              '<span class="order-status ' + statusClass + '">' + statusText + '</span>' +
-            '</div>' +
-            '<div style="display:flex;align-items:center;gap:1rem;">' +
-              '<span class="order-total-header">$' + (o.total || 0).toFixed(2) + '</span>' +
-              '<span class="expand-icon">▼</span>' +
-            '</div>' +
-          '</div>' +
-          '<div class="order-body">' +
-            '<div class="order-tracking">' +
-              '<div class="tracking-step completed"><span class="ts-icon">🛒</span><span class="ts-label">Pedido</span><span class="tracking-line"></span></div>' +
-              '<div class="tracking-step completed"><span class="ts-icon">💳</span><span class="ts-label">Pago</span><span class="tracking-line"></span></div>' +
-              '<div class="tracking-step completed"><span class="ts-icon">📦</span><span class="ts-label">Preparando</span><span class="tracking-line"></span></div>' +
-              '<div class="tracking-step completed"><span class="ts-icon">🚚</span><span class="ts-label">Envío</span><span class="tracking-line"></span></div>' +
-              '<div class="tracking-step completed"><span class="ts-icon">✅</span><span class="ts-label">Entregado</span></div>' +
-            '</div>' +
-            '<div class="order-items">' + itemsHtml + '</div>' +
-            '<div class="order-summary">' +
-              '<div class="order-summary-line"><span>Subtotal</span><span>$' + (o.subtotal || 0).toFixed(2) + '</span></div>' +
-              '<div class="order-summary-line"><span>Envío</span><span>' + (o.envio === 0 ? 'Gratis' : '$' + (o.envio || 0).toFixed(2)) + '</span></div>' +
-              '<div class="order-summary-line"><span>Método de pago</span><span>' + paymentIcon + '</span></div>' +
-              '<div class="order-summary-line order-summary-total"><span>Total</span><span style="color:#00a0b8;">$' + (o.total || 0).toFixed(2) + '</span></div>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
-      }).join('');
-    })();
+      } catch(err) {
+        console.error("Error al cargar pedidos de Supabase:", err);
+        list.innerHTML = '<p style="color:red;text-align:center;padding:2rem;">Hubo un error al sincronizar tus pedidos con el servidor. Verifica tu conexión a internet o actualiza la página.</p>';
+      }
+    }
     
+    // Llamar a la función principal al cargar la pantalla
+    document.addEventListener('DOMContentLoaded', loadOrders);
+    
+    // Función para abrir/cerrar los detalles del pedido
     function toggleOrder(el) {
       el.classList.toggle('expanded');
     }
