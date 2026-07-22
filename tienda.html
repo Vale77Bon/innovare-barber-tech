@@ -88,7 +88,7 @@
         <button class="btn btn-primary btn-block btn-lg" onclick="gotoStep2()">Continuar al Pago →</button>
       </div>
 
-      <!-- Paso 2: Método de pago -->
+     <!-- Paso 2: Método de pago -->
       <div id="checkout-step-2" style="display:none;">
         <div class="checkout-section">
           <h3>💳 Selecciona Método de Pago</h3>
@@ -130,27 +130,49 @@
             </label>
           </div>
 
+          <!-- CONTENEDORES DINÁMICOS DE PAGO -->
+          
           <!-- Datos de tarjeta (solo Stripe) -->
-          <div id="card-form" class="mt-1">
+          <div id="card-form" class="mt-1" style="display: block;">
             <div class="form-group">
               <label class="form-label">Número de Tarjeta</label>
-              <input type="text" class="form-input" id="cc-number" placeholder="4242 4242 4242 4242">
+              <input type="text" class="form-input" id="cc-number" placeholder="4242 4242 4242 4242" maxlength="19">
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
               <div class="form-group">
                 <label class="form-label">Vencimiento</label>
-                <input type="text" class="form-input" id="cc-exp" placeholder="MM/AA">
+                <input type="text" class="form-input" id="cc-exp" placeholder="MM/AA" maxlength="5">
               </div>
               <div class="form-group">
                 <label class="form-label">CVC</label>
-                <input type="text" class="form-input" id="cc-cvc" placeholder="123">
+                <input type="text" class="form-input" id="cc-cvc" placeholder="123" maxlength="4">
               </div>
             </div>
           </div>
+
+          <!-- Instrucciones PayPal / Mercado Pago -->
+          <div id="instructions-digital" style="display: none; text-align: center; padding: 1.5rem; background: #fafafa; border-radius: 8px; margin-top: 1rem;">
+            <span style="font-size: 2rem;">🔗</span>
+            <p style="margin-top: 0.5rem; color: #555;">Serás redirigido a la plataforma segura para completar tu pago.</p>
+          </div>
+
+          <!-- Instrucciones OXXO -->
+          <div id="instructions-oxxo" style="display: none; text-align: center; padding: 1.5rem; background: #fafafa; border-radius: 8px; margin-top: 1rem;">
+            <span style="font-size: 2rem;">🏪</span>
+            <p style="margin-top: 0.5rem; color: #555;">Al confirmar, generaremos un <b>código de barras de 14 dígitos</b> que podrás dictar al cajero del OXXO.</p>
+            <small style="color: #888;">El pago puede tardar hasta 24 hrs en reflejarse.</small>
+          </div>
+
+          <!-- Instrucciones SPEI -->
+          <div id="instructions-spei" style="display: none; text-align: center; padding: 1.5rem; background: #fafafa; border-radius: 8px; margin-top: 1rem;">
+            <span style="font-size: 2rem;">🏦</span>
+            <p style="margin-top: 0.5rem; color: #555;">Al confirmar, te daremos una <b>Cuenta CLABE de 18 dígitos</b> para que transfieras desde tu app bancaria.</p>
+          </div>
+
         </div>
         <div style="display:flex;gap:1rem;">
           <button class="btn btn-outline btn-lg" onclick="gotoStep1()" style="flex:1;">← Atrás</button>
-          <button class="btn btn-primary btn-lg" onclick="processPayment()" style="flex:1;">Pagar $<span id="pay-amount">0</span></button>
+          <button class="btn btn-primary btn-lg" onclick="processPayment()" id="btn-procesar-pago" style="flex:1;">Pagar $<span id="pay-amount">0</span></button>
         </div>
       </div>
 

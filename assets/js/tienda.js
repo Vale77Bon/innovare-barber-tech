@@ -47,7 +47,35 @@ document.addEventListener('DOMContentLoaded', async () => {
       renderProducts(this.dataset.filter);
     });
   });
+
+  // Inicializar la lógica visual de los métodos de pago
+  initPaymentToggle();
 });
+
+function initPaymentToggle() {
+  const paymentRadios = document.querySelectorAll('input[name="payment"]');
+  paymentRadios.forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      const method = e.target.value;
+      
+      // Ocultar todos los contenedores primero
+      const allForms = ['card-form', 'instructions-digital', 'instructions-oxxo', 'instructions-spei'];
+      allForms.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.style.display = 'none';
+      });
+      
+      // Mostrar solo el seleccionado
+      if (method === 'stripe') {
+        document.getElementById('card-form').style.display = 'block';
+      } else if (method === 'paypal' || method === 'mercado') {
+        document.getElementById('instructions-digital').style.display = 'block';
+      } else {
+        document.getElementById(`instructions-${method}`).style.display = 'block';
+      }
+    });
+  });
+}
 
 function renderProducts(filter) {
   const grid = document.getElementById('product-grid');
@@ -112,7 +140,6 @@ function updateCartUI() {
   document.getElementById('cart-total').textContent = '$' + total.toFixed(2);
   document.querySelector('.cart-footer').style.display = cart.length ? 'block' : 'none';
   
-  // Render carrito
   const items = document.getElementById('cart-items');
   if (!cart.length) {
     items.innerHTML = '<p style="color:#6e6e7e;text-align:center;padding:2rem;">Carrito vacío</p>';
@@ -158,7 +185,6 @@ function gotoStep1() {
   document.getElementById('checkout-step-3').style.display = 'none';
   document.querySelectorAll('.step').forEach((s, i) => s.classList.toggle('active', i === 0));
   
-  // Render resumen
   const items = document.getElementById('checkout-items');
   items.innerHTML = cart.map(c => `
     <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f4;font-size:0.9rem;">
@@ -182,13 +208,18 @@ function gotoStep2() {
   document.getElementById('checkout-step-3').style.display = 'none';
   document.querySelectorAll('.step').forEach((s, i) => s.classList.toggle('active', i === 1));
   
-  const total = cart.reduce((s, c) => s + c.precio * (c.qty || 1), 0) + (total >= 500 ? 0 : 59);
-  document.getElementById('pay-amount').textContent = '$' + total.toFixed(2);
+  // Corrección del cálculo total
+  const subtotal = cart.reduce((s, c) => s + c.precio * (c.qty || 1), 0);
+  const envio = subtotal >= 500 ? 0 : 59;
+  const total = subtotal + envio;
+  
+  document.getElementById('pay-amount').textContent = total.toFixed(2);
 }
 
 async function processPayment() {
   const payment = document.querySelector('input[name="payment"]:checked').value;
-  const btn = document.querySelector('#checkout-step-2 .btn-primary');
+  // Ubicamos el botón de pagar para deshabilitarlo temporalmente
+  const btn = document.querySelector('#checkout-step-2 button.btn-primary');
   btn.disabled = true;
   btn.textContent = 'Procesando...';
   
@@ -197,52 +228,72 @@ async function processPayment() {
   const envio = subtotal >= 500 ? 0 : 59;
   const total = subtotal + envio;
   
-  const orderData = {
-    id: 'ORD-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substring(2, 6).toUpperCase(),
-    items: cart.map(c => ({ id: c.id, nombre: c.nombre, precio: c.precio, qty: c.qty || 1 })),
-    subtotal: subtotal,
-    envio: envio,
-    total: total,
-    paymentMethod: payment,
-    paymentMethodName: names[payment],
-    status: 'completado',
-    fecha: new Date().toISOString(),
-    cliente: JSON.parse(localStorage.getItem('innovare_user') || '{}').email || 'Invitado'
-  };
-  
-  // Simular procesamiento de pago
-  await new Promise(r => setTimeout(r, 2000));
-  
-  // Guardar en localStorage
-  const orders = JSON.parse(localStorage.getItem('innovare_orders') || '[]');
-  orders.unshift(orderData);
-  localStorage.setItem('innovare_orders', JSON.stringify(orders));
-  
-  // Guardar en Supabase si está conectado
-  try {
-    if (window.InnovareDB && InnovareDB.isConnected()) {
-      await InnovareDB.saveOrder(orderData);
-    }
-  } catch(e) {
-    console.log('Order saved locally (Supabase unavailable)');
+  // Variables dinámicas para el pedido
+  let reference = '';
+  let status = 'completado';
+  let paymentDetailsStr = names[payment];
+
+  // Simulación de códigos OXXO / SPEI
+  if (payment === 'oxxo') {
+    reference = Math.floor(10000000000000 + Math.random() * 90000000000000).toString(); // 14 dígitos
+    status = 'pendiente';
+    paymentDetailsStr += `<br><small style="color:#ff9800; font-size: 0.9rem;">Referencia a dictar: <b style="letter-spacing:1px;">${reference}</b></small>`;
+  } else if (payment === 'spei') {
+    reference = '646180' + Math.floor(100000000000 + Math.random() * 900000000000).toString(); // 18 dígitos CLABE
+    status = 'pendiente';
+    paymentDetailsStr += `<br><small style="color:#ff9800; font-size: 0.9rem;">CLABE destino: <b style="letter-spacing:1px;">${reference}</b></small>`;
+  } else {
+    reference = 'TXN-' + Math.floor(100000 + Math.random() * 900000).toString();
+  }
+
+  // Recuperar el ID del cliente si está logueado
+  const userString = localStorage.getItem('innovare_user');
+  let clienteId = null;
+  if(userString) {
+      const userData = JSON.parse(userString);
+      clienteId = userData.id || null;
   }
   
-  // Mostrar confirmación
+  // Armar el objeto EXACTAMENTE como lo pide la base de datos
+  const orderDataBD = {
+    cliente_id: clienteId,
+    total: total,
+    metodo_pago: payment,
+    estado: status,
+    referencia_pago: reference,
+    detalles: { items: cart.map(c => ({ id: c.id, nombre: c.nombre, precio: c.precio, qty: c.qty || 1 })) }
+  };
+  
+  // Simular tiempo de carga de 1.5 segundos
+  await new Promise(r => setTimeout(r, 1500));
+  
+  // Guardar en Supabase
+  try {
+    if (window.InnovareDB && InnovareDB.isConnected()) {
+      await InnovareDB.saveOrder(orderDataBD);
+    }
+  } catch(e) {
+    console.error('Error guardando pedido en BD:', e);
+  }
+  
+  // Preparar Paso 3: Confirmación Visual
   document.getElementById('checkout-step-1').style.display = 'none';
   document.getElementById('checkout-step-2').style.display = 'none';
   document.getElementById('checkout-step-3').style.display = 'block';
   document.querySelectorAll('.step').forEach((s, i) => s.classList.toggle('active', i === 2));
   
-  document.getElementById('order-number').textContent = orderData.id;
-  document.getElementById('order-payment').textContent = names[payment];
+  const orderVisualId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+  document.getElementById('order-number').textContent = orderVisualId;
+  document.getElementById('order-payment').innerHTML = paymentDetailsStr; // Usamos innerHTML para renderizar el texto en color naranja
   document.getElementById('order-total').textContent = '$' + total.toFixed(2);
-  document.getElementById('order-date').textContent = new Date().toLocaleDateString('es-MX', { year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' });
+  document.getElementById('order-date').textContent = new Date().toLocaleDateString('es-MX', { year:'numeric', month:'long', day:'numeric' });
   
   // Limpiar carrito
   cart = [];
   saveCart();
   updateCartUI();
   
+  // Restaurar el botón por si cierran y abren el modal
   btn.disabled = false;
-  btn.textContent = 'Pagar';
+  btn.textContent = `Pagar $${total.toFixed(2)}`;
 }
