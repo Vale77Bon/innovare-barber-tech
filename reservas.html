@@ -74,7 +74,7 @@
       <div>
         <div class="calendar-section">
           <div class="calendar-header">
-            <h3 id="calendar-title">Julio 2026</h3>
+            <h3 id="calendar-title">Cargando...</h3>
             <div class="calendar-nav">
               <button onclick="changeMonth(-1)" aria-label="Mes anterior">‹</button>
               <button onclick="changeMonth(1)" aria-label="Mes siguiente">›</button>
@@ -83,17 +83,19 @@
           <div class="calendar-grid" id="calendar-grid"></div>
           <div class="time-slots">
             <h4>⏰ Horarios Disponibles</h4>
-            <div class="time-grid" id="time-grid"></div>
+            <div class="time-grid" id="time-grid">
+              <p style="grid-column: 1/-1; color: #9e9eae; font-size: 0.85rem;">Selecciona un día en el calendario</p>
+            </div>
           </div>
         </div>
       </div>
       <div>
         <div class="barber-selection">
           <h3>💈 Elige tu Barbero</h3>
-          <div id="barber-list"></div>
+          <div id="barber-list"><p style="color:#6e6e7e; font-size: 0.85rem;">Cargando barberos...</p></div>
           <div class="service-selection">
             <h3>✂️ Selecciona Servicio</h3>
-            <div id="service-list"></div>
+            <div id="service-list"><p style="color:#6e6e7e; font-size: 0.85rem;">Cargando servicios...</p></div>
           </div>
           <div class="reservation-summary">
             <h4>📋 Resumen de Reserva</h4>
@@ -102,19 +104,255 @@
             <div class="summary-item"><span class="label">Barbero</span><span class="value" id="summary-barber">—</span></div>
             <div class="summary-item"><span class="label">Servicio</span><span class="value" id="summary-service">—</span></div>
             <div class="summary-item"><span class="label">Precio Servicio</span><span class="value" id="summary-price">—</span></div>
-            <div class="summary-item" id="summary-discount-row" style="display:none;"><span class="label" style="color:#00c853;">👑 Descuento VIP</span><span class="value" id="summary-discount" style="color:#00c853;font-weight:600;">—</span></div>
             <div class="summary-item"><span class="label">Depósito (10%)</span><span class="value" id="summary-deposit" style="color:#00a0b8;">—</span></div>
-            <div class="summary-item" style="border-bottom:none;"><span class="label" style="font-weight:700;">Total a Pagar</span><span class="value" id="summary-total" style="font-weight:700;font-size:1.1rem;">—</span></div>
-            <button class="btn btn-primary btn-block mt-2" id="book-btn" disabled>💳 Confirmar y Pagar (Stripe)</button>
+            <div class="summary-item" style="border-bottom:none;"><span class="label" style="font-weight:700;">Total a Pagar hoy</span><span class="value" id="summary-total" style="font-weight:700; font-size:1.1rem; color:#00E5FF;">—</span></div>
+            <button class="btn btn-primary btn-block mt-2" id="book-btn" disabled>💳 Confirmar y Pagar Depósito</button>
           </div>
         </div>
       </div>
     </div>
   </main>
   <div id="footer-placeholder"></div>
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/js/supabase.js"></script>
   <script src="assets/js/main.js"></script>
-  <script src="assets/js/reservas.js"></script>
+  
+  <!-- SCRIPT INTEGRADO: Reemplaza a reservas.js para conectar directo a Supabase -->
+  <script>
+    // Variables de Estado
+    let today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+    
+    let state = {
+      date: null,
+      time: null,
+      barberId: null,
+      serviceId: null
+    };
+
+    let barbersData = [];
+    let servicesData = [];
+
+    const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+    // 1. Inicialización e Inyección de datos
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Verificar sesión antes de permitir la reserva
+      const userStr = localStorage.getItem('innovare_user');
+      if (!userStr) {
+        alert("🔒 Debes iniciar sesión para agendar una cita.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      await fetchData();
+      renderCalendar();
+    });
+
+    // 2. Traer Barberos y Servicios de Supabase
+    async function fetchData() {
+      try {
+        if (!window.InnovareDB || !InnovareDB.isConnected()) {
+          throw new Error("Conexión a Supabase no disponible.");
+        }
+        barbersData = await InnovareDB.getBarbers();
+        servicesData = await InnovareDB.getServices();
+        
+        renderBarbers();
+        renderServices();
+      } catch (error) {
+        console.error("Error cargando catálogos:", error);
+        document.getElementById('barber-list').innerHTML = "<p style='color:red;'>Error al cargar barberos.</p>";
+        document.getElementById('service-list').innerHTML = "<p style='color:red;'>Error al cargar servicios.</p>";
+      }
+    }
+
+    // 3. Renderizar Barberos
+    function renderBarbers() {
+      const container = document.getElementById('barber-list');
+      container.innerHTML = barbersData.map(b => `
+        <div class="barber-option" onclick="selectBarber('${b.id}')" id="barber-${b.id}">
+          <div class="barber-avatar-sm">💈</div>
+          <div class="barber-info">
+            <h4>${b.nombre}</h4>
+            <p>${b.especialidad}</p>
+          </div>
+          <div class="barber-status">Disponible</div>
+        </div>
+      `).join('');
+    }
+
+    // 4. Renderizar Servicios
+    function renderServices() {
+      const container = document.getElementById('service-list');
+      container.innerHTML = servicesData.map(s => `
+        <div class="service-option" onclick="selectService('${s.id}')" id="service-${s.id}">
+          <div>
+            <div class="service-name">${s.nombre} <small>${s.duracion_min} min</small></div>
+          </div>
+          <div class="service-price">$${parseFloat(s.precio).toFixed(2)}</div>
+        </div>
+      `).join('');
+    }
+
+    // 5. Lógica de Calendario
+    function renderCalendar() {
+      document.getElementById('calendar-title').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+      const grid = document.getElementById('calendar-grid');
+      
+      let html = '<div class="day-name">Dom</div><div class="day-name">Lun</div><div class="day-name">Mar</div><div class="day-name">Mié</div><div class="day-name">Jue</div><div class="day-name">Vie</div><div class="day-name">Sáb</div>';
+      
+      const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      
+      for (let i = 0; i < firstDay; i++) {
+        html += `<div class="day empty"></div>`;
+      }
+      
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateObj = new Date(currentYear, currentMonth, day);
+        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        
+        let classes = "day";
+        if (dateObj < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+          classes += " disabled";
+        }
+        if (state.date === dateStr) {
+          classes += " selected";
+        }
+        
+        html += `<div class="${classes}" onclick="selectDate('${dateStr}', this)">${day}</div>`;
+      }
+      grid.innerHTML = html;
+    }
+
+    function changeMonth(dir) {
+      currentMonth += dir;
+      if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+      else if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+      renderCalendar();
+    }
+
+    // 6. Generar Horarios
+    function renderTimes() {
+      const grid = document.getElementById('time-grid');
+      const times = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+      
+      grid.innerHTML = times.map(t => {
+        const isSelected = state.time === t ? 'selected' : '';
+        return `<div class="time-slot ${isSelected}" onclick="selectTime('${t}')">${t}</div>`;
+      }).join('');
+    }
+
+    // 7. Acciones de Selección
+    function selectDate(dateStr, el) {
+      if (el.classList.contains('disabled')) return;
+      state.date = dateStr;
+      state.time = null; // Reiniciar hora al cambiar día
+      renderCalendar();
+      renderTimes();
+      updateSummary();
+    }
+
+    function selectTime(timeStr) {
+      state.time = timeStr;
+      renderTimes();
+      updateSummary();
+    }
+
+    function selectBarber(id) {
+      state.barberId = id;
+      document.querySelectorAll('.barber-option').forEach(el => el.classList.remove('selected'));
+      document.getElementById('barber-' + id).classList.add('selected');
+      updateSummary();
+    }
+
+    function selectService(id) {
+      state.serviceId = id;
+      document.querySelectorAll('.service-option').forEach(el => el.classList.remove('selected'));
+      document.getElementById('service-' + id).classList.add('selected');
+      updateSummary();
+    }
+
+    // 8. Actualizar Resumen y Calcular Precios
+    function updateSummary() {
+      document.getElementById('summary-date').textContent = state.date ? state.date : '—';
+      document.getElementById('summary-time').textContent = state.time ? state.time : '—';
+      
+      const barber = barbersData.find(b => b.id === state.barberId);
+      document.getElementById('summary-barber').textContent = barber ? barber.nombre : '—';
+      
+      const service = servicesData.find(s => s.id === state.serviceId);
+      
+      let price = 0;
+      let deposit = 0;
+
+      if (service) {
+        document.getElementById('summary-service').textContent = service.nombre;
+        price = parseFloat(service.precio);
+        deposit = price * 0.1; // Depósito del 10%
+        
+        document.getElementById('summary-price').textContent = `$${price.toFixed(2)}`;
+        document.getElementById('summary-deposit').textContent = `$${deposit.toFixed(2)}`;
+        document.getElementById('summary-total').textContent = `$${deposit.toFixed(2)}`;
+      } else {
+        document.getElementById('summary-service').textContent = '—';
+        document.getElementById('summary-price').textContent = '—';
+        document.getElementById('summary-deposit').textContent = '—';
+        document.getElementById('summary-total').textContent = '—';
+      }
+
+      // Habilitar botón de pago si todo está seleccionado
+      const btn = document.getElementById('book-btn');
+      btn.disabled = !(state.date && state.time && state.barberId && state.serviceId);
+    }
+
+    // 9. Guardar la Cita en Supabase
+    document.getElementById('book-btn').addEventListener('click', async () => {
+      const user = JSON.parse(localStorage.getItem('innovare_user'));
+      const btn = document.getElementById('book-btn');
+      
+      btn.disabled = true;
+      btn.textContent = 'Procesando validación...';
+
+      const service = servicesData.find(s => s.id === state.serviceId);
+      const price = parseFloat(service.precio);
+      const deposit = price * 0.1;
+      const pendiente = price - deposit;
+
+      try {
+        // Simulamos el cargo en Stripe de 1.5s
+        await new Promise(r => setTimeout(r, 1500));
+
+        // Construir el objeto exacto para la tabla citas
+        const nuevaCita = {
+          cliente_id: user.id,
+          barbero_id: state.barberId,
+          servicio_id: state.serviceId,
+          fecha: state.date, // Formato YYYY-MM-DD
+          hora: state.time + ':00', // Formato HH:MM:SS requerido por Postgres
+          estado: 'confirmada',
+          deposito_garantia: deposit,
+          precio_total: price,
+          pendiente: pendiente,
+          metodo_pago: 'tarjeta_stripe'
+        };
+
+        // Insertar en Supabase usando nuestra función existente
+        await InnovareDB.createCita(nuevaCita);
+        
+        alert('✅ ¡Tu cita ha sido agendada con éxito y el depósito procesado!');
+        window.location.href = 'mis-citas.html'; // Redirigir a sus citas
+
+      } catch (error) {
+        console.error("Error al agendar cita:", error);
+        alert("❌ Ocurrió un error al guardar tu cita. Inténtalo de nuevo.");
+        btn.disabled = false;
+        btn.textContent = '💳 Confirmar y Pagar Depósito';
+      }
+    });
+  </script>
 </body>
 </html>
