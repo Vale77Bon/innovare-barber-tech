@@ -35,115 +35,166 @@
 </head>
 <body>
   <div id="navbar-placeholder"></div>
+  
   <main class="citas-page">
     <section class="section-title">
       <h2>📋 <span class="highlight">Mis Citas</span></h2>
       <div class="divider"></div>
       <p>Revisa, reagenda o cancela tus citas</p>
     </section>
+    
     <div class="citas-list" id="citas-list">
       <div class="empty-state">
         <div class="icon">📅</div>
-        <p>Cargando tus citas...</p>
+        <p>Cargando tus citas desde la base de datos...</p>
       </div>
     </div>
   </main>
+  
   <div id="footer-placeholder"></div>
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/js/supabase.js"></script>
   <script src="assets/js/main.js"></script>
+  
   <script>
     function fCur(n){ return '$'+parseFloat(n).toFixed(2); }
     function fDate(d){ try{return new Date(d+'T00:00:00').toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'});}catch(e){return d;} }
 
-    var citas = JSON.parse(localStorage.getItem('innovare_appointments') || '[]');
     var container = document.getElementById('citas-list');
+    var citasDb = []; // Aquí guardaremos las citas extraídas
 
-    function renderCitas() {
-      citas = JSON.parse(localStorage.getItem('innovare_appointments') || '[]');
-      if (citas.length === 0) {
-        container.innerHTML = '<div class="empty-state"><div class="icon">📅</div><h3>Sin citas</h3><p>Reserva tu primera cita</p><a href="reservas.html" class="btn btn-primary mt-1">Reservar Ahora</a></div>';
+    async function renderCitas() {
+      const userString = localStorage.getItem('innovare_user');
+      if (!userString) {
+        container.innerHTML = '<div class="empty-state"><div class="icon">🔒</div><h3>Inicia sesión</h3><p>Necesitas una cuenta para ver tus citas.</p><a href="login.html" class="btn btn-primary mt-1">Ir a Iniciar Sesión</a></div>';
         return;
       }
-      var html = '';
-      citas.sort(function(a,b){ return new Date(b.createdAt||0) - new Date(a.createdAt||0); });
-      citas.forEach(function(c, i) {
-        var stClass = c.estado || 'pendiente';
-        var stText = {confirmada:'Confirmada',completada:'Completada',pendiente:'Pendiente',cancelada:'Cancelada'}[stClass]||stClass;
-        var isActive = stClass !== 'cancelada' && stClass !== 'completada';
-        html += '<div class="cita-card' + (stClass==='cancelada'?' cancelled':'') + '">';
-        html += '<div class="cita-info">';
-        html += '<div class="cita-avatar">💈</div>';
-        html += '<div class="cita-details">';
-        html += '<h4>' + (c.service_name || 'Servicio') + '</h4>';
-        html += '<p>👤 ' + (c.barber_name || 'Barbero') + ' · ' + fCur(c.price || 0) + '</p>';
-        html += '<p class="meta">📅 ' + fDate(c.date) + ' · 🕐 ' + (c.time||'—') + ' · 💰 Depósito: ' + fCur(c.deposit||(c.price*0.1||0)) + '</p>';
-        var pend = c.pendiente || ((c.price||0) - (c.deposit||(c.price*0.1||0)));
-        if (pend > 0 && c.estado !== 'cancelada') html += '<p class="meta" style="color:#e65100;">⚠️ Pendiente en barbería: ' + fCur(pend) + '</p>';
-        html += '<span class="cita-status ' + stClass + '">' + stText + '</span>';
-        html += '</div></div>';
-        if (isActive) {
-          html += '<div class="cita-actions">';
-          html += '<button class="btn btn-sm btn-outline" onclick="editCita(' + i + ')">✏️ Reagendar</button>';
-          html += '<button class="btn btn-sm btn-danger" onclick="cancelCita(' + i + ')">✕ Cancelar</button>';
-          html += '</div>';
+      const user = JSON.parse(userString);
+
+      try {
+        if (!window.InnovareDB || !InnovareDB.isConnected()) {
+          throw new Error("Supabase no está conectado.");
         }
-        html += '</div>';
-      });
-      container.innerHTML = html;
+
+        // Llamamos a la función de tu supabase.js que trae las citas con los nombres unidos (JOIN)
+        const data = await InnovareDB.getCitas(user.id, user.rol);
+        citasDb = data || [];
+
+        if (citasDb.length === 0) {
+          container.innerHTML = '<div class="empty-state"><div class="icon">📅</div><h3>Sin citas</h3><p>Reserva tu primera cita en Innovare.</p><a href="reservas.html" class="btn btn-primary mt-1">Reservar Ahora</a></div>';
+          return;
+        }
+
+        var html = '';
+        citasDb.forEach(function(c, i) {
+          var stClass = c.estado || 'pendiente';
+          var stText = {confirmada:'Confirmada',completada:'Completada',pendiente:'Pendiente',cancelada:'Cancelada'}[stClass]||stClass;
+          var isActive = stClass !== 'cancelada' && stClass !== 'completada';
+          
+          // Extracción de datos cruzados desde el JOIN
+          var srvName = c.servicios ? c.servicios.nombre : 'Servicio';
+          var brbName = c.barberos ? c.barberos.nombre : 'Barbero';
+          var horaAjustada = c.hora ? c.hora.substring(0, 5) : '—'; // Para quitar los segundos de SQL
+          
+          html += '<div class="cita-card' + (stClass==='cancelada'?' cancelled':'') + '">';
+          html += '<div class="cita-info">';
+          html += '<div class="cita-avatar">💈</div>';
+          html += '<div class="cita-details">';
+          html += '<h4>' + srvName + '</h4>';
+          html += '<p>👤 ' + brbName + ' · ' + fCur(c.precio_total || 0) + '</p>';
+          html += '<p class="meta">📅 ' + fDate(c.fecha) + ' · 🕐 ' + horaAjustada + ' · 💰 Depósito: ' + fCur(c.deposito_garantia || 0) + '</p>';
+          
+          if (c.pendiente > 0 && c.estado !== 'cancelada') {
+            html += '<p class="meta" style="color:#e65100;">⚠️ Pendiente en barbería: ' + fCur(c.pendiente) + '</p>';
+          }
+          html += '<span class="cita-status ' + stClass + '">' + stText + '</span>';
+          html += '</div></div>';
+          
+          if (isActive) {
+            html += '<div class="cita-actions">';
+            html += '<button class="btn btn-sm btn-outline" onclick="editCita(' + i + ')">✏️ Reagendar</button>';
+            html += '<button class="btn btn-sm btn-danger" onclick="cancelCita(' + i + ')">✕ Cancelar</button>';
+            html += '</div>';
+          }
+          html += '</div>';
+        });
+        container.innerHTML = html;
+
+      } catch (error) {
+        console.error("Error cargando citas:", error);
+        container.innerHTML = '<div class="empty-state"><p style="color:red;">Error al cargar tus citas desde el servidor.</p></div>';
+      }
     }
 
-    function cancelCita(idx) {
-      if (!confirm('¿Cancelar esta cita? Se perderá el depósito de 10%.')) return;
-      var cita = citas[idx];
-      cita.estado = 'cancelada';
-      citas[idx] = cita;
-      localStorage.setItem('innovare_appointments', JSON.stringify(citas));
-      alert('Cita cancelada.');
-      renderCitas();
+    async function cancelCita(idx) {
+      if (!confirm('¿Cancelar esta cita? Se perderá el depósito de garantía.')) return;
+      var cita = citasDb[idx];
+      
+      try {
+        await InnovareDB.updateCita(cita.id, { estado: 'cancelada' });
+        alert('Cita cancelada correctamente en la base de datos.');
+        renderCitas(); // Recargar la lista fresca
+      } catch (e) {
+        alert('Error al cancelar: ' + e.message);
+      }
     }
 
     function editCita(idx) {
-      var cita = citas[idx];
-      // Store OLD date/time to mark old slot as available
-      var oldDate = cita.date;
-      var oldTime = cita.time;
+      var cita = citasDb[idx];
+      var oldDate = cita.fecha;
+      var oldTime = cita.hora ? cita.hora.substring(0, 5) : '';
+      var srvName = cita.servicios ? cita.servicios.nombre : 'Servicio';
+      var brbName = cita.barberos ? cita.barberos.nombre : 'Barbero';
       
       var modal = document.createElement('div');
       modal.className = 'edit-modal';
       modal.innerHTML = '<div class="edit-card">' +
         '<h3>✏️ Reagendar Cita</h3>' +
-        '<p style="color:#6e6e7e;margin-bottom:16px;">' + (cita.service_name||'') + ' con ' + (cita.barber_name||'') + '</p>' +
+        '<p style="color:#6e6e7e;margin-bottom:16px;">' + srvName + ' con ' + brbName + '</p>' +
         '<p style="font-size:0.8rem;color:#9e9eae;margin-bottom:12px;">Anterior: ' + fDate(oldDate) + ' · ' + oldTime + '</p>' +
-        '<div class="form-group"><label class="form-label">Nueva Fecha</label><input type="date" class="form-input" id="edit-date" value="' + cita.date + '" min="' + new Date().toISOString().split('T')[0] + '"></div>' +
+        '<div class="form-group"><label class="form-label">Nueva Fecha</label><input type="date" class="form-input" id="edit-date" value="' + oldDate + '" min="' + new Date().toISOString().split('T')[0] + '"></div>' +
         '<div class="form-group"><label class="form-label">Nueva Hora</label><select class="form-input" id="edit-time">' +
-        ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'].map(function(t){ return '<option value="'+t+'"'+(cita.time===t?' selected':'')+'>'+t+'</option>'; }).join('') +
+        ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'].map(function(t){ return '<option value="'+t+'"'+(oldTime===t?' selected':'')+'>'+t+'</option>'; }).join('') +
         '</select></div>' +
         '<div style="display:flex;gap:8px;">' +
         '<button class="btn btn-primary btn-block" id="save-edit">Guardar Cambios</button>' +
         '<button class="btn btn-accent btn-block" id="close-edit">Cancelar</button></div></div>';
+      
       document.body.appendChild(modal);
 
-      document.getElementById('save-edit').onclick = function() {
+      document.getElementById('save-edit').onclick = async function() {
         var newDate = document.getElementById('edit-date').value;
         var newTime = document.getElementById('edit-time').value;
         if (!newDate || !newTime) { alert('Completa todos los campos'); return; }
         
-        // Update the appointment with new date/time (old slot is freed since we modify the same object)
-        cita.date = newDate;
-        cita.time = newTime;
-        cita.estado = 'confirmada';
-        citas[idx] = cita;
-        localStorage.setItem('innovare_appointments', JSON.stringify(citas));
-        modal.remove();
-        renderCitas();
-        alert('✅ Cita reagendada: ' + fDate(newDate) + ' ' + newTime + '\n\nEl horario anterior (' + oldDate + ' ' + oldTime + ') quedó libre.');
+        var btn = document.getElementById('save-edit');
+        btn.disabled = true;
+        btn.textContent = 'Guardando...';
+
+        try {
+          await InnovareDB.updateCita(cita.id, { 
+            fecha: newDate, 
+            hora: newTime + ':00', // Agregamos los segundos requeridos por SQL
+            estado: 'confirmada' 
+          });
+          
+          modal.remove();
+          alert('✅ Cita reagendada exitosamente a: ' + fDate(newDate) + ' ' + newTime);
+          renderCitas();
+        } catch (e) {
+          alert('Error al reagendar: ' + e.message);
+          btn.disabled = false;
+          btn.textContent = 'Guardar Cambios';
+        }
       };
+      
       document.getElementById('close-edit').onclick = function() { modal.remove(); };
       modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
     }
 
-    renderCitas();
+    // Arrancar la renderización inicial
+    document.addEventListener('DOMContentLoaded', renderCitas);
   </script>
 </body>
 </html>
