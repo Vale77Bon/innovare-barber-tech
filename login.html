@@ -185,13 +185,11 @@
           const { error: dbError } = await supabase
             .from('usuarios')
             .insert([{ 
-                id: data.user.id,
-                nombre: nombre,
-                email: email,
-                telefono: telefono,
-                rol: rol,
-                activo: false // Se activa cuando confirma email
-              }]);
+              id: data.user.id,
+              nombre: nombre,
+              email: email,
+              telefono: telefono
+            }]);
               
           if (dbError) throw dbError;
         }
