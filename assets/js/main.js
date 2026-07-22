@@ -85,6 +85,19 @@ function loadRoleBasedNav() {
       }
       links += `<button class="logout-btn" onclick="logout()">Salir</button>`;
     }
+  } else if (token && user && user.rol === 'admin') {
+    // Admin nav: Dashboard siempre visible
+    const adminLinks = [
+      { href: 'dashboard-admin.html', label: 'Dashboard' },
+      { href: 'index.html', label: 'Inicio' },
+      { href: 'reservas.html', label: 'Reservar' },
+      { href: 'escaneo-ar.html', label: 'Smart Mirror' }
+    ];
+    adminLinks.forEach(l => {
+      links += `<a href="${l.href}" class="${l.href === currentPath ? 'active' : ''}">${l.label}</a>`;
+    });
+    links += `<span class="user-badge">👑 Admin</span>`;
+    links += `<button class="logout-btn" onclick="logout()">Salir</button>`;
   } else {
     // No auth: login + public pages
     const publicLinks = [
