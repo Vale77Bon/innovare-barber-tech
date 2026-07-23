@@ -121,43 +121,66 @@ function loadRoleBasedNav() {
   setupMobileMenu();
 }
 
+// ===== FOOTER ACTUALIZADO CON TUS REDES SOCIALES =====
 function loadFooter() {
   const fp = document.getElementById('footer-placeholder');
   if (!fp) return;
   fp.innerHTML = `
-    <footer class="footer">
-      <div class="footer-inner">
-        <div class="footer-col">
-          <h4>💈 Innovare Barber Tech</h4>
-          <p>Tradición clásica · Innovación digital. Diagnóstico capilar 3D, simulación AR y membresías digitales.</p>
-          <div class="social-links">
-            <a href="https://www.instagram.com/innovarebarbertech" target="_blank" rel="noopener" aria-label="Instagram">📸</a>
-            <a href="https://www.facebook.com/InnovareBarberTechPuebla" target="_blank" rel="noopener" aria-label="Facebook">📘</a>
-            <a href="https://wa.me/522221175554" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+    <footer style="background-color: #11111e; padding: 4rem 2rem 2rem; color: #fff; margin-top: auto; border-top: 1px solid rgba(0,229,255,0.1);">
+      <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+        
+        <!-- Columna 1: Marca y Redes -->
+        <div>
+          <h3 style="color: #00E5FF; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
+            💈 Innovare Barber Tech
+          </h3>
+          <p style="color: #9e9eae; font-size: 0.9rem; line-height: 1.6;">
+            Tradición clásica · Innovación digital.<br>Diagnóstico capilar 3D, simulación AR y membresías digitales.
+          </p>
+          
+          <!-- ICONOS DE REDES SOCIALES Y CONTACTO -->
+          <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+            <a href="https://www.facebook.com/share/19bxBqUFrL/" target="_blank" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="Facebook">
+              📘
+            </a>
+            <a href="https://www.instagram.com/innovarebarbertech?igsh=eTdwcDVpeDVjbDlr" target="_blank" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="Instagram">
+              📸
+            </a>
+            <a href="https://www.tiktok.com/@innovarebarbertec?_r=1&_t=ZS-98EMg5WlDhE" target="_blank" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="TikTok">
+              🎵
+            </a>
+            <a href="https://wa.me/522221175554?text=Hola,%20Innovare%20Barber%20Tech,%20tengo%20una%20duda%20¿en%20qué%20pueden%20ayudarme%20hoy?" target="_blank" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="WhatsApp">
+              💬
+            </a>
+            <a href="mailto:innovarebarber.tech@outlook.com" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="Correo Electrónico">
+              ✉️
+            </a>
           </div>
         </div>
-        <div class="footer-col">
-          <h4>Enlaces</h4>
-          <a href="index.html">Inicio</a>
-          <a href="reservas.html">Reservar Cita</a>
-          <a href="escaneo-ar.html">Smart Mirror</a>
-          <a href="aviso-privacidad.html">Aviso de Privacidad</a>
+        
+        <!-- Columna 2: Enlaces Rápidos -->
+        <div>
+          <h4 style="color: #00E5FF; margin-bottom: 1rem;">Enlaces Rápidos</h4>
+          <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+            <a href="index.html" style="color: #9e9eae; text-decoration: none; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#9e9eae'">Inicio</a>
+            <a href="reservas.html" style="color: #9e9eae; text-decoration: none; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#9e9eae'">Reservar Cita</a>
+            <a href="tienda.html" style="color: #9e9eae; text-decoration: none; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#9e9eae'">Tienda</a>
+            <a href="escaneo-ar.html" style="color: #9e9eae; text-decoration: none; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#9e9eae'">Smart Mirror</a>
+          </div>
         </div>
-        <div class="footer-col">
-          <h4>Horario</h4>
-          <p>Lun - Vie: 9:00 AM - 8:00 PM</p>
-          <p>Sáb: 9:00 AM - 6:00 PM</p>
-          <p>Dom: Cerrado</p>
-        </div>
-        <div class="footer-col">
-          <h4>Contacto</h4>
-          <p>📍 Plaza Solesta, PB-14 · Puebla</p>
-          <p>📞 +52 222 117 5554</p>
-          <p>✉️ hola@innovarebarber.tech</p>
+
+        <!-- Columna 3: Horario y Contacto -->
+        <div>
+          <h4 style="color: #00E5FF; margin-bottom: 1rem;">Horario y Ubicación</h4>
+          <p style="color: #9e9eae; font-size: 0.9rem; margin-bottom: 0.5rem;">Lun - Vie: 9:00 AM - 8:00 PM</p>
+          <p style="color: #9e9eae; font-size: 0.9rem; margin-bottom: 0.5rem;">Sáb: 9:00 AM - 6:00 PM</p>
+          <p style="color: #9e9eae; font-size: 0.9rem; margin-bottom: 1.5rem;">Dom: Cerrado</p>
+          <p style="color: #9e9eae; font-size: 0.9rem;">📍 Local PB-14, Plaza Solesta, Puebla</p>
         </div>
       </div>
-      <div class="footer-bottom">
-        &copy; ${new Date().getFullYear()} Innovare Barber Tech · NE1 ITP
+      
+      <div style="text-align: center; color: #6e6e7e; font-size: 0.8rem; margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.5rem;">
+        &copy; ${new Date().getFullYear()} Innovare Barber Tech. Todos los derechos reservados.
       </div>
     </footer>`;
 }
