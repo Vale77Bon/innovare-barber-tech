@@ -58,235 +58,285 @@
   <div id="navbar-placeholder"></div>
   <main class="admin-page">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;">
-      <div><h1>📊 Dashboard</h1><p style="color:#6e6e7e;margin:0;">Panel de administración</p></div>
+      <div><h1>📊 Dashboard</h1><p style="color:#6e6e7e;margin:0;">Panel de administración en tiempo real</p></div>
     </div>
+    
     <div class="stats" id="srow">
       <div class="st"><div class="n" id="s-total">0</div><div class="l">Total Citas</div></div>
       <div class="st"><div class="n" id="s-pendientes">0</div><div class="l">Pendientes</div></div>
       <div class="st"><div class="n" id="s-completadas">0</div><div class="l">Completadas</div></div>
-      <div class="st"><div class="n" id="s-revenue">$0</div><div class="l">Ingresos</div></div>
+      <div class="st"><div class="n" id="s-revenue">$0</div><div class="l">Ingresos Citas</div></div>
     </div>
-  <div class="dg">
-    <div>
-      <div class="sec">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-          <h3 style="margin:0;">📋 Todas las Citas</h3>
-          <a href="reservas.html" class="btn btn-sm btn-primary">+ Nueva</a>
+    
+    <div class="dg">
+      <div>
+        <div class="sec">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+            <h3 style="margin:0;">📋 Todas las Citas (Supabase)</h3>
+            <a href="reservas.html" class="btn btn-sm btn-primary">+ Nueva</a>
+          </div>
+          <div style="overflow-x:auto;" id="apt-list"><div class="loading-spinner" style="text-align: center; padding: 2rem;">Sincronizando...</div></div>
         </div>
-        <div style="overflow-x:auto;" id="apt-list"><div class="loading-spinner"></div></div>
-      </div>
-      
-      <div class="sec">
-        <h3>✂️ Ventas de Servicios (Semana)</h3>
-        <canvas id="servicesChart" style="max-height:250px;"></canvas>
-      </div>
-      <div class="sec">
-        <h3>📦 Ventas de Productos (Semana)</h3>
-        <canvas id="productsChart" style="max-height:250px;"></canvas>
-      </div>
-    </div>
-    <div>
-      <div class="sec">
-        <h3>⚡ Acciones</h3>
-        <div class="qa">
-          <button class="qbtn" onclick="window.location='reservas.html'"><span class="ic">📅</span>Nueva Cita</button>
-          <button class="qbtn" onclick="loadData()"><span class="ic">🔄</span>Actualizar</button>
-          <button class="qbtn" onclick="window.location='escaneo-ar.html'"><span class="ic">🪞</span>Smart Mirror</button>
-          <button class="qbtn" onclick="window.location='mis-citas.html'"><span class="ic">📋</span>Mis Citas</button>
-          <button class="qbtn" onclick="window.location='mis-pedidos.html'"><span class="ic">📦</span>Pedidos</button>
+        
+        <div class="sec">
+          <h3>✂️ Ventas de Servicios (Semana)</h3>
+          <canvas id="servicesChart" style="max-height:250px;"></canvas>
+        </div>
+        <div class="sec">
+          <h3>📦 Ventas de Productos (Semana)</h3>
+          <canvas id="productsChart" style="max-height:250px;"></canvas>
         </div>
       </div>
       
-      <div class="stats" style="grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1rem;">
-        <div class="st"><div class="n" id="s-pedidos">0</div><div class="l">Pedidos</div></div>
-        <div class="st"><div class="n" id="s-prod-revenue">$0</div><div class="l">Ventas Prod.</div></div>
-      </div>
-      
-      <div class="sec">
-        <h3>💰 Ingresos por Tipo</h3>
-        <canvas id="revenueChart" style="max-height:250px;"></canvas>
+      <div>
+        <div class="sec">
+          <h3>⚡ Acciones</h3>
+          <div class="qa">
+            <button class="qbtn" onclick="window.location='reservas.html'"><span class="ic">📅</span>Nueva Cita</button>
+            <button class="qbtn" onclick="loadData()"><span class="ic">🔄</span>Actualizar</button>
+            <button class="qbtn" onclick="window.location='escaneo-ar.html'"><span class="ic">🪞</span>Smart Mirror</button>
+            <button class="qbtn" onclick="window.location='mis-citas.html'"><span class="ic">📋</span>Mis Citas</button>
+            <button class="qbtn" onclick="window.location='mis-pedidos.html'"><span class="ic">📦</span>Pedidos</button>
+          </div>
+        </div>
+        
+        <div class="stats" style="grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1rem;">
+          <div class="st"><div class="n" id="s-pedidos">0</div><div class="l">Total Pedidos</div></div>
+          <div class="st"><div class="n" id="s-prod-revenue">$0</div><div class="l">Ventas Tienda</div></div>
+        </div>
+        
+        <div class="sec">
+          <h3>💰 Ingresos Totales por Tipo</h3>
+          <canvas id="revenueChart" style="max-height:250px;"></canvas>
+        </div>
       </div>
     </div>
-  </div>
   </main>
+  
   <div id="footer-placeholder"></div>
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="assets/js/supabase.js"></script>
   <script src="assets/js/main.js"></script>
+  
   <script>
+    // Variables para guardar las instancias de las gráficas y poder borrarlas al actualizar
+    let chartSvc = null;
+    let chartProd = null;
+    let chartRev = null;
+
     (function(){
-      var u = JSON.parse(localStorage.getItem('innovare_user')||'{}');
+      // Verificación de Admin
+      var u = JSON.parse(localStorage.getItem('innovare_user') || '{}');
       var userRole = u.user_metadata?.rol || u.rol || 'cliente';
-      if(!localStorage.getItem('innovare_token')||userRole!=='admin') window.location.href='login.html';
-      loadData();
+      if(!localStorage.getItem('innovare_user') || userRole !== 'admin') {
+        alert("Acceso denegado. Solo administradores.");
+        window.location.href = 'login.html';
+      } else {
+        loadData();
+      }
     })();
 
     function fCur(n){ return '$'+parseFloat(n).toFixed(2); }
-
-    function loadData(){
-      var citas = JSON.parse(localStorage.getItem('innovare_appointments')||'[]');
-      citas.sort(function(a,b){ return new Date(b.createdAt||0)-new Date(a.createdAt||0); });
-
-      var total=citas.length,
-          pend=citas.filter(function(c){return c.estado==='pendiente'||c.estado==='confirmada';}).length,
-          comp=citas.filter(function(c){return c.estado==='completada';}).length,
-          rev=citas.filter(function(c){return c.paymentStatus==='Completado';}).reduce(function(s,c){return s+(c.total||c.price||0);},0);
-
-      document.getElementById('s-total').textContent=total;
-      document.getElementById('s-pendientes').textContent=pend;
-      document.getElementById('s-completadas').textContent=comp;
-      document.getElementById('s-revenue').textContent=fCur(rev);
-
-      var list=document.getElementById('apt-list');
-      if(!citas.length){ list.innerHTML='<p style="color:#6e6e7e;text-align:center;padding:2rem;">Sin citas</p>'; return; }
-
-      var map={confirmada:'bg-green',pendiente:'bg-yellow',cancelada:'bg-red',completada:'bg-cyan'};
-      var h='<table><thead><tr><th>Cliente</th><th>Fecha</th><th>Hora</th><th>Barbero</th><th>Servicio</th><th>Precio</th><th>Estado</th><th></th></tr></thead><tbody>';
-      citas.forEach(function(c){
-        var st=c.estado||'pendiente';
-        h+='<tr><td>👤 '+(c.clientName||'Cliente')+'</td><td>'+c.date+'</td><td>'+c.time+'</td><td>'+(c.barber_name||'—')+'</td><td>'+(c.service_name||'—')+'</td><td>'+fCur(c.price||0)+'</td><td><span class="badge-st '+(map[st]||'bg-yellow')+'">'+st+'</span></td>';
-        h+='<td>';
-        if(st!=='cancelada'&&st!=='completada') h+='<button class="act-btn" onclick="updateStatus('+c.id+',\'completada\')">✓</button>';
-        if(st!=='cancelada') h+='<button class="act-btn" onclick="updateStatus('+c.id+',\'cancelada\')" style="color:#ff1744;">✕</button>';
-        h+='</td></tr>';
-      });
-      h+='</tbody></table>';
-      list.innerHTML=h;
-      
-      // Actualizar gráficas en tiempo real
-      loadCharts();
+    function fDate(d){ 
+      try { return new Date(d+'T00:00:00').toLocaleDateString('es-MX',{year:'numeric',month:'short',day:'numeric'}); } 
+      catch(e) { return d; } 
     }
 
-    function updateStatus(id,status){
-      var citas=JSON.parse(localStorage.getItem('innovare_appointments')||'[]');
-      var idx=citas.findIndex(function(c){return c.id===id;});
-      if(idx>=0){ citas[idx].estado=status; localStorage.setItem('innovare_appointments',JSON.stringify(citas)); loadData(); }
+    // ===== CARGA PRINCIPAL DESDE SUPABASE =====
+    async function loadData() {
+      try {
+        if (!window.sb) throw new Error("Supabase no conectado");
+        document.getElementById('apt-list').innerHTML = '<div class="loading-spinner" style="text-align: center; padding: 2rem;">Sincronizando base de datos...</div>';
+
+        // 1. Traer Citas (Haciendo JOIN con usuarios, barberos y servicios para ver los nombres)
+        const { data: citasDb, error: errCitas } = await sb
+          .from('citas')
+          .select('*, usuarios(nombre), barberos(nombre), servicios(nombre)')
+          .order('fecha', { ascending: false });
+        if (errCitas) throw errCitas;
+
+        // 2. Traer Pedidos de la tienda
+        const { data: pedidosDb, error: errPedidos } = await sb
+          .from('pedidos')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (errPedidos) throw errPedidos;
+
+        const citas = citasDb || [];
+        const orders = pedidosDb || [];
+
+        // 3. Pintar Tarjetas de Estadísticas (Citas)
+        const total = citas.length;
+        const pend = citas.filter(c => c.estado === 'pendiente' || c.estado === 'confirmada').length;
+        const comp = citas.filter(c => c.estado === 'completada').length;
+        const rev = citas.filter(c => c.estado === 'completada').reduce((s, c) => s + Number(c.precio_total || 0), 0);
+
+        document.getElementById('s-total').textContent = total;
+        document.getElementById('s-pendientes').textContent = pend;
+        document.getElementById('s-completadas').textContent = comp;
+        document.getElementById('s-revenue').textContent = fCur(rev);
+
+        // 4. Pintar Tarjetas de Estadísticas (Pedidos)
+        const totalPedidos = orders.filter(o => o.estado === 'completado').length;
+        const totalProdRevenue = orders.reduce((s, o) => s + Number(o.total || 0), 0);
+        
+        document.getElementById('s-pedidos').textContent = totalPedidos;
+        document.getElementById('s-prod-revenue').textContent = fCur(totalProdRevenue);
+
+        // 5. Construir Tabla de Citas
+        const list = document.getElementById('apt-list');
+        if (!citas.length) { 
+          list.innerHTML = '<p style="color:#6e6e7e;text-align:center;padding:2rem;">Sin citas registradas</p>'; 
+        } else {
+          const map = { confirmada: 'bg-green', pendiente: 'bg-yellow', cancelada: 'bg-red', completada: 'bg-cyan' };
+          let h = '<table><thead><tr><th>Cliente</th><th>Fecha</th><th>Hora</th><th>Barbero</th><th>Servicio</th><th>Precio</th><th>Estado</th><th></th></tr></thead><tbody>';
+          
+          citas.forEach(c => {
+            const st = c.estado || 'pendiente';
+            const clName = c.usuarios ? c.usuarios.nombre : 'Usuario';
+            const brbName = c.barberos ? c.barberos.nombre : '—';
+            const srvName = c.servicios ? c.servicios.nombre : '—';
+            const cTime = c.hora ? c.hora.substring(0, 5) : '—';
+
+            h += `<tr>
+                    <td>👤 ${clName}</td>
+                    <td>${fDate(c.fecha)}</td>
+                    <td>${cTime}</td>
+                    <td>${brbName}</td>
+                    <td>${srvName}</td>
+                    <td>${fCur(c.precio_total || 0)}</td>
+                    <td><span class="badge-st ${map[st] || 'bg-yellow'}">${st}</span></td>
+                    <td>`;
+            
+            // Botones de acción dinámicos
+            if (st !== 'cancelada' && st !== 'completada') {
+              h += `<button class="act-btn" onclick="updateStatus('${c.id}', 'completada')" title="Marcar completada">✓</button>`;
+            }
+            if (st !== 'cancelada') {
+              h += `<button class="act-btn" onclick="updateStatus('${c.id}', 'cancelada')" style="color:#ff1744;" title="Cancelar">✕</button>`;
+            }
+            
+            h += `</td></tr>`;
+          });
+          h += '</tbody></table>';
+          list.innerHTML = h;
+        }
+
+        // 6. Cargar Gráficas
+        loadCharts(citas, orders);
+
+      } catch (err) {
+        console.error("Error cargando dashboard:", err);
+        document.getElementById('apt-list').innerHTML = '<p style="color:red;text-align:center;padding:2rem;">Hubo un problema sincronizando con el servidor.</p>';
+      }
+    }
+
+    // ===== ACTUALIZAR ESTADO DE CITA DIRECTO EN SUPABASE =====
+    async function updateStatus(id, newStatus) {
+      if (!confirm(`¿Estás seguro de marcar esta cita como ${newStatus.toUpperCase()}?`)) return;
+      
+      try {
+        const { error } = await sb.from('citas').update({ estado: newStatus }).eq('id', id);
+        if (error) throw error;
+        
+        loadData(); // Recargar todo el panel automáticamente
+      } catch (err) {
+        alert("Error al actualizar la base de datos: " + err.message);
+      }
     }
 
     // ===== GRÁFICAS DE VENTAS EN TIEMPO REAL =====
-    var salesChartInstance = null;
-    var revenueChartInstance = null;
-    
-    function getDayIndex(dateStr) {
-      if (!dateStr) return -1;
-      var d = new Date(dateStr);
-      var day = d.getDay();
-      return day === 0 ? 6 : day - 1; // domingo->6, lunes->0
-    }
-
-    function loadCharts() {
+    function loadCharts(citas, orders) {
       var days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-      
-      // Datos de servicios desde citas
       var servicesData = [0, 0, 0, 0, 0, 0, 0];
-      var citas = JSON.parse(localStorage.getItem('innovare_appointments')||'[]');
+      var productsData = [0, 0, 0, 0, 0, 0, 0];
+      
       var hoy = new Date();
       var inicioSemana = new Date(hoy);
-      inicioSemana.setDate(hoy.getDate() - hoy.getDay() + 1); // lunes
+      inicioSemana.setDate(hoy.getDate() - (hoy.getDay() === 0 ? 6 : hoy.getDay() - 1)); // Lunes
       inicioSemana.setHours(0,0,0,0);
 
+      // Sumar Servicios de la semana
       citas.forEach(function(c) {
-        if (c.estado !== 'completada' && c.paymentStatus !== 'Completado') return;
-        var cDate = new Date(c.date);
+        if (c.estado !== 'completada') return;
+        var cDate = new Date(c.fecha + 'T00:00:00');
         if (cDate >= inicioSemana && cDate <= hoy) {
-          var idx = getDayIndex(c.date);
-          if (idx >= 0) servicesData[idx] += parseFloat(c.price || c.total || 0);
+          var idx = cDate.getDay() === 0 ? 6 : cDate.getDay() - 1;
+          servicesData[idx] += Number(c.precio_total || 0);
         }
       });
       
-      // Datos de productos desde pedidos
-      var productsData = [0, 0, 0, 0, 0, 0, 0];
-      var orders = JSON.parse(localStorage.getItem('innovare_orders')||'[]');
+      // Sumar Productos de la semana
       orders.forEach(function(o) {
-        if (o.status !== 'completado') return;
-        var oDate = new Date(o.fecha);
+        // En tu tienda, los pedidos se guardan como estado 'completado'
+        if (o.estado !== 'completado' && o.status !== 'completado') return; 
+        var oDate = new Date(o.created_at || o.fecha);
         if (oDate >= inicioSemana && oDate <= hoy) {
-          var idx = getDayIndex(o.fecha);
-          if (idx >= 0) productsData[idx] += parseFloat(o.total || 0);
+          var idx = oDate.getDay() === 0 ? 6 : oDate.getDay() - 1;
+          productsData[idx] += Number(o.total || 0);
         }
       });
 
-      // Mostrar stats de pedidos
-      var totalPedidos = orders.filter(function(o) { return o.status === 'completado'; }).length;
-      var totalProdRevenue = orders.reduce(function(s, o) { return s + (o.total || 0); }, 0);
-      document.getElementById('s-pedidos').textContent = totalPedidos;
-      document.getElementById('s-prod-revenue').textContent = '$' + totalProdRevenue.toFixed(2);
-
-      // Datos demo si no hay nada
+      // Rellenar con datos demo si la base está en $0 (para que no se vea vacío)
       var hasServices = servicesData.some(function(v) { return v > 0; });
       var hasProducts = productsData.some(function(v) { return v > 0; });
       if (!hasServices) servicesData = [1200, 1900, 800, 2100, 2400, 3200, 1800];
       if (!hasProducts) productsData = [300, 500, 200, 600, 800, 1200, 400];
 
-      // Gráfica SOLO servicios
+      // Destruir gráficas viejas si existen
+      if(chartSvc) chartSvc.destroy();
+      if(chartProd) chartProd.destroy();
+      if(chartRev) chartRev.destroy();
+
+      // 1. Gráfica Servicios
       var ctxSvc = document.getElementById('servicesChart');
       if (ctxSvc) {
-        new Chart(ctxSvc, {
+        chartSvc = new Chart(ctxSvc, {
           type: 'bar',
           data: {
             labels: days,
             datasets: [{
-              label: 'Servicios',
-              data: servicesData,
-              backgroundColor: 'rgba(0, 229, 255, 0.8)',
-              borderColor: 'rgba(0, 229, 255, 1)',
-              borderWidth: 1
+              label: 'Servicios', data: servicesData, backgroundColor: 'rgba(0, 229, 255, 0.8)', borderColor: 'rgba(0, 229, 255, 1)', borderWidth: 1
             }]
           },
-          options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true, ticks: { callback: function(v){ return '$'+v; } } } }
-          }
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { callback: function(v){ return '$'+v; } } } } }
         });
       }
 
-      // Gráfica SOLO productos
+      // 2. Gráfica Productos
       var ctxProd = document.getElementById('productsChart');
       if (ctxProd) {
-        new Chart(ctxProd, {
+        chartProd = new Chart(ctxProd, {
           type: 'bar',
           data: {
             labels: days,
             datasets: [{
-              label: 'Productos',
-              data: productsData,
-              backgroundColor: 'rgba(0, 200, 83, 0.8)',
-              borderColor: 'rgba(0, 200, 83, 1)',
-              borderWidth: 1
+              label: 'Productos', data: productsData, backgroundColor: 'rgba(0, 200, 83, 0.8)', borderColor: 'rgba(0, 200, 83, 1)', borderWidth: 1
             }]
           },
-          options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true, ticks: { callback: function(v){ return '$'+v; } } } }
-          }
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { callback: function(v){ return '$'+v; } } } } }
         });
       }
 
-      // Gráfica donut ingresos por tipo
+      // 3. Gráfica Donut (Servicios vs Productos)
       var ctxRev = document.getElementById('revenueChart');
       if (ctxRev) {
         var totalS = servicesData.reduce(function(a,b){ return a+b; }, 0);
         var totalP = productsData.reduce(function(a,b){ return a+b; }, 0);
-        new Chart(ctxRev, {
+        chartRev = new Chart(ctxRev, {
           type: 'doughnut',
           data: {
             labels: ['Servicios', 'Productos'],
             datasets: [{
-              data: [totalS, totalP],
-              backgroundColor: ['rgba(0,229,255,0.8)', 'rgba(0,200,83,0.8)'],
-              borderColor: ['rgba(0,229,255,1)', 'rgba(0,200,83,1)'],
-              borderWidth: 2
+              data: [totalS, totalP], backgroundColor: ['rgba(0,229,255,0.8)', 'rgba(0,200,83,0.8)'], borderColor: ['rgba(0,229,255,1)', 'rgba(0,200,83,1)'], borderWidth: 2
             }]
           },
           options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
         });
       }
     }
-
-    setTimeout(loadCharts, 500);
   </script>
 </body>
 </html>

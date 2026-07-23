@@ -6,7 +6,7 @@ const API = window.location.origin;
 function initializeApp() {
   loadRoleBasedNav();
   loadFooter();
-  setupMobileMenu();
+  // setupMobileMenu() se llama dentro de loadRoleBasedNav() después de insertar el HTML
 }
 
 function isAuthenticated() {
