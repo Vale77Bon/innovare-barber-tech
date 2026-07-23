@@ -51,6 +51,28 @@
     .help-box strong { color: #b8a000; }
 
     @media(max-width:1024px){ .mirror-container{grid-template-columns:1fr} }
+    @media(max-width:768px){
+      .ar-page { padding-top: calc(70px + 1rem); }
+      .mirror-container { padding: 0 0.75rem; gap: 1rem; }
+      .mirror-box { padding: 1rem; }
+      .mirror-box h3 { font-size: 1rem; }
+      .video-frame { aspect-ratio: 1/1; }
+      .btn-row { gap: 0.4rem; }
+      .btn-row .btn { padding: 12px 10px; font-size: 0.85rem; flex: 1; min-height: 44px; }
+      .sched-bar { padding: 0.5rem 0.75rem; margin-bottom: 1rem; }
+      .sched-bar .dy .nm { font-size: 0.55rem; }
+      .sched-bar .dy .hr { font-size: 0.65rem; }
+      .help-box { padding: 0.75rem; font-size: 0.8rem; }
+      .result-card { padding: 0.75rem; }
+      .result-card .val { font-size: 0.95rem; }
+      .chip { font-size: 0.75rem; padding: 4px 10px; }
+    }
+    @media(max-width:480px){
+      .btn-row { flex-direction: column; }
+      .btn-row .btn { width: 100%; }
+      .sched-bar .dy .nm { font-size: 0.5rem; }
+      .sched-bar .dy .hr { font-size: 0.6rem; }
+    }
   </style>
 </head>
 <body>

@@ -30,7 +30,22 @@
     .edit-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center; }
     .edit-card { background: #fff; border-radius: var(--radius-lg); padding: var(--spacing-xl); max-width: 440px; width: 90%; box-shadow: var(--shadow-lg); }
     .edit-card h3 { margin-bottom: var(--spacing-lg); }
-    @media (max-width: 600px) { .cita-card { grid-template-columns: 1fr; } .cita-actions { justify-content: flex-start; } }
+    @media (max-width: 768px) {
+      .citas-page { padding-top: calc(70px + 1rem); }
+      .citas-list { padding: 0 0.75rem; gap: 0.75rem; }
+      .cita-card { padding: 1rem; }
+      .cita-avatar { width: 40px; height: 40px; font-size: 1.2rem; }
+      .cita-details h4 { font-size: 0.95rem; }
+      .cita-details p { font-size: 0.8rem; }
+      .cita-actions { gap: 0.4rem; }
+      .btn-sm { padding: 6px 12px; font-size: 0.75rem; }
+    }
+    @media (max-width: 480px) {
+      .cita-card { grid-template-columns: 1fr; }
+      .cita-actions { justify-content: flex-start; }
+      .cita-info { grid-template-columns: 1fr; text-align: center; }
+      .cita-avatar { margin: 0 auto; }
+    }
   </style>
 </head>
 <body>

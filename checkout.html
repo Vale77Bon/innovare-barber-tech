@@ -117,7 +117,23 @@
     }
     .tip-btn:hover, .tip-btn.selected { background: var(--secondary); color: var(--dark); border-color: var(--secondary); }
     @media (max-width: 1024px) { .checkout-grid { grid-template-columns: 1fr; } }
-    @media (max-width: 480px) { .checkout-details-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) {
+      .checkout-page { padding-top: calc(70px + 1rem); }
+      .checkout-grid { gap: 1rem; }
+      .checkout-section { padding: 1rem; }
+      .checkout-details-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+      .checkout-detail-item { padding: 0.75rem; }
+      .retail-product { padding: 0.75rem; }
+      .payment-method { padding: 0.75rem; }
+      .tip-btn { padding: 10px 14px; font-size: 0.9rem; }
+      #custom-tip { width: 100%; }
+      #pay-btn { padding: 14px; font-size: 1rem; }
+    }
+    @media (max-width: 480px) {
+      .checkout-details-grid { grid-template-columns: 1fr; }
+      .totals-table { font-size: 0.85rem; }
+      .totals-table tr.total td { font-size: 1rem; }
+    }
   </style>
 </head>
 <body>

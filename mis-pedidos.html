@@ -67,8 +67,17 @@
     .no-orders { text-align: center; padding: 4rem 2rem; }
     .no-orders .big-icon { font-size: 4rem; margin-bottom: 1rem; }
     @media(max-width:768px){
-      .orders-container { padding: 0 var(--spacing-md) var(--spacing-xl); }
-      .order-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+      .orders-page { padding-top: calc(70px + 1rem); }
+      .orders-container { padding: 0 0.75rem var(--spacing-xl); }
+      .order-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; padding: 1rem; }
+      .order-body { padding: 1rem; }
+      .order-item { padding: 0.75rem 0; }
+      .tracking-step .ts-icon { font-size: 1.2rem; }
+      .tracking-step .ts-label { font-size: 0.65rem; }
+    }
+    @media(max-width:480px){
+      .order-header-left { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+      .order-total-header { font-size: 1rem; }
     }
   </style>
 </head>

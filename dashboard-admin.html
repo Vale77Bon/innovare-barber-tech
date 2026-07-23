@@ -29,7 +29,29 @@
     .act-btn { padding:4px 8px; font-size:0.7rem; border-radius:4px; border:1px solid #e0e0ea; background:#f5f6fa; cursor:pointer; margin:2px; }
     .act-btn:hover { background:#00E5FF; color:#1a1a2e; border-color:#00E5FF; }
     @media(max-width:1024px){ .dg{grid-template-columns:1fr} .stats{grid-template-columns:repeat(2,1fr)} }
-    @media(max-width:480px){ .stats{grid-template-columns:1fr} }
+    @media(max-width:768px){
+      .admin-page { padding-top: calc(70px + 1rem); }
+      .stats { grid-template-columns: repeat(2,1fr); gap: 0.75rem; margin-bottom: 1rem; }
+      .st { padding: 1rem; }
+      .st .n { font-size: 1.5rem; }
+      .st .l { font-size: 0.65rem; }
+      .dg { gap: 1rem; }
+      .sec { padding: 1rem; margin-bottom: 1rem; }
+      .sec h3 { font-size: 0.95rem; }
+      table { font-size: 0.75rem; }
+      th, td { padding: 0.4rem 0.5rem; }
+      .qa { grid-template-columns: 1fr 1fr; gap: 0.4rem; }
+      .qbtn { padding: 0.75rem; font-size: 0.8rem; }
+      .qbtn .ic { font-size: 1.2rem; }
+      canvas { max-height: 220px !important; }
+    }
+    @media(max-width:480px){
+      .stats { grid-template-columns: 1fr; }
+      .qa { grid-template-columns: 1fr; }
+      table { font-size: 0.7rem; }
+      th, td { padding: 0.3rem 0.4rem; }
+      .act-btn { padding: 3px 6px; font-size: 0.65rem; }
+    }
   </style>
 </head>
 <body>
