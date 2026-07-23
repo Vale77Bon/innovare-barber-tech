@@ -63,8 +63,8 @@
     
     <div class="stats" id="srow">
       <div class="st"><div class="n" id="s-total">0</div><div class="l">Total Citas</div></div>
-      <div class="st"><div class="n" id="s-pendientes">0</div><div class="l">Pendientes</div></div>
-      <div class="st"><div class="n" id="s-completadas">0</div><div class="l">Completadas</div></div>
+      <div class="st"><div class="n" id="s-pendientes">0</div><div class="l">Citas Ptes.</div></div>
+      <div class="st"><div class="n" id="s-completadas">0</div><div class="l">Citas Completas</div></div>
       <div class="st"><div class="n" id="s-revenue">$0</div><div class="l">Ingresos Citas</div></div>
     </div>
     
@@ -72,10 +72,18 @@
       <div>
         <div class="sec">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-            <h3 style="margin:0;">📋 Todas las Citas (Supabase)</h3>
+            <h3 style="margin:0;">📋 Todas las Citas (Barbería)</h3>
             <a href="reservas.html" class="btn btn-sm btn-primary">+ Nueva</a>
           </div>
           <div style="overflow-x:auto;" id="apt-list"><div class="loading-spinner" style="text-align: center; padding: 2rem;">Sincronizando...</div></div>
+        </div>
+
+        <div class="sec">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+            <h3 style="margin:0;">📦 Todos los Pedidos (Tienda)</h3>
+            <a href="tienda.html" class="btn btn-sm btn-primary">+ Ir a Tienda</a>
+          </div>
+          <div style="overflow-x:auto;" id="order-list"><div class="loading-spinner" style="text-align: center; padding: 2rem;">Sincronizando...</div></div>
         </div>
         
         <div class="sec">
@@ -121,13 +129,11 @@
   <script src="assets/js/main.js"></script>
   
   <script>
-    // Variables para guardar las instancias de las gráficas y poder borrarlas al actualizar
     let chartSvc = null;
     let chartProd = null;
     let chartRev = null;
 
     (function(){
-      // Verificación de Admin
       var u = JSON.parse(localStorage.getItem('innovare_user') || '{}');
       var userRole = u.user_metadata?.rol || u.rol || 'cliente';
       if(!localStorage.getItem('innovare_user') || userRole !== 'admin') {
@@ -140,34 +146,34 @@
 
     function fCur(n){ return '$'+parseFloat(n).toFixed(2); }
     function fDate(d){ 
-      try { return new Date(d+'T00:00:00').toLocaleDateString('es-MX',{year:'numeric',month:'short',day:'numeric'}); } 
+      try { return new Date(d).toLocaleDateString('es-MX',{year:'numeric',month:'short',day:'numeric'}); } 
       catch(e) { return d; } 
     }
 
-    // ===== CARGA PRINCIPAL DESDE SUPABASE =====
     async function loadData() {
       try {
         if (!window.sb) throw new Error("Supabase no conectado");
-        document.getElementById('apt-list').innerHTML = '<div class="loading-spinner" style="text-align: center; padding: 2rem;">Sincronizando base de datos...</div>';
+        document.getElementById('apt-list').innerHTML = '<div class="loading-spinner" style="text-align: center; padding: 2rem;">Sincronizando...</div>';
+        document.getElementById('order-list').innerHTML = '<div class="loading-spinner" style="text-align: center; padding: 2rem;">Sincronizando...</div>';
 
-        // 1. Traer Citas (Haciendo JOIN con usuarios, barberos y servicios para ver los nombres)
+        // 1. Traer Citas
         const { data: citasDb, error: errCitas } = await sb
           .from('citas')
           .select('*, usuarios(nombre), barberos(nombre), servicios(nombre)')
           .order('fecha', { ascending: false });
         if (errCitas) throw errCitas;
 
-        // 2. Traer Pedidos de la tienda
+        // 2. Traer Pedidos (Ahora también jalamos el nombre del usuario con el JOIN)
         const { data: pedidosDb, error: errPedidos } = await sb
           .from('pedidos')
-          .select('*')
+          .select('*, usuarios(nombre)')
           .order('created_at', { ascending: false });
         if (errPedidos) throw errPedidos;
 
         const citas = citasDb || [];
         const orders = pedidosDb || [];
 
-        // 3. Pintar Tarjetas de Estadísticas (Citas)
+        // 3. Pintar Tarjetas (Citas)
         const total = citas.length;
         const pend = citas.filter(c => c.estado === 'pendiente' || c.estado === 'confirmada').length;
         const comp = citas.filter(c => c.estado === 'completada').length;
@@ -178,21 +184,21 @@
         document.getElementById('s-completadas').textContent = comp;
         document.getElementById('s-revenue').textContent = fCur(rev);
 
-        // 4. Pintar Tarjetas de Estadísticas (Pedidos)
-        const totalPedidos = orders.filter(o => o.estado === 'completado').length;
-        const totalProdRevenue = orders.reduce((s, o) => s + Number(o.total || 0), 0);
+        // 4. Pintar Tarjetas (Pedidos)
+        const totalPedidos = orders.length;
+        const totalProdRevenue = orders.filter(o => o.estado === 'completado').reduce((s, o) => s + Number(o.total || 0), 0);
         
         document.getElementById('s-pedidos').textContent = totalPedidos;
         document.getElementById('s-prod-revenue').textContent = fCur(totalProdRevenue);
+
+        const map = { confirmada: 'bg-green', pendiente: 'bg-yellow', cancelada: 'bg-red', completada: 'bg-cyan', completado: 'bg-cyan', cancelado: 'bg-red' };
 
         // 5. Construir Tabla de Citas
         const list = document.getElementById('apt-list');
         if (!citas.length) { 
           list.innerHTML = '<p style="color:#6e6e7e;text-align:center;padding:2rem;">Sin citas registradas</p>'; 
         } else {
-          const map = { confirmada: 'bg-green', pendiente: 'bg-yellow', cancelada: 'bg-red', completada: 'bg-cyan' };
           let h = '<table><thead><tr><th>Cliente</th><th>Fecha</th><th>Hora</th><th>Barbero</th><th>Servicio</th><th>Precio</th><th>Estado</th><th></th></tr></thead><tbody>';
-          
           citas.forEach(c => {
             const st = c.estado || 'pendiente';
             const clName = c.usuarios ? c.usuarios.nombre : 'Usuario';
@@ -202,48 +208,90 @@
 
             h += `<tr>
                     <td>👤 ${clName}</td>
-                    <td>${fDate(c.fecha)}</td>
+                    <td>${fDate(c.fecha + 'T00:00:00')}</td>
                     <td>${cTime}</td>
                     <td>${brbName}</td>
                     <td>${srvName}</td>
                     <td>${fCur(c.precio_total || 0)}</td>
                     <td><span class="badge-st ${map[st] || 'bg-yellow'}">${st}</span></td>
                     <td>`;
-            
-            // Botones de acción dinámicos
             if (st !== 'cancelada' && st !== 'completada') {
               h += `<button class="act-btn" onclick="updateStatus('${c.id}', 'completada')" title="Marcar completada">✓</button>`;
             }
             if (st !== 'cancelada') {
               h += `<button class="act-btn" onclick="updateStatus('${c.id}', 'cancelada')" style="color:#ff1744;" title="Cancelar">✕</button>`;
             }
-            
             h += `</td></tr>`;
           });
           h += '</tbody></table>';
           list.innerHTML = h;
         }
 
-        // 6. Cargar Gráficas
+        // 6. Construir Tabla de Pedidos (NUEVO)
+        const orderList = document.getElementById('order-list');
+        if (!orders.length) {
+          orderList.innerHTML = '<p style="color:#6e6e7e;text-align:center;padding:2rem;">Sin pedidos registrados</p>';
+        } else {
+          let ho = '<table><thead><tr><th>ID / Fecha</th><th>Cliente</th><th>Total</th><th>Método</th><th>Estado</th><th></th></tr></thead><tbody>';
+          orders.forEach(o => {
+            const st = o.estado || 'pendiente';
+            const clName = o.usuarios ? o.usuarios.nombre : 'Usuario';
+            const shortId = o.id ? o.id.split('-')[0].toUpperCase() : '0000';
+            
+            // Si tiene referencia, la mostramos chiquita para que el admin la vea
+            const refText = (o.referencia_pago && st === 'pendiente') ? `<br><small style="color:#00a0b8;font-weight:600;">Ref: ${o.referencia_pago}</small>` : '';
+
+            ho += `<tr>
+                    <td><strong style="color:#1a1a2e;">#${shortId}</strong><br><small>${fDate(o.created_at)}</small></td>
+                    <td>👤 ${clName}</td>
+                    <td>${fCur(o.total || 0)}</td>
+                    <td style="text-transform: capitalize;">${o.metodo_pago}${refText}</td>
+                    <td><span class="badge-st ${map[st] || 'bg-yellow'}">${st}</span></td>
+                    <td>`;
+            
+            if (st !== 'cancelado' && st !== 'completado') {
+              ho += `<button class="act-btn" onclick="updateOrderStatus('${o.id}', 'completado')" title="Marcar pago recibido / completado">✓</button>`;
+            }
+            if (st !== 'cancelado') {
+              ho += `<button class="act-btn" onclick="updateOrderStatus('${o.id}', 'cancelado')" style="color:#ff1744;" title="Cancelar pedido">✕</button>`;
+            }
+            ho += `</td></tr>`;
+          });
+          ho += '</tbody></table>';
+          orderList.innerHTML = ho;
+        }
+
+        // 7. Cargar Gráficas
         loadCharts(citas, orders);
 
       } catch (err) {
         console.error("Error cargando dashboard:", err);
-        document.getElementById('apt-list').innerHTML = '<p style="color:red;text-align:center;padding:2rem;">Hubo un problema sincronizando con el servidor.</p>';
+        document.getElementById('apt-list').innerHTML = '<p style="color:red;text-align:center;padding:2rem;">Hubo un problema sincronizando citas.</p>';
+        document.getElementById('order-list').innerHTML = '<p style="color:red;text-align:center;padding:2rem;">Hubo un problema sincronizando pedidos.</p>';
       }
     }
 
-    // ===== ACTUALIZAR ESTADO DE CITA DIRECTO EN SUPABASE =====
+    // ===== ACTUALIZAR ESTADO DE CITA =====
     async function updateStatus(id, newStatus) {
       if (!confirm(`¿Estás seguro de marcar esta cita como ${newStatus.toUpperCase()}?`)) return;
-      
       try {
         const { error } = await sb.from('citas').update({ estado: newStatus }).eq('id', id);
         if (error) throw error;
-        
-        loadData(); // Recargar todo el panel automáticamente
+        loadData();
       } catch (err) {
-        alert("Error al actualizar la base de datos: " + err.message);
+        alert("Error al actualizar la cita: " + err.message);
+      }
+    }
+
+    // ===== ACTUALIZAR ESTADO DE PEDIDO (NUEVO) =====
+    async function updateOrderStatus(id, newStatus) {
+      if (!confirm(`¿Estás seguro de marcar este pedido como ${newStatus.toUpperCase()}?`)) return;
+      try {
+        const { error } = await sb.from('pedidos').update({ estado: newStatus }).eq('id', id);
+        if (error) throw error;
+        loadData();
+      } catch (err) {
+        alert("Error al actualizar el pedido: " + err.message);
       }
     }
 
@@ -270,7 +318,6 @@
       
       // Sumar Productos de la semana
       orders.forEach(function(o) {
-        // En tu tienda, los pedidos se guardan como estado 'completado'
         if (o.estado !== 'completado' && o.status !== 'completado') return; 
         var oDate = new Date(o.created_at || o.fecha);
         if (oDate >= inicioSemana && oDate <= hoy) {
