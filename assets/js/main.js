@@ -63,9 +63,18 @@ function getUser() {
   catch { return null; }
 }
 
-function logout() {
+async function logout() {
+  // 1. Le decimos a Supabase que cierre la sesión real en el servidor
+  if (window.sb) {
+    await window.sb.auth.signOut();
+  }
+  
+  // 2. Limpiamos nuestros datos locales del navegador
   localStorage.removeItem('innovare_token');
   localStorage.removeItem('innovare_user');
+  localStorage.removeItem('innovare_membership'); // Limpiamos también la membresía por seguridad
+  
+  // 3. Redirigimos al login
   window.location.href = 'login.html';
 }
 
