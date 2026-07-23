@@ -3,10 +3,55 @@ document.addEventListener('DOMContentLoaded', () => initializeApp());
 
 const API = window.location.origin;
 
-function initializeApp() {
+async function initializeApp() {
+  // --- NUEVO: Sincronización Automática con Supabase ---
+  if (window.sb) {
+    // 1. Revisar si hay una sesión activa al cargar la página
+    const { data: { session } } = await window.sb.auth.getSession();
+    if (session) {
+      await syncUserProfile(session);
+    }
+
+    // 2. Escuchar cuando el usuario regresa de confirmar el correo (Magia en tiempo real)
+    window.sb.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        if (session) {
+          await syncUserProfile(session);
+          loadRoleBasedNav(); // Repintamos la barra para que quite "Usuario" y ponga el nombre real
+        }
+      } else if (event === 'SIGNED_OUT') {
+        localStorage.removeItem('innovare_token');
+        localStorage.removeItem('innovare_user');
+        loadRoleBasedNav();
+      }
+    });
+  }
+
   loadRoleBasedNav();
   loadFooter();
-  // setupMobileMenu() se llama dentro de loadRoleBasedNav() después de insertar el HTML
+}
+
+// Función auxiliar para traer los datos frescos de la BD
+async function syncUserProfile(session) {
+  localStorage.setItem('innovare_token', session.access_token);
+  try {
+    // Buscar el perfil completo en la tabla usuarios
+    const { data: dbUser } = await window.sb
+      .from('usuarios')
+      .select('*')
+      .eq('id', session.user.id)
+      .single();
+      
+    if (dbUser) {
+      // Combinamos la info de auth con la info de tu tabla (nombre, rol, etc.)
+      const fullUser = { ...session.user, ...dbUser };
+      localStorage.setItem('innovare_user', JSON.stringify(fullUser));
+    } else {
+      localStorage.setItem('innovare_user', JSON.stringify(session.user));
+    }
+  } catch (error) {
+    console.error("Error sincronizando perfil:", error);
+  }
 }
 
 function isAuthenticated() {
@@ -53,12 +98,10 @@ function loadRoleBasedNav() {
   let links = '';
   
   if (token && user) {
-    // Determinar rol del usuario (verificar en raíz o en user_metadata)
+    // Determinar rol del usuario
     var userRole = user.rol || (user.user_metadata && user.user_metadata.rol) || 'cliente';
     
     if (userRole === 'admin') {
-      // === ADMIN NAV ===
-      // Dashboard SIEMPRE visible para admin cuando navega
       const adminLinks = [
         { href: 'dashboard-admin.html', label: 'Dashboard' },
         { href: 'index.html', label: 'Inicio' },
@@ -72,7 +115,6 @@ function loadRoleBasedNav() {
       links += `<span class="user-badge">👑 Admin</span>`;
       links += `<button class="logout-btn" onclick="logout()">Salir</button>`;
     } else {
-      // === CLIENT NAV ===
       const clientLinks = [
         { href: 'index.html', label: 'Inicio' },
         { href: 'tienda.html', label: 'Tienda' },
@@ -93,7 +135,6 @@ function loadRoleBasedNav() {
       links += `<button class="logout-btn" onclick="logout()">Salir</button>`;
     }
   } else {
-    // No auth: login + public pages
     const publicLinks = [
       { href: 'index.html', label: 'Inicio' },
       { href: 'tienda.html', label: 'Tienda' },
@@ -121,7 +162,6 @@ function loadRoleBasedNav() {
   setupMobileMenu();
 }
 
-// ===== FOOTER ACTUALIZADO CON TUS REDES SOCIALES =====
 function loadFooter() {
   const fp = document.getElementById('footer-placeholder');
   if (!fp) return;
@@ -129,7 +169,6 @@ function loadFooter() {
     <footer style="background-color: #11111e; padding: 4rem 2rem 2rem; color: #fff; margin-top: auto; border-top: 1px solid rgba(0,229,255,0.1);">
       <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
         
-        <!-- Columna 1: Marca y Redes -->
         <div>
           <h3 style="color: #00E5FF; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
             💈 Innovare Barber Tech
@@ -138,27 +177,15 @@ function loadFooter() {
             Tradición clásica · Innovación digital.<br>Diagnóstico capilar 3D, simulación AR y membresías digitales.
           </p>
           
-          <!-- ICONOS DE REDES SOCIALES Y CONTACTO -->
           <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-            <a href="https://www.facebook.com/share/19bxBqUFrL/" target="_blank" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="Facebook">
-              📘
-            </a>
-            <a href="https://www.instagram.com/innovarebarbertech?igsh=eTdwcDVpeDVjbDlr" target="_blank" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="Instagram">
-              📸
-            </a>
-            <a href="https://www.tiktok.com/@innovarebarbertec?_r=1&_t=ZS-98EMg5WlDhE" target="_blank" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="TikTok">
-              🎵
-            </a>
-            <a href="https://wa.me/522221175554?text=Hola,%20Innovare%20Barber%20Tech,%20tengo%20una%20duda%20¿en%20qué%20pueden%20ayudarme%20hoy?" target="_blank" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="WhatsApp">
-              💬
-            </a>
-            <a href="mailto:innovarebarber.tech@outlook.com" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="Correo Electrónico">
-              ✉️
-            </a>
+            <a href="https://www.facebook.com/share/19bxBqUFrL/" target="_blank" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="Facebook">📘</a>
+            <a href="https://www.instagram.com/innovarebarbertech?igsh=eTdwcDVpeDVjbDlr" target="_blank" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="Instagram">📸</a>
+            <a href="https://www.tiktok.com/@innovarebarbertec?_r=1&_t=ZS-98EMg5WlDhE" target="_blank" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="TikTok">🎵</a>
+            <a href="https://wa.me/522221175554?text=Hola,%20Innovare%20Barber%20Tech,%20tengo%20una%20duda%20¿en%20qué%20pueden%20ayudarme%20hoy?" target="_blank" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="WhatsApp">💬</a>
+            <a href="mailto:innovarebarber.tech@outlook.com" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="Correo Electrónico">✉️</a>
           </div>
         </div>
         
-        <!-- Columna 2: Enlaces Rápidos -->
         <div>
           <h4 style="color: #00E5FF; margin-bottom: 1rem;">Enlaces Rápidos</h4>
           <div style="display: flex; flex-direction: column; gap: 0.8rem;">
@@ -166,10 +193,10 @@ function loadFooter() {
             <a href="reservas.html" style="color: #9e9eae; text-decoration: none; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#9e9eae'">Reservar Cita</a>
             <a href="tienda.html" style="color: #9e9eae; text-decoration: none; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#9e9eae'">Tienda</a>
             <a href="escaneo-ar.html" style="color: #9e9eae; text-decoration: none; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#9e9eae'">Smart Mirror</a>
+            <a href="aviso-privacidad.html" style="color: #9e9eae; text-decoration: none; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#9e9eae'">Aviso de Privacidad</a>
           </div>
         </div>
 
-        <!-- Columna 3: Horario y Contacto -->
         <div>
           <h4 style="color: #00E5FF; margin-bottom: 1rem;">Horario y Ubicación</h4>
           <p style="color: #9e9eae; font-size: 0.9rem; margin-bottom: 0.5rem;">Lun - Vie: 9:00 AM - 8:00 PM</p>
