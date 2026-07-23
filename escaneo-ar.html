@@ -128,83 +128,142 @@
     </div>
   </main>
   <div id="footer-placeholder"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/supabase.js"></script>
+  <script src="assets/js/main.js"></script>
+
   <script>
     var stream = null, ready = false, cnt = 0;
 
-    var SESSION = (function(){
-      var f=['Ovalado','Redondo','Cuadrado','Diamante','Corazón'];
-      var d=['Alta','Media','Baja'];
-      var t=['Lisa','Ondulada','Rizada','Crespa'];
-      var c=['Normal','Seca','Grasa','Mixta'];
-      var e=['🧑','👨','👨‍🦰','👨‍🦱','👨‍🦳'];
-      var sn=['Degradado Clásico','Corte Texturizado','Estilo Pompadour','Undercut Moderno','Crop Top'];
-      var st=[],us=new Set();
-      for(var i=0;i<3;i++){var x;do{x=Math.floor(Math.random()*5)}while(us.has(x));us.add(x);st.push({n:sn[x],m:Math.floor(Math.random()*8)+92});}
-      return{fa:f[Math.floor(Math.random()*5)],de:d[Math.floor(Math.random()*3)],te:t[Math.floor(Math.random()*4)],co:c[Math.floor(Math.random()*4)],sc:Math.floor(Math.random()*8)+92,em:e[Math.floor(Math.random()*5)],st:st};
-    })();
+    // Generador dinámico de datos (Ahora genera un análisis nuevo cada vez que se llama)
+    function generateScanData() {
+      var f = ['Ovalado','Redondo','Cuadrado','Diamante','Corazón'];
+      var d = ['Alta','Media','Baja'];
+      var t = ['Lisa','Ondulada','Rizada','Crespa'];
+      var c = ['Normal','Seca','Grasa','Mixta'];
+      var e = ['🧑','👨','👨‍🦰','👨‍🦱','👨‍🦳'];
+      var sn = ['Degradado Clásico','Corte Texturizado','Estilo Pompadour','Undercut Moderno','Crop Top'];
+      var st = [], us = new Set();
+      for(var i=0; i<3; i++){
+        var x;
+        do { x = Math.floor(Math.random()*5); } while(us.has(x));
+        us.add(x);
+        st.push({n: sn[x], m: Math.floor(Math.random()*8)+92});
+      }
+      return {
+        fa: f[Math.floor(Math.random()*5)],
+        de: d[Math.floor(Math.random()*3)],
+        te: t[Math.floor(Math.random()*4)],
+        co: c[Math.floor(Math.random()*4)],
+        sc: Math.floor(Math.random()*8)+92,
+        em: e[Math.floor(Math.random()*5)],
+        st: st
+      };
+    }
 
-    var cam=document.getElementById('cam'),ph=document.getElementById('ph'),st=document.getElementById('status');
-    var rs=document.getElementById('results'),np=document.getElementById('nope');
+    var cam = document.getElementById('cam'), ph = document.getElementById('ph'), st = document.getElementById('status');
+    var rs = document.getElementById('results'), np = document.getElementById('nope');
 
-    // highlight today
-    var dy=new Date().getDay();
-    document.querySelectorAll('.sched-bar .dy[data-dy]').forEach(function(el){if(parseInt(el.dataset.dy)===dy)el.classList.add('td');});
+    // Highlight today
+    var dy = new Date().getDay();
+    document.querySelectorAll('.sched-bar .dy[data-dy]').forEach(function(el){
+      if(parseInt(el.dataset.dy) === dy) el.classList.add('td');
+    });
 
-    function sStatus(t,c){st.textContent=t;st.className='badge-status '+c;}
+    function sStatus(t,c) { st.textContent = t; st.className = 'badge-status ' + c; }
 
     // DEMO button
-    document.getElementById('btn-demo').onclick=function(){
-      ready=true;
-      document.getElementById('btn-analyze').disabled=false;
-      document.getElementById('btn-start').style.display='none';
-      document.getElementById('btn-demo').style.display='none';
-      document.getElementById('btn-stop').style.display='inline-flex';
-      ph.innerHTML='<div style="font-size:3rem;">🧑</div><p style="color:#c0c0d0;margin-top:1rem;">Modo Demo activo</p>';
-      sStatus('🎭 Demo activo','ready');
+    document.getElementById('btn-demo').onclick = function() {
+      ready = true;
+      document.getElementById('btn-analyze').disabled = false;
+      document.getElementById('btn-start').style.display = 'none';
+      document.getElementById('btn-demo').style.display = 'none';
+      document.getElementById('btn-stop').style.display = 'inline-flex';
+      ph.innerHTML = '<div style="font-size:3rem;">🧑</div><p style="color:#c0c0d0;margin-top:1rem;">Modo Demo activo</p>';
+      sStatus('🎭 Demo activo', 'ready');
     };
 
     // CAMERA button
-    document.getElementById('btn-start').onclick=async function(){
-      try{
-        sStatus('Solicitando...','waiting');
-        stream=await navigator.mediaDevices.getUserMedia({video:{width:640,height:480,facingMode:'user'}});
-        cam.srcObject=stream;await cam.play();
-        cam.style.display='block';ph.style.display='none';ready=true;
-        document.getElementById('btn-start').style.display='none';
-        document.getElementById('btn-demo').style.display='none';
-        document.getElementById('btn-stop').style.display='inline-flex';
-        document.getElementById('btn-analyze').disabled=false;
-        sStatus('Cámara activa','ready');
-      }catch(e){
-        sStatus('No disponible','idle');
-        var demo=document.getElementById('btn-demo');
-        demo.style.animation='pulse 0.6s 3';
-        alert('No se pudo acceder a la cámara.\n\nUsa el botón "🎭 Demo" para probar sin cámara.\n\nError: '+e.message);
-        demo.style.animation='';
+    document.getElementById('btn-start').onclick = async function() {
+      try {
+        sStatus('Solicitando...', 'waiting');
+        stream = await navigator.mediaDevices.getUserMedia({video:{width:640,height:480,facingMode:'user'}});
+        cam.srcObject = stream; await cam.play();
+        cam.style.display = 'block'; ph.style.display = 'none'; ready = true;
+        document.getElementById('btn-start').style.display = 'none';
+        document.getElementById('btn-demo').style.display = 'none';
+        document.getElementById('btn-stop').style.display = 'inline-flex';
+        document.getElementById('btn-analyze').disabled = false;
+        sStatus('Cámara activa', 'ready');
+      } catch(e) {
+        sStatus('No disponible', 'idle');
+        var demo = document.getElementById('btn-demo');
+        demo.style.animation = 'pulse 0.6s 3';
+        alert('No se pudo acceder a la cámara.\n\nUsa el botón "🎭 Demo" para probar sin cámara.\n\nError: ' + e.message);
+        demo.style.animation = '';
       }
     };
 
     // STOP button
-    document.getElementById('btn-stop').onclick=function(){
-      if(stream){stream.getTracks().forEach(function(t){t.stop()});stream=null;}
-      cam.style.display='none';ph.innerHTML='<div>📸</div><p>Presiona un botón</p>';ph.style.display='flex';ready=false;
-      document.getElementById('btn-start').style.display='inline-flex';
-      document.getElementById('btn-demo').style.display='inline-flex';
-      document.getElementById('btn-stop').style.display='none';
-      document.getElementById('btn-analyze').disabled=true;
-      sStatus('Detenida','idle');
+    document.getElementById('btn-stop').onclick = function() {
+      if(stream) { stream.getTracks().forEach(function(t){t.stop()}); stream=null; }
+      cam.style.display = 'none'; ph.innerHTML = '<div>📸</div><p>Presiona un botón</p>'; ph.style.display = 'flex'; ready = false;
+      document.getElementById('btn-start').style.display = 'inline-flex';
+      document.getElementById('btn-demo').style.display = 'inline-flex';
+      document.getElementById('btn-stop').style.display = 'none';
+      document.getElementById('btn-analyze').disabled = true;
+      sStatus('Detenida', 'idle');
     };
 
-    // ANALYZE button
-    document.getElementById('btn-analyze').onclick=function(){
-      if(!ready)return;
-      var btn=document.getElementById('btn-analyze');
-      btn.disabled=true;btn.textContent='⏳ Analizando...';sStatus('Analizando...','waiting');
-      setTimeout(function(){
-        cnt++;btn.disabled=false;btn.textContent='🔍 Analizar';
-        var s=SESSION;
-        np.style.display='none';
-        rs.innerHTML=
+    // ANALYZE button (Connected to Supabase)
+    document.getElementById('btn-analyze').onclick = function() {
+      if(!ready) return;
+      var btn = document.getElementById('btn-analyze');
+      btn.disabled = true; 
+      btn.textContent = '⏳ Analizando y Guardando...'; 
+      sStatus('Analizando...', 'waiting');
+      
+      setTimeout(async function() {
+        cnt++; 
+        btn.disabled = false; 
+        btn.textContent = '🔍 Analizar de nuevo';
+        
+        var s = generateScanData(); // Generamos un diagnóstico nuevo
+        np.style.display = 'none';
+        
+        // --- GUARDAR EN SUPABASE ---
+        try {
+          const userStr = localStorage.getItem('innovare_user');
+          if (userStr && window.sb) {
+            const userObj = JSON.parse(userStr);
+            
+            // Construimos los datos asegurando que coinciden con las columnas de la foto
+            const scanData = {
+              cliente_id: userObj.id,
+              forma_rostro: s.fa,
+              densidad_capilar: s.de,
+              textura: s.te,
+              cuero_cabelludo: s.co,
+              salud_capilar: s.sc,
+              // Convertimos el arreglo de estilos a texto/JSON para guardarlo
+              estilos_recomendados: JSON.stringify(s.st) 
+            };
+
+            const { error } = await window.sb.from('diagnosticos_3d').insert([scanData]);
+            if (error) {
+              console.error("Error al guardar diagnóstico en Supabase:", error);
+            } else {
+              console.log("Diagnóstico guardado exitosamente.");
+            }
+          }
+        } catch (err) {
+          console.error("No se pudo guardar el historial: ", err);
+        }
+        // --------------------------
+
+        // Actualizar UI
+        rs.innerHTML = 
           '<div class="result-card"><div class="lbl">Forma de Rostro</div><div class="val">'+s.em+' '+s.fa+'</div></div>'+
           '<div class="result-card"><div class="lbl">Densidad Capilar</div><div class="val">'+s.de+'</div></div>'+
           '<div class="result-card"><div class="lbl">Textura</div><div class="val">'+s.te+'</div></div>'+
@@ -212,18 +271,21 @@
           '<div class="result-card"><div class="lbl">Salud Capilar</div><div class="val good">'+s.sc+'%</div></div>'+
           '<div class="result-card"><div class="lbl">✂️ Estilos Recomendados</div><div style="margin-top:8px;">'+s.st.map(function(x){return '<span class="chip">'+x.n+' <b>'+x.m+'%</b></span>';}).join('')+'</div></div>'+
           '<div class="result-card"><div class="lbl">💡 Recomendaciones</div><ul style="margin:8px 0 0 16px;padding:0;list-style:disc;"><li style="color:#4a4a5e;font-size:0.85rem;margin-bottom:4px;">Shampoo con biotina para fortalecer folículos</li><li style="color:#4a4a5e;font-size:0.85rem;margin-bottom:4px;">Aceite de argán para hidratación profunda</li><li style="color:#4a4a5e;font-size:0.85rem;">Evitar lavados diarios (balance natural de sebo)</li></ul></div>'+
-          '<div style="text-align:center;margin-top:1rem;"><span style="padding:3px 10px;background:rgba(0,229,255,0.1);border:1px solid rgba(0,200,210,0.2);border-radius:4px;font-size:0.65rem;color:#00a0b8;font-weight:600;">Escaneo #'+cnt+'</span></div>';
-        sStatus('✅ Escaneo #'+cnt+' completado','ready');
-        // notification
-        var n=document.createElement('div');n.style.cssText='position:fixed;top:80px;right:20px;padding:16px 24px;border-radius:8px;font-family:Inter;font-size:0.9rem;font-weight:500;z-index:9999;background:#00c853;color:#fff;box-shadow:0 4px 15px rgba(0,0,0,0.2);animation:snIn 0.3s ease;';n.textContent='✅ Diagnóstico completado';
-        var st2=document.createElement('style');st2.textContent='@keyframes snIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}@keyframes snOut{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}';
-        document.head.appendChild(st2);document.body.appendChild(n);
-        setTimeout(function(){n.style.animation='snOut 0.3s ease forwards';setTimeout(function(){n.remove()},300);},2500);
-      },1200);
+          '<div style="text-align:center;margin-top:1rem;"><span style="padding:3px 10px;background:rgba(0,229,255,0.1);border:1px solid rgba(0,200,210,0.2);border-radius:4px;font-size:0.65rem;color:#00a0b8;font-weight:600;">Escaneo Guardado #'+cnt+'</span></div>';
+        
+        sStatus('✅ Escaneo #'+cnt+' completado', 'ready');
+        
+        // Notificación
+        var n = document.createElement('div');
+        n.style.cssText = 'position:fixed;top:80px;right:20px;padding:16px 24px;border-radius:8px;font-family:Inter;font-size:0.9rem;font-weight:500;z-index:9999;background:#00c853;color:#fff;box-shadow:0 4px 15px rgba(0,0,0,0.2);animation:snIn 0.3s ease;';
+        n.textContent = '✅ Diagnóstico completado y guardado';
+        var st2 = document.createElement('style');
+        st2.textContent = '@keyframes snIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}@keyframes snOut{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}';
+        document.head.appendChild(st2); document.body.appendChild(n);
+        setTimeout(function(){ n.style.animation='snOut 0.3s ease forwards'; setTimeout(function(){n.remove()},300); }, 2500);
+      
+      }, 1500); // Le di unos milisegundos extra para que simule mejor el guardado
     };
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="assets/js/supabase.js"></script>
-  <script src="assets/js/main.js"></script>
 </body>
 </html>
