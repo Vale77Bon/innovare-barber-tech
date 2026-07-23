@@ -29,7 +29,7 @@
     .time-slot { padding: 10px 6px; text-align: center; background: #f5f6fa; border: 1px solid #e8eaf0; border-radius: 6px; cursor: pointer; transition: all 0.3s; font-size: 0.8rem; color: #1a1a2e; }
     .time-slot:hover:not(.disabled) { background: rgba(0,229,255,0.15); border-color: #00E5FF; }
     .time-slot.selected { background: #00E5FF; color: #1a1a2e; font-weight: 600; border-color: #00E5FF; }
-    .time-slot.disabled { opacity: 0.3; cursor: not-allowed; text-decoration: line-through; }
+    .time-slot.disabled { opacity: 0.5; cursor: not-allowed; background: #e8eaf0; color: #9e9eae; text-decoration: line-through; }
 
     .barber-selection { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
     .barber-selection h3 { color: #00a0b8; margin-bottom: 1rem; }
@@ -172,6 +172,8 @@
     let state = { date: null, time: null, barberId: null, serviceId: null };
     let barbersData = [];
     let servicesData = [];
+    let citasData = []; // NUEVO: Para guardar las citas registradas en la base de datos
+    
     const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
     // 1. Inicialización
@@ -191,6 +193,7 @@
 
       await fetchData();
       renderCalendar();
+      renderTimes(); // Iniciar vista de horarios bloqueados
     });
 
     async function fetchData() {
@@ -198,6 +201,13 @@
         if (!window.InnovareDB || !InnovareDB.isConnected()) throw new Error("Conexión a Supabase no disponible.");
         barbersData = await InnovareDB.getBarbers();
         servicesData = await InnovareDB.getServices();
+        
+        // NUEVO: Extraemos de Supabase todas las citas para poder bloquear las horas
+        if (window.sb) {
+          const { data, error } = await window.sb.from('citas').select('fecha, hora, barbero_id, estado');
+          if (!error && data) citasData = data;
+        }
+
         renderBarbers();
         renderServices();
       } catch (error) {
@@ -232,6 +242,7 @@
       let html = '<div class="day-name">Dom</div><div class="day-name">Lun</div><div class="day-name">Mar</div><div class="day-name">Mié</div><div class="day-name">Jue</div><div class="day-name">Vie</div><div class="day-name">Sáb</div>';
       const firstDay = new Date(currentYear, currentMonth, 1).getDay();
       const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      
       for (let i = 0; i < firstDay; i++) html += `<div class="day empty"></div>`;
       for (let day = 1; day <= daysInMonth; day++) {
         const dateObj = new Date(currentYear, currentMonth, day);
@@ -251,21 +262,83 @@
       renderCalendar();
     }
 
+    // NUEVO: Lógica completa para bloquear horarios dinámicamente
     function renderTimes() {
       const grid = document.getElementById('time-grid');
+      
+      // Bloqueo Inicial: Si no hay fecha o barbero, pedir que seleccionen
+      if (!state.date || !state.barberId) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; color: #9e9eae; font-size: 0.85rem; padding: 1rem; text-align: center;">Por favor, selecciona un Barbero y un Día en el calendario para ver su disponibilidad.</p>';
+        return;
+      }
+
+      // Buscar citas ocupadas para el día y barbero seleccionados (omitimos las canceladas)
+      const bookedTimes = citasData
+        .filter(c => c.fecha === state.date && c.barbero_id === state.barberId && c.estado !== 'cancelada')
+        .map(c => c.hora.substring(0, 5)); // Convertimos "09:00:00" a "09:00"
+
       const times = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+      
+      // Control de horas pasadas (Si selecciona el día de hoy)
+      const now = new Date();
+      const isToday = state.date === `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      const currentHour = now.getHours();
+      const currentMinutes = now.getMinutes();
+
       grid.innerHTML = times.map(t => {
+        let isPast = false;
+        
+        if (isToday) {
+          const [h, m] = t.split(':').map(Number);
+          // Si la hora del bloque es menor a la actual, o si es la misma hora pero el minuto ya pasó
+          if (h < currentHour || (h === currentHour && m <= currentMinutes)) {
+            isPast = true;
+          }
+        }
+
+        // Si el bloque está en la base de datos o si ya pasó la hora
+        if (bookedTimes.includes(t) || isPast) {
+          return `<div class="time-slot disabled" title="Horario no disponible">${t}</div>`;
+        }
+
         const isSelected = state.time === t ? 'selected' : '';
         return `<div class="time-slot ${isSelected}" onclick="selectTime('${t}')">${t}</div>`;
       }).join('');
     }
 
-    function selectDate(dateStr, el) { if (el.classList.contains('disabled')) return; state.date = dateStr; state.time = null; renderCalendar(); renderTimes(); updateSummary(); }
-    function selectTime(timeStr) { state.time = timeStr; renderTimes(); updateSummary(); }
-    function selectBarber(id) { state.barberId = id; document.querySelectorAll('.barber-option').forEach(el => el.classList.remove('selected')); document.getElementById('barber-' + id).classList.add('selected'); updateSummary(); }
-    function selectService(id) { state.serviceId = id; document.querySelectorAll('.service-option').forEach(el => el.classList.remove('selected')); document.getElementById('service-' + id).classList.add('selected'); updateSummary(); }
+    // ACCIONES DE CLIC
+    function selectDate(dateStr, el) { 
+      if (el.classList.contains('disabled')) return; 
+      state.date = dateStr; 
+      state.time = null; // Reiniciar hora al cambiar día
+      renderCalendar(); 
+      renderTimes(); 
+      updateSummary(); 
+    }
+    
+    function selectBarber(id) { 
+      state.barberId = id; 
+      document.querySelectorAll('.barber-option').forEach(el => el.classList.remove('selected')); 
+      document.getElementById('barber-' + id).classList.add('selected'); 
+      state.time = null; // Reiniciar hora al cambiar barbero (su agenda es distinta)
+      renderTimes(); 
+      updateSummary(); 
+    }
 
-    // 8. Actualizar Resumen y Habilitar Botón de forma inmediata
+    function selectTime(timeStr) { 
+      state.time = timeStr; 
+      renderTimes(); 
+      updateSummary(); 
+    }
+    
+    function selectService(id) { 
+      state.serviceId = id; 
+      document.querySelectorAll('.service-option').forEach(el => el.classList.remove('selected')); 
+      document.getElementById('service-' + id).classList.add('selected'); 
+      updateSummary(); 
+    }
+
+    // 8. Actualizar Resumen y Habilitar Botón
     function updateSummary() {
       document.getElementById('summary-date').textContent = state.date ? state.date : '—';
       document.getElementById('summary-time').textContent = state.time ? state.time : '—';
@@ -341,7 +414,7 @@
         document.getElementById('stripe-payment-form').style.display = 'none';
       }
 
-      // Habilitar el botón en cuanto los 4 elementos obligatorios estén seleccionados
+      // Habilitar el botón solo si todo está seleccionado
       const btn = document.getElementById('book-btn');
       const isValid = (state.date && state.time && state.barberId && state.serviceId);
       btn.disabled = !isValid;
