@@ -225,21 +225,17 @@
       
       try {
         // 1. Intentar login
-        const d = await InnovareDB.login(email, pass);
-        const user = d.user;
-        const token = d.token;
+        const { data, error } = await sb.auth.signInWithPassword({
+         email: email,
+          password: pass,
+        });
+
+        if (error) throw error;
+
+        const user = data.user;
+        const token = data.session.access_token;
         
-        // 2. Validar si el email está confirmado
-        if (!user.email_confirmed_at) {
-          errDiv.textContent = '❌ Debes confirmar tu correo electrónico primero. Revisa tu bandeja de entrada.';
-          errDiv.style.display = 'block';
-          btn.disabled = false;
-          btn.textContent = 'Iniciar Sesión';
-          
-          // Cerrar sesión porque Supabase igual autentica
-          await supabase.auth.signOut();
-          return;
-        }
+        
         
         // 3. Todo bien, loguear
         doLogin(user, token);
@@ -272,7 +268,7 @@
       // Actualizar activo=true en la tabla usuarios si ya confirmó
       (async function() {
         try {
-          await supabase.from('usuarios').update({ activo: true }).eq('id', userData.id);
+          await sb.from('usuarios').update({ activo: true }).eq('id', userData.id);
         } catch(e) { /* silent */ }
       })();
       

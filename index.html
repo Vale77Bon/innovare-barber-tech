@@ -4,60 +4,56 @@
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
   <meta name="description" content="Innovare Barber Tech - Revolucionando la barbería con diagnóstico 3D, simulación AR y membresías digitales.">
   <title>Innovare Barber Tech | Tecnología en Barbería</title>
+  <!-- 1. Cargar FontAwesome para los íconos Premium -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="assets/css/global.css">
+  
+  <!-- Estilos adaptados al Tema Oscuro Premium -->
   <style>
     .services { padding-top: calc(var(--spacing-xxl) + 70px); }
     .service-card { text-align: center; }
-    .service-card .service-img {
-      width: 100%; height: 160px; border-radius: var(--radius-md); margin-bottom: var(--spacing-md);
-      background: linear-gradient(135deg, rgba(0,229,255,0.12) 0%, rgba(0,150,200,0.06) 100%);
-      display: flex; align-items: center; justify-content: center; font-size: 3.5rem;
-      border: 1px solid rgba(0,200,210,0.15);
-    }
-    .service-card .price { font-size: 1.4rem; font-weight: 700; color: #00a0b8; margin-bottom: var(--spacing-sm); }
-    .service-card .duration { font-size: 0.85rem; color: #6e6e7e; margin-bottom: var(--spacing-md); }
-    .service-card p { font-size: 0.9rem; color: #4a4a5e; }
-
+    
     .membership-plans { padding-top: var(--spacing-xxl); }
     .plan-card { text-align: center; }
-    .plan-card.featured { border: 2px solid #00E5FF; position: relative; box-shadow: 0 0 20px rgba(0,229,255,0.15); }
-    .plan-card.featured::before { content: '★ MÁS POPULAR'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #00E5FF; color: #1a1a2e; padding: 4px 16px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; }
-    .plan-price { font-size: 2.2rem; font-weight: 700; color: #00a0b8; margin: var(--spacing-md) 0; }
-    .plan-price span { font-size: 1rem; font-weight: 400; color: #6e6e7e; }
+    .plan-card.featured { border: 2px solid var(--secondary); position: relative; box-shadow: var(--shadow-glow); }
+    .plan-card.featured::before { 
+      content: '\f005  MÁS POPULAR'; 
+      font-family: "Font Awesome 6 Free"; 
+      font-weight: 900; 
+      position: absolute; 
+      top: -14px; left: 50%; transform: translateX(-50%); 
+      background: var(--secondary); color: var(--bg-main); 
+      padding: 4px 16px; border-radius: 20px; font-size: 0.75rem; letter-spacing: 1px; 
+    }
+    .plan-price { font-size: 2.2rem; font-weight: 700; color: var(--secondary-hover); margin: var(--spacing-md) 0; }
+    .plan-price span { font-size: 1rem; font-weight: 400; color: var(--text-muted); }
     .plan-features { margin: var(--spacing-lg) 0; text-align: left; padding: 0; }
-    .plan-features li { padding: var(--spacing-sm) 0; border-bottom: 1px solid rgba(0,0,0,0.04); font-size: 0.9rem; color: #4a4a5e; }
+    .plan-features li { padding: var(--spacing-sm) 0; border-bottom: 1px solid rgba(197, 168, 128, 0.1); font-size: 0.9rem; color: var(--text-muted); }
     .plan-features li:last-child { border-bottom: none; }
-    .plan-features li::before { content: '✓ '; color: #00c853; font-weight: 700; }
+    .plan-features li::before { 
+      content: '\f00c'; 
+      font-family: "Font Awesome 6 Free"; font-weight: 900; 
+      color: var(--secondary); margin-right: 8px; 
+    }
 
     .barbers { padding-top: var(--spacing-xxl); }
-    .barber-card { text-align: center; }
-    .barber-avatar { width: 110px; height: 110px; border-radius: var(--radius-full); margin: 0 auto var(--spacing-md); background: linear-gradient(135deg, rgba(0,229,255,0.18) 0%, rgba(0,180,210,0.08) 100%); display: flex; align-items: center; justify-content: center; font-size: 3rem; border: 3px solid #00E5FF; box-shadow: 0 0 18px rgba(0,229,255,0.12); }
-    .rating { color: #ffb300; font-size: 0.9rem; margin-bottom: var(--spacing-sm); }
-    .rating span { color: #6e6e7e; margin-left: var(--spacing-xs); }
-
+    
     .testimonials { padding-top: var(--spacing-xxl); }
-    .testimonial-card { position: relative; }
-    .testimonial-card::before { content: '"'; position: absolute; top: 1.5rem; left: 1.5rem; font-size: 3rem; color: #00E5FF; opacity: 0.25; font-family: var(--font-heading); line-height: 1; }
-    .testimonial-card p { padding-top: 2rem; font-style: italic; color: #4a4a5e; }
-    .client-info { display: flex; align-items: center; margin-top: var(--spacing-md); gap: var(--spacing-md); }
-    .client-img { width: 50px; height: 50px; border-radius: var(--radius-full); background: rgba(0,229,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
-    .client-info h4 { margin-bottom: 2px; font-size: 0.95rem; }
-    .client-info small { color: #6e6e7e; }
 
-    .stats-section { background: #1a1a2e; padding: 3rem 2rem; margin: 3rem auto 0; }
+    .stats-section { background: var(--bg-card); padding: 3rem 2rem; margin: 3rem auto 0; border-top: 1px solid rgba(197, 168, 128, 0.1); border-bottom: 1px solid rgba(197, 168, 128, 0.1); }
     .stats-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; text-align: center; }
-    .stat-number { font-size: 2.5rem; font-weight: 700; color: #00E5FF; }
-    .stat-label { font-size: 0.85rem; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 1px; }
+    .stat-number { font-size: 2.5rem; font-weight: 700; color: var(--primary); }
+    .stat-label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
 
     .tech-section { padding-top: var(--spacing-xxl); }
     .tech-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
     .tech-feature { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem; }
-    .tf-icon { width: 48px; height: 48px; border-radius: 10px; background: rgba(0,229,255,0.12); border: 1px solid rgba(0,180,210,0.2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
-    .tf-text h4 { color: #00a0b8; font-size: 1rem; margin-bottom: 4px; }
-    .tf-text p { font-size: 0.85rem; color: #6e6e7e; margin: 0; }
+    .tf-icon { width: 48px; height: 48px; border-radius: 10px; background: rgba(69, 162, 158, 0.1); border: 1px solid rgba(69, 162, 158, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--secondary); flex-shrink: 0; }
+    .tf-text h4 { color: var(--text-main); font-size: 1rem; margin-bottom: 4px; }
+    .tf-text p { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
 
-    .cta-section { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, rgba(0,229,255,0.06) 0%, rgba(0,150,200,0.04) 100%); border-radius: var(--radius-lg); border: 1px solid rgba(0,200,210,0.12); margin: 3rem auto; }
-    .cta-section p { max-width: 500px; margin: 0 auto 1.5rem; color: #5a5a6e; }
+    .cta-section { text-align: center; padding: 4rem 2rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid rgba(197, 168, 128, 0.2); margin: 4rem auto; box-shadow: var(--shadow-lg); }
+    .cta-section p { max-width: 500px; margin: 0 auto 1.5rem; color: var(--text-muted); }
 
     @media(max-width:768px){
       .hero { padding: 100px 1rem 3rem; }
@@ -65,20 +61,18 @@
       .hero-content p { font-size: 0.95rem; }
       .hero-buttons { flex-direction: column; }
       .hero-buttons .btn { width: 100%; }
-      .services { padding-top: calc(70px + 2rem); }
+      .services { padding-top: calc(75px + 2rem); }
       .grid-4 { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-      .service-card .service-img { height: 120px; font-size: 2.5rem; }
-      .service-card .price { font-size: 1.1rem; }
       .membership-plans { padding-top: 2rem; }
       .grid-2 { grid-template-columns: 1fr; max-width: 400px; }
       .barbers { padding-top: 2rem; }
-      .barber-avatar { width: 80px; height: 80px; font-size: 2rem; }
       .stats-section { padding: 2rem 1rem; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
       .stat-number { font-size: 1.8rem; }
       .tech-section { padding-top: 2rem; }
       .tech-feature { gap: 0.75rem; }
       .tf-icon { width: 40px; height: 40px; font-size: 1.2rem; }
+      .tech-grid { grid-template-columns: 1fr; }
       .testimonials { padding-top: 2rem; }
       .grid-3 { grid-template-columns: 1fr; }
       .cta-section { padding: 2rem 1rem; margin: 2rem 1rem; }
@@ -96,13 +90,16 @@
 </head>
 <body>
   <div id="navbar-placeholder"></div>
+  
   <section class="hero" id="inicio">
     <div class="hero-content">
-      <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;background:rgba(0,229,255,0.12);border:1px solid rgba(0,200,210,0.25);border-radius:4px;font-size:0.65rem;color:#00a0b8;text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:1.5rem;">⚡ E-Business 2026</span>
+      <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(69, 162, 158, 0.1);border:1px solid rgba(69, 162, 158, 0.3);border-radius:4px;font-size:0.7rem;color:var(--secondary);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:1.5rem;">
+        <i class="fa-solid fa-bolt"></i> E-Business 2026
+      </span>
       <h1><span class="highlight">Innovare</span> Barber Tech</h1>
       <p>Donde la tradición de la barbería clásica se encuentra con la innovación tecnológica. Diagnóstico capilar 3D, simulación con realidad aumentada y una experiencia premium sin fricciones.</p>
       <div class="hero-buttons">
-        <a href="reservas.html" class="btn btn-primary btn-lg">📅 Reservar Ahora</a>
+        <a href="reservas.html" class="btn btn-primary btn-lg"><i class="fa-solid fa-calendar-check"></i> Reservar Ahora</a>
         <a href="#servicios" class="btn btn-outline btn-lg">Ver Servicios</a>
       </div>
     </div>
@@ -111,18 +108,58 @@
   <!-- Services -->
   <section class="services" id="servicios">
     <div class="section-title">
-      <h2>✂️ <span class="highlight">Servicios</span> Especializados</h2>
+      <h2><i class="fa-solid fa-scissors" style="color: var(--primary); margin-right: 10px;"></i> <span class="highlight">Servicios</span> Especializados</h2>
       <div class="divider"></div>
       <p>Catálogo híbrido que combina estética clásica con diagnósticos digitales avanzados</p>
       <div id="membership-badge" style="display:none;margin-top:12px;">
         <span id="badge-text" style="padding:6px 16px;border-radius:20px;font-size:0.8rem;font-weight:600;"></span>
       </div>
     </div>
-    <div class="grid-4" id="servicios-grid">
-      <div class="card service-card"><div class="service-img">✂️</div><h3>Corte & Estilo Técnico Premium</h3><p class="price">$450</p><p class="duration">45 min</p><p>Desvanecidos degradados avanzados con asignación automatizada de barbero.</p></div>
-      <div class="card service-card"><div class="service-img">🧔</div><h3>Perfilado de Barba VIP</h3><p class="price">$350</p><p class="duration">30 min</p><p>Toalla caliente con vapor de ozono. Historial estético centralizado.</p></div>
-      <div class="card service-card"><div class="service-img">🔬</div><h3>Escáner Capilar 3D + IA</h3><p class="price">$400</p><p class="duration">15 min</p><p>Microscopía digital 50x en 5 zonas críticas + algoritmo IA.</p></div>
-      <div class="card service-card"><div class="service-img">🪞</div><h3>Simulación AR Lujo</h3><p class="price">$250</p><p class="duration">10 min</p><p>Espejo inteligente con segmentación en tiempo real y previsualización.</p></div>
+    
+    <div class="grid-4 mt-2">
+      <!-- Servicio 1: Corte -->
+      <div class="card">
+        <div class="card-icon">
+          <i class="fa-solid fa-scissors"></i>
+        </div>
+        <h3>Corte & Estilo Técnico Premium</h3>
+        <div class="service-price">$450</div>
+        <div class="service-duration">45 min</div>
+        <p>Desvanecidos degradados avanzados con asignación automatizada de barbero.</p>
+      </div>
+
+      <!-- Servicio 2: Barba -->
+      <div class="card">
+        <div class="card-icon">
+          <i class="fa-solid fa-user-tie"></i>
+        </div>
+        <h3>Perfilado de Barba VIP</h3>
+        <div class="service-price">$350</div>
+        <div class="service-duration">30 min</div>
+        <p>Toalla caliente con vapor de ozono. Historial estético centralizado.</p>
+      </div>
+
+      <!-- Servicio 3: Escáner -->
+      <div class="card">
+        <div class="card-icon">
+          <i class="fa-solid fa-microscope"></i>
+        </div>
+        <h3>Escáner Capilar 3D + IA</h3>
+        <div class="service-price">$400</div>
+        <div class="service-duration">15 min</div>
+        <p>Microscopía digital 50x en 5 zonas críticas + algoritmo IA.</p>
+      </div>
+
+      <!-- Servicio 4: AR -->
+      <div class="card">
+        <div class="card-icon">
+          <i class="fa-solid fa-mobile-screen-button"></i>
+        </div>
+        <h3>Simulación AR Lujo</h3>
+        <div class="service-price">$250</div>
+        <div class="service-duration">10 min</div>
+        <p>Espejo inteligente con segmentación en tiempo real y previsualización.</p>
+      </div>
     </div>
     <div class="text-center mt-2"><a href="reservas.html" class="btn btn-primary">Ver Todos →</a></div>
   </section>
@@ -130,7 +167,7 @@
   <!-- Memberships -->
   <section class="membership-plans" id="membresias">
     <div class="section-title">
-      <h2>👑 <span class="highlight">Membresías</span> Digitales</h2>
+      <h2><i class="fa-solid fa-crown" style="color: var(--primary); margin-right: 10px;"></i> <span class="highlight">Membresías</span> Digitales</h2>
       <div class="divider"></div>
       <p>Ingresos recurrentes mensuales con cargo automático tokenizado</p>
     </div>
@@ -157,21 +194,64 @@
         <span class="btn btn-primary btn-block">Suscribirme</span>
       </div>
     </div>
-    <p class="text-center" style="font-size:0.8rem;color:#6e6e7e;margin-top:1rem;">* Uso o pérdida: sesiones no agendadas expiran sin reembolso.</p>
+    <p class="text-center" style="font-size:0.85rem;color:var(--text-muted);margin-top:1.5rem;">Uso o pérdida: sesiones no agendadas expiran sin reembolso.</p>
   </section>
 
   <!-- Barbers -->
   <section class="barbers" id="barberos">
     <div class="section-title">
-      <h2>💈 <span class="highlight">Master Barbers</span></h2>
+      <h2><i class="fa-solid fa-medal" style="color: var(--primary); margin-right: 10px;"></i> <span class="highlight">Master</span> Barbers</h2>
       <div class="divider"></div>
       <p>Profesionales certificados en técnicas clásicas y tecnología digital</p>
     </div>
-    <div class="grid-4">
-      <div class="card barber-card"><div class="barber-avatar">👨‍🦰</div><h3>Alex Martínez</h3><div class="rating">★★★★★ <span>4.9</span></div><p>Cortes Clásicos · 8 años</p></div>
-      <div class="card barber-card"><div class="barber-avatar">👨‍🦱</div><h3>Carlos Gómez</h3><div class="rating">★★★★★ <span>4.8</span></div><p>Barbas VIP · 6 años</p></div>
-      <div class="card barber-card"><div class="barber-avatar">👨‍🦳</div><h3>Miguel Torres</h3><div class="rating">★★★★★ <span>4.9</span></div><p>Degradados · 5 años</p></div>
-      <div class="card barber-card"><div class="barber-avatar">👨‍🦲</div><h3>David Rojas</h3><div class="rating">★★★★½ <span>4.7</span></div><p>Estilos Premium · 10 años</p></div>
+    <div class="grid-4" style="gap: 15px;">
+      <!-- Barbero 1 -->
+      <div class="card" style="background: var(--bg-main); padding: var(--spacing-lg);">
+        <div style="width: 80px; height: 80px; border-radius: 50%; background: transparent; border: 2px solid var(--secondary); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-md); box-shadow: var(--shadow-glow);">
+          <i class="fa-solid fa-scissors" style="font-size: 2rem; color: var(--primary);"></i>
+        </div>
+        <h4 style="margin-bottom: 5px;">Alex Martínez</h4>
+        <div style="color: var(--warning); font-size: 0.8rem; margin-bottom: 10px;">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i> 4.9
+        </div>
+        <p style="font-size: 0.8rem; margin: 0; color: var(--text-muted);">Cortes Clásicos • 8 años</p>
+      </div>
+
+      <!-- Barbero 2 -->
+      <div class="card" style="background: var(--bg-main); padding: var(--spacing-lg);">
+        <div style="width: 80px; height: 80px; border-radius: 50%; background: transparent; border: 2px solid var(--secondary); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-md); box-shadow: var(--shadow-glow);">
+          <i class="fa-solid fa-user-tie" style="font-size: 2rem; color: var(--primary);"></i>
+        </div>
+        <h4 style="margin-bottom: 5px;">Carlos Gómez</h4>
+        <div style="color: var(--warning); font-size: 0.8rem; margin-bottom: 10px;">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i> 4.8
+        </div>
+        <p style="font-size: 0.8rem; margin: 0; color: var(--text-muted);">Barbas VIP • 6 años</p>
+      </div>
+
+      <!-- Barbero 3 -->
+      <div class="card" style="background: var(--bg-main); padding: var(--spacing-lg);">
+        <div style="width: 80px; height: 80px; border-radius: 50%; background: transparent; border: 2px solid var(--secondary); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-md); box-shadow: var(--shadow-glow);">
+          <i class="fa-solid fa-bolt" style="font-size: 2rem; color: var(--primary);"></i>
+        </div>
+        <h4 style="margin-bottom: 5px;">Miguel Torres</h4>
+        <div style="color: var(--warning); font-size: 0.8rem; margin-bottom: 10px;">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i> 4.9
+        </div>
+        <p style="font-size: 0.8rem; margin: 0; color: var(--text-muted);">Degradados • 5 años</p>
+      </div>
+
+      <!-- Barbero 4 -->
+      <div class="card" style="background: var(--bg-main); padding: var(--spacing-lg);">
+        <div style="width: 80px; height: 80px; border-radius: 50%; background: transparent; border: 2px solid var(--secondary); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-md); box-shadow: var(--shadow-glow);">
+          <i class="fa-solid fa-microchip" style="font-size: 2rem; color: var(--primary);"></i>
+        </div>
+        <h4 style="margin-bottom: 5px;">David Rojas</h4>
+        <div style="color: var(--warning); font-size: 0.8rem; margin-bottom: 10px;">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i> 4.7
+        </div>
+        <p style="font-size: 0.8rem; margin: 0; color: var(--text-muted);">Estilos Premium • 10 años</p>
+      </div>
     </div>
   </section>
 
@@ -188,26 +268,38 @@
   <!-- Technology -->
   <section class="tech-section" id="tecnologia">
     <div class="section-title">
-      <h2>⚡ <span class="highlight">Tecnología</span> Integrada</h2>
+      <h2><i class="fa-solid fa-microchip" style="color: var(--primary); margin-right: 10px;"></i> <span class="highlight">Tecnología</span> Integrada</h2>
       <div class="divider"></div>
       <p>Innovación disruptiva aplicada a cada paso de tu experiencia</p>
     </div>
     <div class="tech-grid">
       <div>
-        <div class="tech-feature"><div class="tf-icon">🤖</div><div class="tf-text"><h4>Motor de Reservas 24/7</h4><p>Agenda automatizada con depósito de garantía (10%) vía Stripe API. Sin llamadas, sin fricción.</p></div></div>
-        <div class="tech-feature"><div class="tf-icon">📊</div><div class="tf-text"><h4>Diagnóstico Capilar 3D</h4><p>Microscopía digital 50x con algoritmo IA en 5 zonas críticas.</p></div></div>
-        <div class="tech-feature"><div class="tf-icon">🪞</div><div class="tf-text"><h4>Espejo Inteligente AR</h4><p>Simulación de cortes en tiempo real. Elimina errores de comunicación al 100%.</p></div></div>
-        <div class="tech-feature"><div class="tf-icon">💳</div><div class="tf-text"><h4>Checkout Unificado</h4><p>POS que consolida servicios + retail. Pago contactless, tokenizado o SPEI.</p></div></div>
+        <div class="tech-feature">
+          <div class="tf-icon"><i class="fa-solid fa-robot"></i></div>
+          <div class="tf-text"><h4>Motor de Reservas 24/7</h4><p>Agenda automatizada con depósito de garantía (10%) vía Stripe API. Sin llamadas, sin fricción.</p></div>
+        </div>
+        <div class="tech-feature">
+          <div class="tf-icon"><i class="fa-solid fa-microscope"></i></div>
+          <div class="tf-text"><h4>Diagnóstico Capilar 3D</h4><p>Microscopía digital 50x con algoritmo IA en 5 zonas críticas.</p></div>
+        </div>
+        <div class="tech-feature">
+          <div class="tf-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+          <div class="tf-text"><h4>Espejo Inteligente AR</h4><p>Simulación de cortes en tiempo real. Elimina errores de comunicación al 100%.</p></div>
+        </div>
+        <div class="tech-feature">
+          <div class="tf-icon"><i class="fa-solid fa-credit-card"></i></div>
+          <div class="tf-text"><h4>Checkout Unificado</h4><p>POS que consolida servicios + retail. Pago contactless, tokenizado o SPEI.</p></div>
+        </div>
       </div>
       <div class="card" style="text-align:center;">
-        <div style="font-size:3rem;margin-bottom:1rem;">📍</div>
-        <h4 style="color:#00a0b8;">Sucursal Matriz</h4>
-        <p style="font-weight:500;">Local PB-14, Plaza Solesta</p>
-        <p>Av. Osa Mayor No. 4931</p>
+        <div style="font-size:3rem; margin-bottom:1rem; color: var(--primary);"><i class="fa-solid fa-location-dot"></i></div>
+        <h4 style="color:var(--text-main); margin-bottom:10px;">Sucursal Matriz</h4>
+        <p style="font-weight:500; color:var(--text-main); margin-bottom:5px;">Local PB-14, Plaza Solesta</p>
+        <p style="margin-bottom:5px;">Av. Osa Mayor No. 4931</p>
         <p>Atlixcáyotl, <strong>Puebla</strong></p>
         <div class="divider"></div>
-        <p style="font-size:0.8rem;color:#6e6e7e;">Lun-Vie 9-8 PM · Sáb 9-6 PM</p>
-        <a href="https://wa.me/522221175554" class="btn btn-sm btn-primary mt-1" target="_blank">💬 WhatsApp</a>
+        <p style="font-size:0.8rem; color:var(--text-muted);">Lun-Vie 9-8 PM · Sáb 9-6 PM</p>
+        <a href="https://wa.me/522221175554" class="btn btn-sm btn-primary mt-1" target="_blank" style="margin-top: 15px;"><i class="fa-brands fa-whatsapp" style="font-size:1.2rem;"></i> WhatsApp</a>
       </div>
     </div>
   </section>
@@ -215,36 +307,79 @@
   <!-- Testimonials -->
   <section class="testimonials" id="testimonios">
     <div class="section-title">
-      <h2>⭐ <span class="highlight">Reseñas</span> de Clientes</h2>
+      <h2><i class="fa-solid fa-star" style="color: var(--primary); margin-right: 10px;"></i> <span class="highlight">Reseñas</span> de Clientes</h2>
       <div class="divider"></div>
     </div>
+    
     <div class="grid-3">
-      <div class="card testimonial-card"><p>"La mejor barbería. El degradado de Miguel es perfecto, y el diagnóstico 3D es impresionante."</p><div class="client-info"><div class="client-img">👨</div><div><h4>Ricardo Mendoza</h4><small>Miembro The Regular</small></div></div></div>
-      <div class="card testimonial-card"><p>"Traje a mi esposo y salió transformado. El servicio VIP Tech es excelente y el espejo AR una maravilla."</p><div class="client-info"><div class="client-img">👩</div><div><h4>Ana Sofía García</h4><small>Cliente frecuente</small></div></div></div>
-      <div class="card testimonial-card"><p>"La membresía VIP Tech es la mejor inversión. Cortes ilimitados más diagnóstico mensual."</p><div class="client-info"><div class="client-img">🧑</div><div><h4>Daniel Ortiz</h4><small>Miembro VIP Tech</small></div></div></div>
+      <!-- Reseña 1 -->
+      <div class="card" style="text-align: left; align-items: flex-start; position: relative;">
+        <i class="fa-solid fa-quote-left" style="color: rgba(69, 162, 158, 0.15); font-size: 3rem; position: absolute; top: 20px; left: 20px;"></i>
+        <p style="font-style: italic; position: relative; z-index: 1; padding-top: 15px; color: var(--text-main); font-weight: 300;">"La mejor barbería. El degradado de Miguel es perfecto, y el diagnóstico 3D es impresionante."</p>
+        <div style="display: flex; align-items: center; gap: 15px; margin-top: auto; padding-top: 20px;">
+          <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(197, 168, 128, 0.1); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(197, 168, 128, 0.3);">
+            <i class="fa-solid fa-user" style="color: var(--primary); font-size: 1.2rem;"></i>
+          </div>
+          <div>
+            <h4 style="font-size: 1rem; margin-bottom: 2px;">Ricardo Mendoza</h4>
+            <span style="font-size: 0.8rem; color: var(--secondary);">Miembro The Regular</span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Reseña 2 -->
+      <div class="card" style="text-align: left; align-items: flex-start; position: relative; border-color: var(--primary); box-shadow: 0 0 15px rgba(197, 168, 128, 0.1);">
+        <i class="fa-solid fa-quote-left" style="color: rgba(69, 162, 158, 0.15); font-size: 3rem; position: absolute; top: 20px; left: 20px;"></i>
+        <p style="font-style: italic; position: relative; z-index: 1; padding-top: 15px; color: var(--text-main); font-weight: 300;">"Traje a mi esposo y salió transformado. El servicio VIP Tech es excelente y el espejo AR una maravilla."</p>
+        <div style="display: flex; align-items: center; gap: 15px; margin-top: auto; padding-top: 20px;">
+          <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(197, 168, 128, 0.1); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(197, 168, 128, 0.3);">
+            <i class="fa-solid fa-user" style="color: var(--primary); font-size: 1.2rem;"></i>
+          </div>
+          <div>
+            <h4 style="font-size: 1rem; margin-bottom: 2px;">Ana Sofía García</h4>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Cliente frecuente</span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Reseña 3 -->
+      <div class="card" style="text-align: left; align-items: flex-start; position: relative;">
+        <i class="fa-solid fa-quote-left" style="color: rgba(69, 162, 158, 0.15); font-size: 3rem; position: absolute; top: 20px; left: 20px;"></i>
+        <p style="font-style: italic; position: relative; z-index: 1; padding-top: 15px; color: var(--text-main); font-weight: 300;">"La membresía VIP Tech es la mejor inversión. Cortes ilimitados más diagnóstico mensual."</p>
+        <div style="display: flex; align-items: center; gap: 15px; margin-top: auto; padding-top: 20px;">
+          <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(197, 168, 128, 0.1); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(197, 168, 128, 0.3);">
+            <i class="fa-solid fa-user" style="color: var(--primary); font-size: 1.2rem;"></i>
+          </div>
+          <div>
+            <h4 style="font-size: 1rem; margin-bottom: 2px;">Daniel Ortiz</h4>
+            <span style="font-size: 0.8rem; color: var(--primary);">Miembro VIP Tech</span>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- CTA -->
   <section class="cta-section">
-    <h2>🚀 ¿Listo para Transformar tu Look?</h2>
+    <h2><i class="fa-solid fa-rocket" style="color: var(--primary); margin-right: 10px;"></i> ¿Listo para Transformar tu Look?</h2>
     <p>Reserva tu cita con depósito desde 10% y descubre Innovare Barber Tech</p>
-    <a href="reservas.html" class="btn btn-primary btn-lg">📅 Agendar Ahora</a>
+    <a href="reservas.html" class="btn btn-primary btn-lg"><i class="fa-solid fa-calendar-check"></i> Agendar Ahora</a>
   </section>
 
   <div id="footer-placeholder"></div>
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/js/supabase.js"></script>
   <script src="assets/js/main.js"></script>
   
   <script>
     function openMembership(name, price, features) {
-      // 1. Verificar si el usuario inició sesión ANTES de abrir el modal
+      // 1. Verificar si el usuario inició sesión
       const userString = localStorage.getItem('innovare_user');
       if (!userString) {
-        alert("🔒 Debes iniciar sesión para poder suscribirte a una membresía.");
+        alert("Debes iniciar sesión para poder suscribirte a una membresía.");
         window.location.href = 'login.html';
-        return; // Detiene el código si no hay sesión
+        return; 
       }
 
       var existing = document.getElementById('membership-modal');
@@ -252,48 +387,70 @@
 
       var modal = document.createElement('div');
       modal.id = 'membership-modal';
-      modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif;';
+      modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);backdrop-filter:blur(5px);z-index:9999;display:flex;align-items:center;justify-content:center;font-family:var(--font-primary);';
       modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
 
       var deposit = (price * 0.1).toFixed(2);
-      var featuresHtml = features.map(function(f) { return '<li style="padding:6px 0;border-bottom:1px solid #eee;font-size:0.85rem;">✓ ' + f + '</li>'; }).join('');
+      var featuresHtml = features.map(function(f) { 
+        return '<li style="padding:8px 0; border-bottom:1px solid rgba(197,168,128,0.1); font-size:0.9rem; color:var(--text-muted); text-align:left;"><i class="fa-solid fa-check" style="color:var(--secondary); margin-right:8px;"></i> ' + f + '</li>'; 
+      }).join('');
 
-      modal.innerHTML = '<div style="background:#fff;border-radius:16px;padding:32px;max-width:480px;width:95%;box-shadow:0 20px 60px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto;">' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">' +
-        '<h3 style="margin:0;color:#1a1a2e;font-size:1.3rem;">👑 ' + name + '</h3>' +
-        '<span style="font-size:0.7rem;background:rgba(0,200,83,0.1);color:#00c853;padding:4px 10px;border-radius:10px;">🔒 Seguro</span></div>' +
+      // Modal HTML oscuro y Premium
+      modal.innerHTML = `
+        <div style="background: var(--bg-card); color: var(--text-main); border: 1px solid rgba(197, 168, 128, 0.2); border-radius: 16px; padding: 32px; max-width: 480px; width: 95%; box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto; position: relative;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 style="margin:0; font-size:1.3rem;"><i class="fa-solid fa-crown" style="color: var(--primary); margin-right:8px;"></i> ${name}</h3>
+            <span style="font-size:0.75rem; background:rgba(40,167,69,0.1); color:var(--success); padding:4px 10px; border-radius:4px; border: 1px solid rgba(40,167,69,0.3);"><i class="fa-solid fa-lock"></i> Seguro</span>
+          </div>
 
-        '<div style="background:#f5f6fa;border-radius:12px;padding:20px;margin-bottom:20px;">' +
-        '<div style="text-align:center;margin-bottom:16px;"><span style="font-size:2.5rem;font-weight:800;color:#00a0b8;">$' + price + '</span><span style="color:#6e6e7e;"> /mes</span></div>' +
-        '<ul style="list-style:none;padding:0;">' + featuresHtml + '</ul>' +
-        '<div style="text-align:center;margin-top:12px;font-size:0.8rem;color:#6e6e7e;">Depósito inicial: <strong style="color:#00a0b8;">$' + deposit + '</strong> (10%)</div></div>' +
+          <div style="background: var(--bg-main); border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(197,168,128,0.1);">
+            <div style="text-align:center; margin-bottom:16px;">
+              <span style="font-size:2.5rem; font-weight:800; color:var(--secondary-hover);">$${price}</span>
+              <span style="color:var(--text-muted);"> /mes</span>
+            </div>
+            <ul style="list-style:none; padding:0;">${featuresHtml}</ul>
+            <div style="text-align:center; margin-top:12px; font-size:0.85rem; color:var(--text-muted);">Depósito inicial: <strong style="color:var(--secondary-hover);">$${deposit}</strong> (10%)</div>
+          </div>
 
-        '<div style="margin-bottom:16px;">' +
-        '<label style="display:block;font-size:0.75rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;">Número de Tarjeta</label>' +
-        '<input id="mem-cc" type="text" class="form-input" placeholder="4242 4242 4242 4242" maxlength="19" value="4242 4242 4242 4242" style="background:#f5f6fa;">' +
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">' +
-        '<div><label style="display:block;font-size:0.75rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;">Vencimiento</label><input id="mem-exp" type="text" class="form-input" placeholder="MM/AA" maxlength="5" value="12/28" style="background:#f5f6fa;"></div>' +
-        '<div><label style="display:block;font-size:0.75rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;">CVC</label><input id="mem-cvc" type="text" class="form-input" placeholder="123" maxlength="4" value="123" style="background:#f5f6fa;"></div></div>' +
-        '<div style="margin-top:12px;"><label style="display:block;font-size:0.75rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;text-transform:uppercase;">Titular</label><input id="mem-name" type="text" class="form-input" value="Alejandro García" style="background:#f5f6fa;"></div></div>' +
+          <div style="margin-bottom:16px;">
+            <label class="form-label" style="text-align:left;">Número de Tarjeta</label>
+            <input id="mem-cc" type="text" class="form-input" placeholder="4242 4242 4242 4242" maxlength="19" value="4242 4242 4242 4242">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
+              <div>
+                <label class="form-label" style="text-align:left;">Vencimiento</label>
+                <input id="mem-exp" type="text" class="form-input" placeholder="MM/AA" maxlength="5" value="12/28">
+              </div>
+              <div>
+                <label class="form-label" style="text-align:left;">CVC</label>
+                <input id="mem-cvc" type="text" class="form-input" placeholder="123" maxlength="4" value="123">
+              </div>
+            </div>
+            <div style="margin-top:12px; text-align:left;">
+              <label class="form-label">Titular</label>
+              <input id="mem-name" type="text" class="form-input" value="Alejandro García">
+            </div>
+          </div>
 
-        '<button id="mem-pay-btn" style="width:100%;padding:14px;background:#00E5FF;color:#1a1a2e;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;">Pagar $' + price + ' MXN</button>' +
-        '<button onclick="document.getElementById(\'membership-modal\').remove()" style="width:100%;padding:10px;background:none;border:none;color:#6e6e7e;margin-top:4px;cursor:pointer;font-size:0.85rem;">Cancelar</button></div>';
+          <button id="mem-pay-btn" class="btn btn-primary btn-block" style="padding: 14px; font-size: 1rem;">Pagar $${price} MXN</button>
+          <button onclick="document.getElementById('membership-modal').remove()" style="width:100%; padding:10px; background:none; border:none; color:var(--text-muted); margin-top:8px; cursor:pointer; font-size:0.85rem; text-transform:uppercase; letter-spacing:1px;">Cancelar</button>
+        </div>
+      `;
 
       document.body.appendChild(modal);
 
-      // 2. Lógica para procesar el pago y guardarlo en Supabase
+      // 2. Lógica de Pago
       document.getElementById('mem-pay-btn').onclick = async function() {
         var btn = document.getElementById('mem-pay-btn');
         btn.disabled = true; 
         btn.textContent = 'Procesando validación...';
         
         try {
-          const usuario = JSON.parse(userString); // Recuperamos los datos del usuario logueado
+          const usuario = JSON.parse(userString);
 
-          // Simular tiempo de validación bancaria (1.5 segundos)
+          // Simular tiempo de validación bancaria
           await new Promise(r => setTimeout(r, 1500));
 
-          // Guardar en la tabla 'suscripciones' de Supabase
+          // Guardar en Supabase
           if (window.sb) {
             const { error } = await sb.from('suscripciones').insert([{
               cliente_id: usuario.id,
@@ -301,11 +458,10 @@
               precio: price,
               estado: 'activa'
             }]);
-            
             if (error) throw error;
           }
 
-          // Guardar en LocalStorage para actualizar visualmente el menú/perfil
+          // Guardar en LocalStorage
           localStorage.setItem('innovare_membership', JSON.stringify({
             name: name, price: price, date: new Date().toISOString(),
             deposit: parseFloat(deposit), status: 'active'
@@ -313,8 +469,20 @@
           
           if (typeof window.updateNavBar === 'function') window.updateNavBar();
 
-          // Mostrar pantalla de éxito
-          modal.innerHTML = '<div style="background:#fff;border-radius:16px;padding:48px 32px;text-align:center;max-width:400px;width:90%;"><div style="font-size:4rem;margin-bottom:20px;">✅</div><h3 style="color:#00c853;">¡Suscripción exitosa!</h3><p style="color:#6e6e7e;">Tu membresía <strong>' + name + '</strong> está activa y registrada en tu cuenta.</p><p style="color:#1a1a2e;font-weight:600;font-size:1.2rem;">$' + price + ' MXN / mes</p><p style="color:#6e6e7e;font-size:0.85rem;">Depósito cobrado: $' + deposit + '</p><div style="margin-top:16px;padding:12px;background:rgba(0,200,83,0.08);border:1px solid rgba(0,200,83,0.2);border-radius:8px;font-size:0.8rem;color:#00c853;font-weight:600;">👑 Ahora eres miembro <strong>' + name + '</strong></div><button onclick="window.location.href=\'reservas.html\'" style="width:100%;padding:14px;background:#00E5FF;color:#1a1a2e;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;margin-top:20px;">Ir a Reservar Ahora</button></div>';
+          // Modal de Éxito Oscuro/Premium
+          modal.innerHTML = `
+            <div style="background: var(--bg-card); color: var(--text-main); border: 1px solid rgba(197, 168, 128, 0.2); border-radius: 16px; padding: 48px 32px; text-align: center; max-width: 400px; width: 90%; box-shadow: var(--shadow-lg);">
+              <div style="font-size:4rem; margin-bottom:20px; color: var(--success);"><i class="fa-solid fa-circle-check"></i></div>
+              <h3 style="color:var(--success); margin-bottom: 10px;">¡Suscripción exitosa!</h3>
+              <p style="color:var(--text-muted); margin-bottom: 20px;">Tu membresía <strong style="color:var(--text-main);">${name}</strong> está activa y registrada en tu cuenta.</p>
+              <p style="color:var(--secondary-hover); font-weight:700; font-size:1.4rem; margin-bottom: 5px;">$${price} MXN / mes</p>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom: 20px;">Depósito cobrado: $${deposit}</p>
+              <div style="margin-top:16px; padding:12px; background:rgba(40,167,69,0.1); border:1px solid rgba(40,167,69,0.3); border-radius:8px; font-size:0.85rem; color:var(--success); font-weight:700; text-transform: uppercase; letter-spacing: 1px;">
+                <i class="fa-solid fa-crown" style="margin-right: 5px;"></i> Ahora eres miembro ${name}
+              </div>
+              <button onclick="window.location.href='reservas.html'" class="btn btn-primary btn-block" style="margin-top:25px; padding: 14px;">Ir a Reservar Ahora</button>
+            </div>
+          `;
           
         } catch(error) {
           console.error("Error guardando suscripción:", error);

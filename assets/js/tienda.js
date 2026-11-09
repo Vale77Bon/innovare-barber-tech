@@ -12,28 +12,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateCartUI();
   } catch(e) {
     // Fallback: productos hardcodeados
+    // Fallback: productos con rutas de imágenes reales
     productos = [
-      { id:1, nombre:'Shampoo Profesional Biotina', categoria:'shampoo', precio:249, img:'🧴' },
-      { id:2, nombre:'Shampoo Anticaspa Mentolado', categoria:'shampoo', precio:199, img:'🧴' },
-      { id:3, nombre:'Shampoo Voluminizador', categoria:'shampoo', precio:229, img:'🧴' },
-      { id:4, nombre:'Shampoo Keratina Reparadora', categoria:'shampoo', precio:279, img:'🧴' },
-      { id:5, nombre:'Acondicionador Hidratante Argán', categoria:'acondicionador', precio:259, img:'🧴' },
-      { id:6, nombre:'Acondicionador Leave-In', categoria:'acondicionador', precio:219, img:'🧴' },
-      { id:7, nombre:'Acondicionador Reparador Barba', categoria:'acondicionador', precio:189, img:'🧴' },
-      { id:8, nombre:'Pomada Fuerte Hold Mate', categoria:'pomada', precio:179, img:'💈' },
-      { id:9, nombre:'Pomada Brillo Natural', categoria:'pomada', precio:159, img:'💈' },
-      { id:10, nombre:'Cera Capilar Texturizante', categoria:'cera', precio:199, img:'💈' },
-      { id:11, nombre:'Cera para Barba Modeladora', categoria:'cera', precio:149, img:'🧔' },
-      { id:12, nombre:'Aceite Barba Argán + Jojoba', categoria:'aceite', precio:299, img:'🧔' },
-      { id:13, nombre:'Aceite Capilar Anticaída', categoria:'aceite', precio:349, img:'💆' },
-      { id:14, nombre:'Tónico Capilar Revitalizante', categoria:'tonico', precio:229, img:'💆' },
-      { id:15, nombre:'Tónico After Shave Calmante', categoria:'tonico', precio:189, img:'🪒' },
-      { id:16, nombre:'Gel Fijador Extra Fuerte', categoria:'gel', precio:139, img:'💈' },
-      { id:17, nombre:'Spray Texturizante Salino', categoria:'spray', precio:219, img:'🌊' },
-      { id:18, nombre:'Crema para Peinar', categoria:'crema', precio:169, img:'💈' },
-      { id:19, nombre:'Kit Viajero (3 piezas)', categoria:'kit', precio:499, img:'🎒' },
-      { id:20, nombre:'Peine Carbono Profesional', categoria:'accesorio', precio:129, img:'🪮' },
-      { id:21, nombre:'Cepillo Redondo Profesional', categoria:'accesorio', precio:179, img:'🪮' }
+      { id:1, nombre:'Shampoo Profesional Biotina', categoria:'shampoo', precio:249, img:'assets/img/productos/shampoo-biotina.png' },
+      { id:2, nombre:'Shampoo Anticaspa Mentolado', categoria:'shampoo', precio:199, img:'assets/img/productos/shampoo-anticaspa.png' },
+      { id:3, nombre:'Shampoo Voluminizador', categoria:'shampoo', precio:229, img:'assets/img/productos/shampoo-volumen.png' },
+      { id:4, nombre:'Shampoo Keratina Reparadora', categoria:'shampoo', precio:279, img:'assets/img/productos/shampoo-keratina.png' },
+      { id:5, nombre:'Acondicionador Hidratante Argán', categoria:'acondicionador', precio:259, img:'assets/img/productos/acondicionador-argan.png' },
+      { id:6, nombre:'Acondicionador Leave-In', categoria:'acondicionador', precio:219, img:'assets/img/productos/acondicionador-leavein.png' },
+      { id:7, nombre:'Acondicionador Reparador Barba', categoria:'acondicionador', precio:189, img:'assets/img/productos/acondicionador-barba.png' },
+      { id:8, nombre:'Pomada Fuerte Hold Mate', categoria:'pomada', precio:179, img:'assets/img/productos/pomada-fuerte.png' },
+      { id:9, nombre:'Pomada Brillo Natural', categoria:'pomada', precio:159, img:'assets/img/productos/pomada-brillo.png' },
+      { id:10, nombre:'Cera Capilar Texturizante', categoria:'cera', precio:199, img:'assets/img/productos/cera-texturizante.png' },
+      { id:11, nombre:'Cera para Barba Modeladora', categoria:'cera', precio:149, img:'assets/img/productos/cera-barba.png' },
+      { id:12, nombre:'Aceite Barba Argán + Jojoba', categoria:'aceite', precio:299, img:'assets/img/productos/aceite-argan.png' },
+      { id:13, nombre:'Aceite Capilar Anticaída', categoria:'aceite', precio:349, img:'assets/img/productos/aceite-anticaida.png' },
+      { id:14, nombre:'Tónico Capilar Revitalizante', categoria:'tonico', precio:229, img:'assets/img/productos/tonico-revitalizante.png' },
+      { id:15, nombre:'Tónico After Shave Calmante', categoria:'tonico', precio:189, img:'assets/img/productos/tonico-aftershave.png' },
+      { id:16, nombre:'Gel Fijador Extra Fuerte', categoria:'gel', precio:139, img:'assets/img/productos/gel-fijador.png' },
+      { id:17, nombre:'Spray Texturizante Salino', categoria:'spray', precio:219, img:'assets/img/productos/spray-salino.png' },
+      { id:18, nombre:'Crema para Peinar', categoria:'crema', precio:169, img:'assets/img/productos/crema-peinar.png' },
+      { id:19, nombre:'Kit Viajero (3 piezas)', categoria:'kit', precio:499, img:'assets/img/productos/kit-viajero.png' },
+      { id:20, nombre:'Peine Carbono Profesional', categoria:'accesorio', precio:129, img:'assets/img/productos/peine-carbono.png' },
+      { id:21, nombre:'Cepillo Redondo Profesional', categoria:'accesorio', precio:179, img:'assets/img/productos/cepillo-redondo.png' }
     ];
     renderProducts('todas');
     updateCartUI();
@@ -107,7 +108,9 @@ function renderProducts(filter) {
     return `
       <div class="product-card">
         <span class="product-category">${p.categoria}</span>
-        <div class="product-img">${p.img}</div>
+        <div class="product-img" style="text-align: center; margin-bottom: 1rem;">
+          <img src="${p.img}" alt="${p.nombre}" style="width: 100%; height: 150px; object-fit: contain; drop-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        </div>
         <div class="product-name">${p.nombre}</div>
         <div class="product-desc">${p.descripcion || ''}</div>
         <div class="product-price">$${p.precio}</div>
@@ -173,19 +176,31 @@ function updateCartUI() {
     items.innerHTML = '<p style="color:#6e6e7e;text-align:center;padding:2rem;">Carrito vacío</p>';
     return;
   }
+  // Dentro de la función updateCartUI(), busca la parte del items.innerHTML y cámbiala por esto:
+  // Dentro de la función updateCartUI(), busca la parte del items.innerHTML y cámbiala por esto:
+  // CÓDIGO CORREGIDO
   items.innerHTML = cart.map(c => `
-    <div class="cart-item">
-      <div class="cart-item-img">${c.img}</div>
-      <div class="cart-item-info">
-        <div class="cart-item-name">${c.nombre}</div>
-        <div class="cart-item-price">$${(c.precio * (c.qty || 1)).toFixed(2)}</div>
+    <div class="cart-item" style="display: grid; grid-template-columns: 60px 1fr auto; gap: 15px; align-items: center; padding: 15px 0; border-bottom: 1px solid #f0f0f4; position: relative;">
+      
+      <div class="cart-item-img" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #e8eaf0;">
+        <img src="${c.img}" alt="${c.nombre}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
       </div>
-      <div class="cart-item-qty">
-        <button class="qty-btn" onclick="changeQty(${c.id}, -1)">−</button>
-        <span>${c.qty || 1}</span>
-        <button class="qty-btn" onclick="changeQty(${c.id}, 1)">+</button>
+      
+      <div class="cart-item-info" style="display: flex; flex-direction: column; gap: 4px;">
+        <div class="cart-item-name" style="font-weight: 600; font-size: 0.9rem; line-height: 1.2; padding-right: 20px;">${c.nombre}</div>
+        <div class="cart-item-price" style="color: #00E5FF; font-weight: 700; font-size: 0.9rem;">$${(c.precio * (c.qty || 1)).toFixed(2)}</div>
       </div>
-      <span class="cart-item-remove" onclick="removeFromCart(${c.id})">✕</span>
+      
+      <div class="cart-item-actions" style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+        <span class="cart-item-remove" onclick="removeFromCart(${c.id})" style="cursor: pointer; color: #ff1744; font-size: 1.1rem; position: absolute; top: 15px; right: 0;">✕</span>
+        
+        <div class="cart-item-qty" style="display: flex; align-items: center; background: #f8f9fa; border-radius: 20px; padding: 2px 8px; border: 1px solid #e8eaf0; margin-top: 15px;">
+          <button class="qty-btn" onclick="changeQty(${c.id}, -1)" style="background: none; border: none; cursor: pointer; color: #6e6e7e; font-size: 1.2rem; padding: 0 5px;">−</button>
+          <span style="font-weight: 600; font-size: 0.9rem; min-width: 20px; text-align: center;">${c.qty || 1}</span>
+          <button class="qty-btn" onclick="changeQty(${c.id}, 1)" style="background: none; border: none; cursor: pointer; color: #6e6e7e; font-size: 1.2rem; padding: 0 5px;">+</button>
+        </div>
+      </div>
+      
     </div>
   `).join('');
 }
@@ -216,9 +231,13 @@ function gotoStep1() {
   const totales = calcularTotales();
   const items = document.getElementById('checkout-items');
   
+  // Dentro de la función gotoStep1(), busca la variable items.innerHTML y cámbiala por esto:
   items.innerHTML = cart.map(c => `
-    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f4;font-size:0.9rem;">
-      <span>${c.img} ${c.nombre} x${c.qty || 1}</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f0f0f4; font-size:0.9rem;">
+      <span style="display:flex; align-items:center; gap:12px;">
+        <img src="${c.img}" alt="${c.nombre}" style="width: 35px; height: 35px; object-fit: contain; border-radius: 4px; background: #fff;"> 
+        ${c.nombre} x${c.qty || 1}
+      </span>
       <span style="font-weight:600;">$${(c.precio * (c.qty || 1)).toFixed(2)}</span>
     </div>
   `).join('');
