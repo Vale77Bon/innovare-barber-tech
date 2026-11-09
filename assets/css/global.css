@@ -192,13 +192,73 @@ section { padding: var(--spacing-xxl) var(--spacing-xl); max-width: 1200px; marg
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ===== RESPONSIVE ===== */
-@media (max-width: 1024px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: repeat(2, 1fr); } }
+/* ===== RESPONSIVE Y MENÚ MÓVIL (GLOBAL) ===== */
+@media (max-width: 1024px) { 
+  .grid-4 { grid-template-columns: repeat(2, 1fr); } 
+  .grid-3 { grid-template-columns: repeat(2, 1fr); } 
+}
+
 @media (max-width: 768px) {
   html { font-size: 15px; }
-  .hamburger { display: flex; }
-  .nav-links { position: fixed; top: 75px; left: 0; width: 100%; background: rgba(11,12,16,0.98); flex-direction: column; padding: var(--spacing-xl); gap: var(--spacing-md); transform: translateY(-100%); opacity: 0; pointer-events: none; transition: all 0.3s ease; border-bottom: 1px solid rgba(197,168,128,0.2); }
-  .nav-links.active { transform: translateY(0); opacity: 1; pointer-events: all; }
+  
+  /* 1. Ajuste de Navbar y Logo para evitar que empuje al menú */
+  .navbar { z-index: 9999 !important; padding: 0 1rem !important; }
+  .navbar .logo { font-size: 1.05rem !important; letter-spacing: 0px !important; white-space: nowrap; }
+  
+  /* 2. Forzar Menú de Hamburguesa a la vista con color dorado */
+  .hamburger { display: flex !important; z-index: 10000; margin-left: auto !important; margin-right: 0 !important; }
+  .hamburger span { background-color: var(--primary) !important; }
+  
+  /* 3. Panel lateral del menú que ocupa toda la pantalla */
+  .nav-links { 
+    position: fixed !important; 
+    top: 75px !important; 
+    left: 0 !important; 
+    width: 100% !important; 
+    height: calc(100vh - 75px) !important; 
+    background: var(--bg-main) !important; 
+    flex-direction: column !important; 
+    justify-content: flex-start !important;
+    padding: 2rem 1.5rem !important; 
+    gap: 1rem !important; 
+    transform: translateX(100%) !important; 
+    opacity: 1 !important; 
+    transition: transform 0.3s ease-in-out !important; 
+    pointer-events: none !important;
+    overflow-y: auto !important;
+    border-top: 1px solid rgba(197,168,128,0.2);
+  }
+  
+  .nav-links.active { 
+    transform: translateX(0) !important; 
+    pointer-events: all !important; 
+  }
+  
+  /* 4. Diseño de los botones dentro del menú */
+  .nav-links a {
+    font-size: 1.1rem !important;
+    width: 100%;
+    text-align: center;
+    padding: 15px 0 !important;
+    border-bottom: 1px solid rgba(197,168,128,0.1);
+  }
+  .nav-links a::after { display: none !important; }
+  
+  .nav-links .user-badge, .nav-links .logout-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 15px !important;
+    font-size: 1rem !important;
+    margin-top: 10px;
+  }
+  
+  /* 5. Ajustes generales de las secciones en móvil */
   .hero-content h1 { font-size: 2.5rem; }
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
   section { padding: var(--spacing-xl) var(--spacing-md); }
+}
+
+@media (max-width: 480px) {
+  html { font-size: 14px; }
+  .hero-content h1 { font-size: 2rem; }
 }
