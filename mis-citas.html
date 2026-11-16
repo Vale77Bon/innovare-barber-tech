@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mis Citas | Innovare Barber Tech</title>
+  <title>Mis Citas | Saulo &amp; Amor Salón</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/img/marca/favicon-64.png">
+  <link rel="apple-touch-icon" href="assets/img/marca/favicon-180.png">
   <link rel="stylesheet" href="assets/css/global.css">
   <style>
     .citas-page { padding-top: calc(70px + var(--spacing-xxl)); min-height: 100vh; }
@@ -15,14 +17,14 @@
     }
     .cita-card.cancelled { opacity: 0.5; }
     .cita-info { display: grid; grid-template-columns: auto 1fr; gap: var(--spacing-md); align-items: center; }
-    .cita-avatar { width: 48px; height: 48px; border-radius: var(--radius-full); background: rgba(0,229,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    .cita-avatar { width: 48px; height: 48px; border-radius: var(--radius-full); background: rgba(200,147,124,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
     .cita-details h4 { margin-bottom: 2px; }
     .cita-details p { font-size: 0.85rem; color: #6e6e7e; margin: 0; }
     .cita-details .meta { font-size: 0.8rem; color: #9e9eae; margin-top: 4px; }
     .cita-actions { display: flex; gap: var(--spacing-sm); flex-wrap: wrap; }
     .cita-status { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 10px; border-radius: 12px; }
     .cita-status.confirmada { background: rgba(0,200,83,0.12); color: #00c853; }
-    .cita-status.completada { background: rgba(0,229,255,0.12); color: #0099aa; }
+    .cita-status.completada { background: rgba(200,147,124,0.12); color: #7A3B5E; }
     .cita-status.pendiente { background: rgba(255,214,0,0.12); color: #b8a000; }
     .cita-status.cancelada { background: rgba(255,23,68,0.12); color: #ff1744; }
     .empty-state { text-align: center; padding: var(--spacing-xxl); color: #9e9eae; }
@@ -97,7 +99,7 @@
         citasDb = data || [];
 
         if (citasDb.length === 0) {
-          container.innerHTML = '<div class="empty-state"><div class="icon">📅</div><h3>Sin citas</h3><p>Reserva tu primera cita en Innovare.</p><a href="reservas.html" class="btn btn-primary mt-1">Reservar Ahora</a></div>';
+          container.innerHTML = '<div class="empty-state"><div class="icon">📅</div><h3>Sin citas</h3><p>Reserva tu primera cita en Saulo &amp; Amor Salón.</p><a href="reservas.html" class="btn btn-primary mt-1">Reservar Ahora</a></div>';
           return;
         }
 
@@ -109,19 +111,19 @@
           
           // Extracción de datos cruzados desde el JOIN
           var srvName = c.servicios ? c.servicios.nombre : 'Servicio';
-          var brbName = c.barberos ? c.barberos.nombre : 'Barbero';
+          var brbName = c.barberos ? c.barberos.nombre : 'Estilista';
           var horaAjustada = c.hora ? c.hora.substring(0, 5) : '—'; // Para quitar los segundos de SQL
           
           html += '<div class="cita-card' + (stClass==='cancelada'?' cancelled':'') + '">';
           html += '<div class="cita-info">';
-          html += '<div class="cita-avatar">💈</div>';
+          html += '<div class="cita-avatar">💇</div>';
           html += '<div class="cita-details">';
           html += '<h4>' + srvName + '</h4>';
           html += '<p>👤 ' + brbName + ' · ' + fCur(c.precio_total || 0) + '</p>';
           html += '<p class="meta">📅 ' + fDate(c.fecha) + ' · 🕐 ' + horaAjustada + ' · 💰 Depósito: ' + fCur(c.deposito_garantia || 0) + '</p>';
           
           if (c.pendiente > 0 && c.estado !== 'cancelada') {
-            html += '<p class="meta" style="color:#e65100;">⚠️ Pendiente en barbería: ' + fCur(c.pendiente) + '</p>';
+            html += '<p class="meta" style="color:#e65100;">⚠️ Pendiente en el salón: ' + fCur(c.pendiente) + '</p>';
           }
           html += '<span class="cita-status ' + stClass + '">' + stText + '</span>';
           html += '</div></div>';
@@ -160,7 +162,7 @@
       var oldDate = cita.fecha;
       var oldTime = cita.hora ? cita.hora.substring(0, 5) : '';
       var srvName = cita.servicios ? cita.servicios.nombre : 'Servicio';
-      var brbName = cita.barberos ? cita.barberos.nombre : 'Barbero';
+      var brbName = cita.barberos ? cita.barberos.nombre : 'Estilista';
       
       var modal = document.createElement('div');
       modal.className = 'edit-modal';
