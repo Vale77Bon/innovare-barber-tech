@@ -1,4 +1,4 @@
-// ===== TIENDA.JS - Innovare Barber Tech =====
+// ===== TIENDA.JS - Saulo & Amor Salón =====
 let productos = [];
 let cart = JSON.parse(localStorage.getItem('innovare_cart') || '[]');
 
@@ -14,27 +14,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Fallback: productos hardcodeados
     // Fallback: productos con rutas de imágenes reales
     productos = [
-      { id:1, nombre:'Shampoo Profesional Biotina', categoria:'shampoo', precio:249, img:'assets/img/productos/shampoo-biotina.png' },
-      { id:2, nombre:'Shampoo Anticaspa Mentolado', categoria:'shampoo', precio:199, img:'assets/img/productos/shampoo-anticaspa.png' },
-      { id:3, nombre:'Shampoo Voluminizador', categoria:'shampoo', precio:229, img:'assets/img/productos/shampoo-volumen.png' },
-      { id:4, nombre:'Shampoo Keratina Reparadora', categoria:'shampoo', precio:279, img:'assets/img/productos/shampoo-keratina.png' },
-      { id:5, nombre:'Acondicionador Hidratante Argán', categoria:'acondicionador', precio:259, img:'assets/img/productos/acondicionador-argan.png' },
-      { id:6, nombre:'Acondicionador Leave-In', categoria:'acondicionador', precio:219, img:'assets/img/productos/acondicionador-leavein.png' },
-      { id:7, nombre:'Acondicionador Reparador Barba', categoria:'acondicionador', precio:189, img:'assets/img/productos/acondicionador-barba.png' },
-      { id:8, nombre:'Pomada Fuerte Hold Mate', categoria:'pomada', precio:179, img:'assets/img/productos/pomada-fuerte.png' },
-      { id:9, nombre:'Pomada Brillo Natural', categoria:'pomada', precio:159, img:'assets/img/productos/pomada-brillo.png' },
-      { id:10, nombre:'Cera Capilar Texturizante', categoria:'cera', precio:199, img:'assets/img/productos/cera-texturizante.png' },
-      { id:11, nombre:'Cera para Barba Modeladora', categoria:'cera', precio:149, img:'assets/img/productos/cera-barba.png' },
-      { id:12, nombre:'Aceite Barba Argán + Jojoba', categoria:'aceite', precio:299, img:'assets/img/productos/aceite-argan.png' },
-      { id:13, nombre:'Aceite Capilar Anticaída', categoria:'aceite', precio:349, img:'assets/img/productos/aceite-anticaida.png' },
-      { id:14, nombre:'Tónico Capilar Revitalizante', categoria:'tonico', precio:229, img:'assets/img/productos/tonico-revitalizante.png' },
-      { id:15, nombre:'Tónico After Shave Calmante', categoria:'tonico', precio:189, img:'assets/img/productos/tonico-aftershave.png' },
-      { id:16, nombre:'Gel Fijador Extra Fuerte', categoria:'gel', precio:139, img:'assets/img/productos/gel-fijador.png' },
-      { id:17, nombre:'Spray Texturizante Salino', categoria:'spray', precio:219, img:'assets/img/productos/spray-salino.png' },
-      { id:18, nombre:'Crema para Peinar', categoria:'crema', precio:169, img:'assets/img/productos/crema-peinar.png' },
-      { id:19, nombre:'Kit Viajero (3 piezas)', categoria:'kit', precio:499, img:'assets/img/productos/kit-viajero.png' },
-      { id:20, nombre:'Peine Carbono Profesional', categoria:'accesorio', precio:129, img:'assets/img/productos/peine-carbono.png' },
-      { id:21, nombre:'Cepillo Redondo Profesional', categoria:'accesorio', precio:179, img:'assets/img/productos/cepillo-redondo.png' }
+      { id:1, nombre:'Shampoo Hidratante de Argán', categoria:'shampoo', precio:219, img:'assets/img/productos/shampoo-argan.png' },
+      { id:2, nombre:'Shampoo Matizador Violeta', categoria:'shampoo', precio:249, img:'assets/img/productos/shampoo-matizador.png' },
+      { id:3, nombre:'Shampoo Anticaída con Biotina', categoria:'shampoo', precio:239, img:'assets/img/productos/shampoo-biotina.png' },
+      { id:4, nombre:'Shampoo Cuida Color', categoria:'shampoo', precio:229, img:'assets/img/productos/shampoo-cuida-color.png' },
+      { id:5, nombre:'Acondicionador Nutritivo de Argán', categoria:'acondicionador', precio:219, img:'assets/img/productos/acondicionador-argan.png' },
+      { id:6, nombre:'Acondicionador Sin Enjuague', categoria:'acondicionador', precio:199, img:'assets/img/productos/acondicionador-sin-enjuague.png' },
+      { id:7, nombre:'Mascarilla Reparadora de Keratina', categoria:'tratamiento', precio:289, img:'assets/img/productos/mascarilla-keratina.png' },
+      { id:8, nombre:'Ampolleta Reconstructora', categoria:'tratamiento', precio:95, img:'assets/img/productos/ampolleta-reconstructora.png' },
+      { id:9, nombre:'Aceite Capilar de Argán', categoria:'tratamiento', precio:259, img:'assets/img/productos/aceite-argan.png' },
+      { id:10, nombre:'Tónico Anticaída', categoria:'tratamiento', precio:229, img:'assets/img/productos/tonico-anticaida.png' },
+      { id:11, nombre:'Protector Térmico en Spray', categoria:'peinado', precio:199, img:'assets/img/productos/protector-termico.png' },
+      { id:12, nombre:'Crema para Rizos', categoria:'peinado', precio:179, img:'assets/img/productos/crema-rizos.png' },
+      { id:13, nombre:'Spray Fijador Flexible', categoria:'peinado', precio:169, img:'assets/img/productos/spray-fijador.png' },
+      { id:14, nombre:'Esmalte en Gel', categoria:'uñas', precio:129, img:'assets/img/productos/esmalte-gel.png' },
+      { id:15, nombre:'Aceite para Cutícula', categoria:'uñas', precio:99, img:'assets/img/productos/aceite-cuticula.png' },
+      { id:16, nombre:'Cepillo Redondo Térmico', categoria:'accesorio', precio:189, img:'assets/img/productos/cepillo-redondo.png' },
+      { id:17, nombre:'Kit de Viaje', categoria:'accesorio', precio:399, img:'assets/img/productos/kit-viaje.png' }
     ];
     renderProducts('todas');
     updateCartUI();
@@ -73,7 +69,7 @@ function initPaymentToggle() {
   });
 }
 
-// 2. Función Helper Centralizada para las matemáticas (Aplica VIP Tech 15%)
+// 2. Función Helper Centralizada para las matemáticas (Aplica Amor VIP 15%)
 function calcularTotales() {
   const count = cart.reduce((s, c) => s + (c.qty || 1), 0);
   const subtotal = cart.reduce((s, c) => s + c.precio * (c.qty || 1), 0);
@@ -81,11 +77,11 @@ function calcularTotales() {
   let discount = 0;
   let isVIP = false;
   
-  // Verificar Membresía VIP Tech
+  // Verificar Membresía Amor VIP
   const memStr = localStorage.getItem('innovare_membership');
   if (memStr) {
     const mem = JSON.parse(memStr);
-    if (mem.status === 'active' && mem.name === 'VIP Tech') {
+    if (mem.status === 'active' && mem.name === 'Amor VIP') {
       discount = subtotal * 0.15; // 15% de descuento
       isVIP = true;
     }
@@ -164,7 +160,7 @@ function updateCartUI() {
   
   // Mostrar descuento en el carrito lateral
   if (totales.isVIP && totales.count > 0) {
-    document.getElementById('cart-total').innerHTML = `<span style="text-decoration:line-through; font-size:0.8rem; color:#9e9eae;">$${totales.subtotal.toFixed(2)}</span> <span style="color:#00E5FF;">$${totales.total.toFixed(2)}</span>`;
+    document.getElementById('cart-total').innerHTML = `<span style="text-decoration:line-through; font-size:0.8rem; color:#9e9eae;">$${totales.subtotal.toFixed(2)}</span> <span style="color:#C8937C;">$${totales.total.toFixed(2)}</span>`;
   } else {
     document.getElementById('cart-total').textContent = '$' + totales.total.toFixed(2);
   }
@@ -188,7 +184,7 @@ function updateCartUI() {
       
       <div class="cart-item-info" style="display: flex; flex-direction: column; gap: 4px;">
         <div class="cart-item-name" style="font-weight: 600; font-size: 0.9rem; line-height: 1.2; padding-right: 20px;">${c.nombre}</div>
-        <div class="cart-item-price" style="color: #00E5FF; font-weight: 700; font-size: 0.9rem;">$${(c.precio * (c.qty || 1)).toFixed(2)}</div>
+        <div class="cart-item-price" style="color: #C8937C; font-weight: 700; font-size: 0.9rem;">$${(c.precio * (c.qty || 1)).toFixed(2)}</div>
       </div>
       
       <div class="cart-item-actions" style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
@@ -246,7 +242,7 @@ function gotoStep1() {
   if (totales.isVIP) {
     items.innerHTML += `
     <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f4;font-size:0.9rem;color:#00c853;background:rgba(0,200,83,0.05);">
-      <span>👑 Descuento VIP Tech (15%)</span>
+      <span>👑 Descuento Amor VIP (15%)</span>
       <span style="font-weight:600;">-$${totales.discount.toFixed(2)}</span>
     </div>`;
   }

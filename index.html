@@ -2,8 +2,10 @@
 <html lang="es-MX">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <meta name="description" content="Innovare Barber Tech - Revolucionando la barbería con diagnóstico 3D, simulación AR y membresías digitales.">
-  <title>Innovare Barber Tech | Tecnología en Barbería</title>
+  <meta name="description" content="Saulo &amp; Amor Salón: estética en Puebla. Cortes, color, tratamientos capilares y uñas con reserva en línea.">
+  <title>Saulo &amp; Amor Salón | Estética en Puebla</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/img/marca/favicon-64.png">
+  <link rel="apple-touch-icon" href="assets/img/marca/favicon-180.png">
   
   <!-- FontAwesome para los íconos Premium -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -29,7 +31,7 @@
     .plan-price { font-size: 2.2rem; font-weight: 700; color: var(--secondary-hover); margin: var(--spacing-md) 0; }
     .plan-price span { font-size: 1rem; font-weight: 400; color: var(--text-muted); }
     .plan-features { margin: var(--spacing-lg) 0; text-align: left; padding: 0; }
-    .plan-features li { padding: var(--spacing-sm) 0; border-bottom: 1px solid rgba(197, 168, 128, 0.1); font-size: 0.9rem; color: var(--text-muted); }
+    .plan-features li { padding: var(--spacing-sm) 0; border-bottom: 1px solid rgba(200,147,124, 0.1); font-size: 0.9rem; color: var(--text-muted); }
     .plan-features li:last-child { border-bottom: none; }
     .plan-features li::before { 
       content: '\f00c'; 
@@ -37,10 +39,11 @@
       color: var(--secondary); margin-right: 8px; 
     }
 
-    .barbers { padding-top: var(--spacing-xxl); }
+    .team { padding-top: var(--spacing-xxl); }
     .testimonials { padding-top: var(--spacing-xxl); }
+    .testimonials .card h3 { font-size: 1.1rem; }
 
-    .stats-section { background: var(--bg-card); padding: 3rem 2rem; margin: 3rem auto 0; border-top: 1px solid rgba(197, 168, 128, 0.1); border-bottom: 1px solid rgba(197, 168, 128, 0.1); }
+    .stats-section { background: var(--bg-card); padding: 3rem 2rem; margin: 3rem auto 0; border-top: 1px solid rgba(200,147,124, 0.1); border-bottom: 1px solid rgba(200,147,124, 0.1); }
     .stats-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; text-align: center; }
     .stat-number { font-size: 2.5rem; font-weight: 700; color: var(--primary); }
     .stat-label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
@@ -48,11 +51,11 @@
     .tech-section { padding-top: var(--spacing-xxl); }
     .tech-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
     .tech-feature { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem; }
-    .tf-icon { width: 48px; height: 48px; border-radius: 10px; background: rgba(69, 162, 158, 0.1); border: 1px solid rgba(69, 162, 158, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--secondary); flex-shrink: 0; }
+    .tf-icon { width: 48px; height: 48px; border-radius: 10px; background: rgba(208,143,174, 0.1); border: 1px solid rgba(208,143,174, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--secondary); flex-shrink: 0; }
     .tf-text h4 { color: var(--text-main); font-size: 1rem; margin-bottom: 4px; }
     .tf-text p { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
 
-    .cta-section { text-align: center; padding: 4rem 2rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid rgba(197, 168, 128, 0.2); margin: 4rem auto; box-shadow: var(--shadow-lg); }
+    .cta-section { text-align: center; padding: 4rem 2rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid rgba(200,147,124, 0.2); margin: 4rem auto; box-shadow: var(--shadow-lg); }
     .cta-section p { max-width: 500px; margin: 0 auto 1.5rem; color: var(--text-muted); }
 
     /* ===== FIX MENÚ MÓVIL (SOBREESCRIBE GLOBAL.CSS) ===== */
@@ -63,7 +66,7 @@
       
       /* 2. Forzar el menú de hamburguesa a la vista con color dorado */
       .hamburger { display: flex !important; z-index: 10000; margin-left: auto !important; margin-right: 0 !important; }
-      .hamburger span { background-color: #C5A880 !important; } 
+      .hamburger span { background-color: #C8937C !important; } 
       
       /* ... (deja el resto del código que ya tenías aquí abajo) ... */
       
@@ -84,7 +87,7 @@
         transition: transform 0.3s ease-in-out !important; 
         pointer-events: none !important;
         overflow-y: auto !important;
-        border-top: 1px solid rgba(197,168,128,0.2);
+        border-top: 1px solid rgba(200,147,124,0.2);
       }
       
       /* Clase que activa main.js al hacer clic */
@@ -99,7 +102,7 @@
         width: 100%;
         text-align: center;
         padding: 15px 0 !important;
-        border-bottom: 1px solid rgba(197,168,128,0.1);
+        border-bottom: 1px solid rgba(200,147,124,0.1);
       }
       .nav-links a::after { display: none !important; } /* Ocultar línea animada */
 
@@ -146,11 +149,11 @@
   
   <section class="hero" id="inicio">
     <div class="hero-content">
-      <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(69, 162, 158, 0.1);border:1px solid rgba(69, 162, 158, 0.3);border-radius:4px;font-size:0.7rem;color:var(--secondary);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:1.5rem;">
-        <i class="fa-solid fa-bolt"></i> E-Business 2026
+      <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(208,143,174,0.1);border:1px solid rgba(208,143,174,0.3);border-radius:4px;font-size:0.7rem;color:var(--secondary);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:1.5rem;">
+        <i class="fa-solid fa-location-dot"></i> Estética en Puebla
       </span>
-      <h1><span class="highlight">Innovare</span> Barber Tech</h1>
-      <p>Donde la tradición de la barbería clásica se encuentra con la innovación tecnológica. Diagnóstico capilar 3D, simulación con realidad aumentada y una experiencia premium sin fricciones.</p>
+      <h1>Saulo &amp; Amor <span class="highlight">Salón</span></h1>
+      <p>Cortes, color, tratamientos capilares y uñas en el centro de Puebla. Agenda en línea a cualquier hora, conoce el estado de tu cabello con el diagnóstico capilar y prueba tu nuevo look en el espejo inteligente antes de la cita.</p>
       <div class="hero-buttons">
         <a href="reservas.html" class="btn btn-primary btn-lg"><i class="fa-solid fa-calendar-check"></i> Reservar Ahora</a>
         <a href="#servicios" class="btn btn-outline btn-lg">Ver Servicios</a>
@@ -158,245 +161,212 @@
     </div>
   </section>
 
-  <!-- Services -->
+  <!-- Servicios -->
   <section class="services" id="servicios">
     <div class="section-title">
-      <h2><i class="fa-solid fa-scissors" style="color: var(--primary); margin-right: 10px;"></i> <span class="highlight">Servicios</span> Especializados</h2>
+      <h2><i class="fa-solid fa-scissors" style="color: var(--primary); margin-right: 10px;"></i> <span class="highlight">Nuestros</span> Servicios</h2>
       <div class="divider"></div>
-      <p>Catálogo híbrido que combina estética clásica con diagnósticos digitales avanzados</p>
+      <p>Cabello, color, tratamientos y uñas con productos profesionales. Estos son los más pedidos; el catálogo completo está en Reservar.</p>
       <div id="membership-badge" style="display:none;margin-top:12px;">
         <span id="badge-text" style="padding:6px 16px;border-radius:20px;font-size:0.8rem;font-weight:600;"></span>
       </div>
     </div>
-    
+
     <div class="grid-4 mt-2">
       <div class="card">
         <div class="card-icon"><i class="fa-solid fa-scissors"></i></div>
-        <h3>Corte & Estilo Técnico Premium</h3>
-        <div class="service-price">$450</div>
-        <div class="service-duration">45 min</div>
-        <p>Desvanecidos degradados avanzados con asignación automatizada de barbero.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-icon"><i class="fa-solid fa-user-tie"></i></div>
-        <h3>Perfilado de Barba VIP</h3>
-        <div class="service-price">$350</div>
-        <div class="service-duration">30 min</div>
-        <p>Toalla caliente con vapor de ozono. Historial estético centralizado.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-icon"><i class="fa-solid fa-microscope"></i></div>
-        <h3>Escáner Capilar 3D + IA</h3>
-        <div class="service-price">$400</div>
-        <div class="service-duration">15 min</div>
-        <p>Microscopía digital 50x en 5 zonas críticas + algoritmo IA.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
-        <h3>Simulación AR Lujo</h3>
+        <h3>Corte de Dama</h3>
         <div class="service-price">$250</div>
-        <div class="service-duration">10 min</div>
-        <p>Espejo inteligente con segmentación en tiempo real y previsualización.</p>
+        <div class="service-duration">45 min</div>
+        <p>Lavado, corte y secado con la técnica que mejor va con tu tipo de cabello.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fa-solid fa-palette"></i></div>
+        <h3>Tinte Completo</h3>
+        <div class="service-price">$650</div>
+        <div class="service-duration">120 min</div>
+        <p>Color de raíz a puntas con diagnóstico capilar incluido.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fa-solid fa-spa"></i></div>
+        <h3>Tratamiento Hidratante</h3>
+        <div class="service-price">$400</div>
+        <div class="service-duration">40 min</div>
+        <p>Mascarilla y vapor para devolverle suavidad y brillo al cabello seco.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fa-solid fa-hand-sparkles"></i></div>
+        <h3>Manicure en Gel</h3>
+        <div class="service-price">$300</div>
+        <div class="service-duration">60 min</div>
+        <p>Limado, cutícula y esmalte en gel de larga duración.</p>
       </div>
     </div>
-    <div class="text-center mt-2"><a href="reservas.html" class="btn btn-primary">Ver Todos →</a></div>
+    <div class="text-center mt-2"><a href="reservas.html" class="btn btn-primary">Ver los 21 servicios →</a></div>
   </section>
 
-  <!-- Memberships -->
+  <!-- Membresías -->
   <section class="membership-plans" id="membresias">
     <div class="section-title">
-      <h2><i class="fa-solid fa-crown" style="color: var(--primary); margin-right: 10px;"></i> <span class="highlight">Membresías</span> Digitales</h2>
+      <h2><i class="fa-solid fa-crown" style="color: var(--primary); margin-right: 10px;"></i> <span class="highlight">Membresías</span></h2>
       <div class="divider"></div>
-      <p>Ingresos recurrentes mensuales con cargo automático tokenizado</p>
+      <p>Beneficios para clientes frecuentes, con cargo mensual automático</p>
     </div>
     <div class="grid-2" style="max-width:800px;margin:0 auto;">
-      <div class="card plan-card" onclick="openMembership('The Regular',349,['1 corte técnico al mes','1 perfilado de barba VIP','Prioridad en agenda (jueves a sábado)','Muestra gratis de producto premium','Cargo automático tokenizado vía Stripe'])">
-        <h3>The Regular</h3>
+      <div class="card plan-card" onclick="openMembership('Amor Esencial',349,['Brushing sin costo en cada visita','Diagnóstico capilar sin costo','Prioridad en agenda de jueves a sábado','Muestra de producto Saulo &amp; Amor','Cargo mensual automático con tarjeta'])">
+        <h3>Amor Esencial</h3>
         <div class="plan-price">$349 <span>/mes</span></div>
         <ul class="plan-features">
-          <li>1 corte técnico al mes</li><li>1 perfilado de barba VIP</li>
-          <li>Prioridad en agenda (jueves a sábado)</li><li>Muestra gratis de producto premium</li>
-          <li>Cargo automático tokenizado vía Stripe</li>
+          <li>Brushing sin costo en cada visita</li><li>Diagnóstico capilar sin costo</li>
+          <li>Prioridad en agenda de jueves a sábado</li><li>Muestra de producto Saulo &amp; Amor</li>
+          <li>Cargo mensual automático con tarjeta</li>
         </ul>
         <span class="btn btn-outline btn-block">Suscribirme</span>
       </div>
-      <div class="card plan-card featured" onclick="openMembership('VIP Tech',599,['Servicios ilimitados de corte y estilizado','Tratamientos capilares con diagnóstico 3D','15% descuento en tienda retail','Acceso prioritario Master Barbers','Cargo automático · Sin acumulación'])">
-        <h3>VIP Tech</h3>
+      <div class="card plan-card featured" onclick="openMembership('Amor VIP',599,['15% de descuento en todos los servicios','15% de descuento en la tienda','Prioridad con la estilista que elijas','Cargo mensual automático con tarjeta'])">
+        <h3>Amor VIP</h3>
         <div class="plan-price">$599 <span>/mes</span></div>
         <ul class="plan-features">
-          <li>Servicios ilimitados de corte y estilizado</li>
-          <li>Tratamientos capilares con diagnóstico 3D</li>
-          <li>15% descuento en tienda retail</li><li>Acceso prioritario Master Barbers</li>
-          <li>Cargo automático · Sin acumulación</li>
+          <li>15% de descuento en todos los servicios</li>
+          <li>15% de descuento en la tienda</li>
+          <li>Prioridad con la estilista que elijas</li>
+          <li>Cargo mensual automático con tarjeta</li>
         </ul>
         <span class="btn btn-primary btn-block">Suscribirme</span>
       </div>
     </div>
-    <p class="text-center" style="font-size:0.85rem;color:var(--text-muted);margin-top:1.5rem;">Uso o pérdida: sesiones no agendadas expiran sin reembolso.</p>
+    <p class="text-center" style="font-size:0.85rem;color:var(--text-muted);margin-top:1.5rem;">Los beneficios aplican mientras la membresía esté activa y no se acumulan con otras promociones.</p>
   </section>
 
-  <!-- Barbers -->
-  <section class="barbers" id="barberos">
+  <!-- Equipo -->
+  <section class="team" id="equipo">
     <div class="section-title">
-      <h2><i class="fa-solid fa-medal" style="color: var(--primary); margin-right: 10px;"></i> <span class="highlight">Master</span> Barbers</h2>
+      <h2><i class="fa-solid fa-medal" style="color: var(--primary); margin-right: 10px;"></i> <span class="highlight">Nuestro</span> Equipo</h2>
       <div class="divider"></div>
-      <p>Profesionales certificados en técnicas clásicas y tecnología digital</p>
+      <p>Estilistas especializados en corte, color, tratamientos y uñas</p>
     </div>
     <div class="grid-4" style="gap: 15px;">
       <div class="card" style="background: var(--bg-main); padding: var(--spacing-lg);">
         <div style="width: 80px; height: 80px; border-radius: 50%; background: transparent; border: 2px solid var(--secondary); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-md); box-shadow: var(--shadow-glow);">
           <i class="fa-solid fa-scissors" style="font-size: 2rem; color: var(--primary);"></i>
         </div>
-        <h4 style="margin-bottom: 5px;">Alex Martínez</h4>
-        <div style="color: var(--warning); font-size: 0.8rem; margin-bottom: 10px;">
-          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i> 4.9
-        </div>
-        <p style="font-size: 0.8rem; margin: 0; color: var(--text-muted);">Cortes Clásicos • 8 años</p>
+        <h4 style="margin-bottom: 5px;">Daniela Ríos</h4>
+        <div style="color: var(--primary); font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Estilista senior</div>
+        <p style="font-size: 0.8rem; margin: 0; color: var(--text-muted);">Corte y peinado • 8 años</p>
       </div>
 
       <div class="card" style="background: var(--bg-main); padding: var(--spacing-lg);">
         <div style="width: 80px; height: 80px; border-radius: 50%; background: transparent; border: 2px solid var(--secondary); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-md); box-shadow: var(--shadow-glow);">
-          <i class="fa-solid fa-user-tie" style="font-size: 2rem; color: var(--primary);"></i>
+          <i class="fa-solid fa-palette" style="font-size: 2rem; color: var(--primary);"></i>
         </div>
-        <h4 style="margin-bottom: 5px;">Carlos Gómez</h4>
-        <div style="color: var(--warning); font-size: 0.8rem; margin-bottom: 10px;">
-          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i> 4.8
-        </div>
-        <p style="font-size: 0.8rem; margin: 0; color: var(--text-muted);">Barbas VIP • 6 años</p>
+        <h4 style="margin-bottom: 5px;">Fernanda Luna</h4>
+        <div style="color: var(--primary); font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Colorista</div>
+        <p style="font-size: 0.8rem; margin: 0; color: var(--text-muted);">Color, mechas y balayage • 5 años</p>
       </div>
 
       <div class="card" style="background: var(--bg-main); padding: var(--spacing-lg);">
         <div style="width: 80px; height: 80px; border-radius: 50%; background: transparent; border: 2px solid var(--secondary); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-md); box-shadow: var(--shadow-glow);">
-          <i class="fa-solid fa-bolt" style="font-size: 2rem; color: var(--primary);"></i>
+          <i class="fa-solid fa-hand-sparkles" style="font-size: 2rem; color: var(--primary);"></i>
         </div>
-        <h4 style="margin-bottom: 5px;">Miguel Torres</h4>
-        <div style="color: var(--warning); font-size: 0.8rem; margin-bottom: 10px;">
-          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i> 4.9
-        </div>
-        <p style="font-size: 0.8rem; margin: 0; color: var(--text-muted);">Degradados • 5 años</p>
+        <h4 style="margin-bottom: 5px;">Ximena Paredes</h4>
+        <div style="color: var(--primary); font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Manicurista</div>
+        <p style="font-size: 0.8rem; margin: 0; color: var(--text-muted);">Manicure, pedicure y acrílico • 6 años</p>
       </div>
 
       <div class="card" style="background: var(--bg-main); padding: var(--spacing-lg);">
         <div style="width: 80px; height: 80px; border-radius: 50%; background: transparent; border: 2px solid var(--secondary); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-md); box-shadow: var(--shadow-glow);">
-          <i class="fa-solid fa-microchip" style="font-size: 2rem; color: var(--primary);"></i>
+          <i class="fa-solid fa-spa" style="font-size: 2rem; color: var(--primary);"></i>
         </div>
-        <h4 style="margin-bottom: 5px;">David Rojas</h4>
-        <div style="color: var(--warning); font-size: 0.8rem; margin-bottom: 10px;">
-          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i> 4.7
-        </div>
-        <p style="font-size: 0.8rem; margin: 0; color: var(--text-muted);">Estilos Premium • 10 años</p>
+        <h4 style="margin-bottom: 5px;">Rodrigo Salas</h4>
+        <div style="color: var(--primary); font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Especialista capilar</div>
+        <p style="font-size: 0.8rem; margin: 0; color: var(--text-muted);">Tratamientos y corte de caballero • 10 años</p>
       </div>
     </div>
   </section>
 
-  <!-- Stats -->
+  <!-- Datos del salón -->
   <div class="stats-section">
     <div class="stats-grid">
-      <div><div class="stat-number">1,250+</div><div class="stat-label">Clientes</div></div>
-      <div><div class="stat-number">8+</div><div class="stat-label">Años Exp.</div></div>
-      <div><div class="stat-number">340+</div><div class="stat-label">Citas/Mes</div></div>
-      <div><div class="stat-number">4</div><div class="stat-label">Master Barbers</div></div>
+      <div><div class="stat-number">21</div><div class="stat-label">Servicios</div></div>
+      <div><div class="stat-number">4</div><div class="stat-label">Estilistas</div></div>
+      <div><div class="stat-number">17</div><div class="stat-label">Productos</div></div>
+      <div><div class="stat-number">24/7</div><div class="stat-label">Reservas en línea</div></div>
     </div>
   </div>
 
-  <!-- Technology -->
+  <!-- Tecnología -->
   <section class="tech-section" id="tecnologia">
     <div class="section-title">
-      <h2><i class="fa-solid fa-microchip" style="color: var(--primary); margin-right: 10px;"></i> <span class="highlight">Tecnología</span> Integrada</h2>
+      <h2><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary); margin-right: 10px;"></i> <span class="highlight">Tecnología</span> a tu Servicio</h2>
       <div class="divider"></div>
-      <p>Innovación disruptiva aplicada a cada paso de tu experiencia</p>
+      <p>Herramientas digitales para que llegues a tu cita sabiendo lo que quieres</p>
     </div>
     <div class="tech-grid">
       <div>
         <div class="tech-feature">
-          <div class="tf-icon"><i class="fa-solid fa-robot"></i></div>
-          <div class="tf-text"><h4>Motor de Reservas 24/7</h4><p>Agenda automatizada con depósito de garantía (10%) vía Stripe API. Sin llamadas, sin fricción.</p></div>
+          <div class="tf-icon"><i class="fa-solid fa-calendar-check"></i></div>
+          <div class="tf-text"><h4>Reservas en Línea 24/7</h4><p>Elige estilista, servicio y horario, y asegura tu lugar con un depósito del 10%.</p></div>
         </div>
         <div class="tech-feature">
           <div class="tf-icon"><i class="fa-solid fa-microscope"></i></div>
-          <div class="tf-text"><h4>Diagnóstico Capilar 3D</h4><p>Microscopía digital 50x con algoritmo IA en 5 zonas críticas.</p></div>
+          <div class="tf-text"><h4>Diagnóstico Capilar</h4><p>Revisamos fibra y cuero cabelludo para recomendarte el tratamiento o el color adecuado.</p></div>
         </div>
         <div class="tech-feature">
           <div class="tf-icon"><i class="fa-solid fa-mobile-screen"></i></div>
-          <div class="tf-text"><h4>Espejo Inteligente AR</h4><p>Simulación de cortes en tiempo real. Elimina errores de comunicación al 100%.</p></div>
+          <div class="tf-text"><h4>Espejo Inteligente</h4><p>Prueba cortes y estilos antes de decidir, desde tu celular o en el salón.</p></div>
         </div>
         <div class="tech-feature">
           <div class="tf-icon"><i class="fa-solid fa-credit-card"></i></div>
-          <div class="tf-text"><h4>Checkout Unificado</h4><p>POS que consolida servicios + retail. Pago contactless, tokenizado o SPEI.</p></div>
+          <div class="tf-text"><h4>Pago en Línea</h4><p>Paga tu depósito, tu membresía o tus productos de la tienda en un solo lugar.</p></div>
         </div>
       </div>
       <div class="card" style="text-align:center;">
         <div style="font-size:3rem; margin-bottom:1rem; color: var(--primary);"><i class="fa-solid fa-location-dot"></i></div>
-        <h4 style="color:var(--text-main); margin-bottom:10px;">Sucursal Matriz</h4>
-        <p style="font-weight:500; color:var(--text-main); margin-bottom:5px;">Local PB-14, Plaza Solesta</p>
-        <p style="margin-bottom:5px;">Av. Osa Mayor No. 4931</p>
-        <p>Atlixcáyotl, <strong>Puebla</strong></p>
+        <h4 style="color:var(--text-main); margin-bottom:10px;">Nuestro Salón</h4>
+        <p style="font-weight:500; color:var(--text-main); margin-bottom:5px;">5 Sur y 33 Poniente 316</p>
+        <p style="margin-bottom:5px;">Junto al Oxxo · Av. 33 Pte., 72420</p>
+        <p>Heroica Puebla de Zaragoza, <strong>Pue.</strong></p>
         <div class="divider"></div>
         <p style="font-size:0.8rem; color:var(--text-muted);">Lun-Vie 9-8 PM · Sáb 9-6 PM</p>
-        <a href="https://wa.me/522221175554" class="btn btn-sm btn-primary mt-1" target="_blank" style="margin-top: 15px;"><i class="fa-brands fa-whatsapp" style="font-size:1.2rem;"></i> WhatsApp</a>
+        <p style="font-size:0.9rem; margin-bottom:0;"><a href="tel:+522225054935">📞 222 505 4935</a></p>
+        <a href="https://wa.me/522225054935" class="btn btn-sm btn-primary mt-1" target="_blank" style="margin-top: 15px;"><i class="fa-brands fa-whatsapp" style="font-size:1.2rem;"></i> WhatsApp</a>
       </div>
     </div>
   </section>
 
-  <!-- Testimonials -->
-  <section class="testimonials" id="testimonios">
+  <!-- Por qué elegirnos -->
+  <section class="testimonials" id="por-que">
     <div class="section-title">
-      <h2><i class="fa-solid fa-star" style="color: var(--primary); margin-right: 10px;"></i> <span class="highlight">Reseñas</span> de Clientes</h2>
+      <h2><i class="fa-solid fa-heart" style="color: var(--primary); margin-right: 10px;"></i> <span class="highlight">¿Por qué</span> Elegirnos?</h2>
       <div class="divider"></div>
     </div>
-    
+
     <div class="grid-3">
-      <div class="card" style="text-align: left; align-items: flex-start; position: relative;">
-        <i class="fa-solid fa-quote-left" style="color: rgba(69, 162, 158, 0.15); font-size: 3rem; position: absolute; top: 20px; left: 20px;"></i>
-        <p style="font-style: italic; position: relative; z-index: 1; padding-top: 15px; color: var(--text-main); font-weight: 300;">"La mejor barbería. El degradado de Miguel es perfecto, y el diagnóstico 3D es impresionante."</p>
-        <div style="display: flex; align-items: center; gap: 15px; margin-top: auto; padding-top: 20px;">
-          <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(197, 168, 128, 0.1); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(197, 168, 128, 0.3);">
-            <i class="fa-solid fa-user" style="color: var(--primary); font-size: 1.2rem;"></i>
-          </div>
-          <div>
-            <h4 style="font-size: 1rem; margin-bottom: 2px;">Ricardo Mendoza</h4>
-            <span style="font-size: 0.8rem; color: var(--secondary);">Miembro The Regular</span>
-          </div>
-        </div>
+      <div class="card">
+        <div class="card-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+        <h3>Diagnóstico antes del color</h3>
+        <p>Antes de teñir o decolorar revisamos tu cabello, para cuidar su salud y lograr el tono que buscas.</p>
       </div>
-  
-      <div class="card" style="text-align: left; align-items: flex-start; position: relative; border-color: var(--primary); box-shadow: 0 0 15px rgba(197, 168, 128, 0.1);">
-        <i class="fa-solid fa-quote-left" style="color: rgba(69, 162, 158, 0.15); font-size: 3rem; position: absolute; top: 20px; left: 20px;"></i>
-        <p style="font-style: italic; position: relative; z-index: 1; padding-top: 15px; color: var(--text-main); font-weight: 300;">"Traje a mi esposo y salió transformado. El servicio VIP Tech es excelente y el espejo AR una maravilla."</p>
-        <div style="display: flex; align-items: center; gap: 15px; margin-top: auto; padding-top: 20px;">
-          <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(197, 168, 128, 0.1); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(197, 168, 128, 0.3);">
-            <i class="fa-solid fa-user" style="color: var(--primary); font-size: 1.2rem;"></i>
-          </div>
-          <div>
-            <h4 style="font-size: 1rem; margin-bottom: 2px;">Ana Sofía García</h4>
-            <span style="font-size: 0.8rem; color: var(--text-muted);">Cliente frecuente</span>
-          </div>
-        </div>
+      <div class="card">
+        <div class="card-icon"><i class="fa-solid fa-pump-soap"></i></div>
+        <h3>Productos profesionales</h3>
+        <p>Trabajamos con nuestra propia línea de shampoos, tratamientos y productos para uñas, que también encuentras en la tienda.</p>
       </div>
-  
-      <div class="card" style="text-align: left; align-items: flex-start; position: relative;">
-        <i class="fa-solid fa-quote-left" style="color: rgba(69, 162, 158, 0.15); font-size: 3rem; position: absolute; top: 20px; left: 20px;"></i>
-        <p style="font-style: italic; position: relative; z-index: 1; padding-top: 15px; color: var(--text-main); font-weight: 300;">"La membresía VIP Tech es la mejor inversión. Cortes ilimitados más diagnóstico mensual."</p>
-        <div style="display: flex; align-items: center; gap: 15px; margin-top: auto; padding-top: 20px;">
-          <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(197, 168, 128, 0.1); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(197, 168, 128, 0.3);">
-            <i class="fa-solid fa-user" style="color: var(--primary); font-size: 1.2rem;"></i>
-          </div>
-          <div>
-            <h4 style="font-size: 1rem; margin-bottom: 2px;">Daniel Ortiz</h4>
-            <span style="font-size: 0.8rem; color: var(--primary);">Miembro VIP Tech</span>
-          </div>
-        </div>
+      <div class="card">
+        <div class="card-icon"><i class="fa-solid fa-clock"></i></div>
+        <h3>Tu horario apartado</h3>
+        <p>Al reservar, tu horario queda separado. Si se te complica, puedes reagendar o cancelar desde Mis Citas.</p>
       </div>
     </div>
   </section>
 
   <!-- CTA -->
   <section class="cta-section">
-    <h2><i class="fa-solid fa-rocket" style="color: var(--primary); margin-right: 10px;"></i> ¿Listo para Transformar tu Look?</h2>
-    <p>Reserva tu cita con depósito desde 10% y descubre Innovare Barber Tech</p>
+    <h2><i class="fa-solid fa-heart" style="color: var(--primary); margin-right: 10px;"></i> Tu Próximo Cambio de Look Empieza Aquí</h2>
+    <p>Reserva en línea con un depósito del 10% y te esperamos en Saulo &amp; Amor Salón</p>
     <a href="reservas.html" class="btn btn-primary btn-lg"><i class="fa-solid fa-calendar-check"></i> Agendar Ahora</a>
   </section>
 
@@ -426,18 +396,18 @@
 
       var deposit = (price * 0.1).toFixed(2);
       var featuresHtml = features.map(function(f) { 
-        return '<li style="padding:8px 0; border-bottom:1px solid rgba(197,168,128,0.1); font-size:0.9rem; color:var(--text-muted); text-align:left;"><i class="fa-solid fa-check" style="color:var(--secondary); margin-right:8px;"></i> ' + f + '</li>'; 
+        return '<li style="padding:8px 0; border-bottom:1px solid rgba(200,147,124,0.1); font-size:0.9rem; color:var(--text-muted); text-align:left;"><i class="fa-solid fa-check" style="color:var(--secondary); margin-right:8px;"></i> ' + f + '</li>'; 
       }).join('');
 
       // Modal HTML oscuro y Premium
       modal.innerHTML = `
-        <div style="background: var(--bg-card); color: var(--text-main); border: 1px solid rgba(197, 168, 128, 0.2); border-radius: 16px; padding: 32px; max-width: 480px; width: 95%; box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto; position: relative;">
+        <div style="background: var(--bg-card); color: var(--text-main); border: 1px solid rgba(200,147,124, 0.2); border-radius: 16px; padding: 32px; max-width: 480px; width: 95%; box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto; position: relative;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <h3 style="margin:0; font-size:1.3rem;"><i class="fa-solid fa-crown" style="color: var(--primary); margin-right:8px;"></i> ${name}</h3>
             <span style="font-size:0.75rem; background:rgba(40,167,69,0.1); color:var(--success); padding:4px 10px; border-radius:4px; border: 1px solid rgba(40,167,69,0.3);"><i class="fa-solid fa-lock"></i> Seguro</span>
           </div>
 
-          <div style="background: var(--bg-main); border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(197,168,128,0.1);">
+          <div style="background: var(--bg-main); border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(200,147,124,0.1);">
             <div style="text-align:center; margin-bottom:16px;">
               <span style="font-size:2.5rem; font-weight:800; color:var(--secondary-hover);">$${price}</span>
               <span style="color:var(--text-muted);"> /mes</span>
@@ -505,7 +475,7 @@
 
           // Modal de Éxito Oscuro/Premium
           modal.innerHTML = `
-            <div style="background: var(--bg-card); color: var(--text-main); border: 1px solid rgba(197, 168, 128, 0.2); border-radius: 16px; padding: 48px 32px; text-align: center; max-width: 400px; width: 90%; box-shadow: var(--shadow-lg);">
+            <div style="background: var(--bg-card); color: var(--text-main); border: 1px solid rgba(200,147,124, 0.2); border-radius: 16px; padding: 48px 32px; text-align: center; max-width: 400px; width: 90%; box-shadow: var(--shadow-lg);">
               <div style="font-size:4rem; margin-bottom:20px; color: var(--success);"><i class="fa-solid fa-circle-check"></i></div>
               <h3 style="color:var(--success); margin-bottom: 10px;">¡Suscripción exitosa!</h3>
               <p style="color:var(--text-muted); margin-bottom: 20px;">Tu membresía <strong style="color:var(--text-main);">${name}</strong> está activa y registrada en tu cuenta.</p>

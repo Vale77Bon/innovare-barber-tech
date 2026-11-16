@@ -1,4 +1,18 @@
-// ===== MAIN.JS - Innovare Barber Tech - Rol-based =====
+// ===== MAIN.JS - Saulo & Amor Salón - Rol-based =====
+
+// Las membresías cambiaron de nombre: quien ya tenía una guardada en el
+// navegador con el nombre anterior la conserva con el nombre nuevo.
+(function migrarMembresia() {
+  try {
+    var mapa = { 'The Regular': 'Amor Esencial', 'VIP Tech': 'Amor VIP' };
+    var mem = JSON.parse(localStorage.getItem('innovare_membership') || 'null');
+    if (mem && mapa[mem.name]) {
+      mem.name = mapa[mem.name];
+      localStorage.setItem('innovare_membership', JSON.stringify(mem));
+    }
+  } catch (e) { /* sin membresía guardada */ }
+})();
+
 document.addEventListener('DOMContentLoaded', () => initializeApp());
 
 const API = window.location.origin;
@@ -158,9 +172,8 @@ function loadRoleBasedNav() {
 
   placeholder.innerHTML = `
     <nav class="navbar">
-      <a href="index.html" class="logo">
-        <span class="logo-icon">💈</span>
-        Innovare <span class="highlight">Barber</span> Tech
+      <a href="index.html" class="logo" aria-label="Saulo &amp; Amor Salón - Inicio">
+        <img src="assets/img/marca/logo-horizontal-claro.svg" alt="Saulo &amp; Amor Salón" class="logo-img">
       </a>
       <div class="nav-links">${links}</div>
       <button class="hamburger" aria-label="Menú">
@@ -175,28 +188,22 @@ function loadFooter() {
   const fp = document.getElementById('footer-placeholder');
   if (!fp) return;
   fp.innerHTML = `
-    <footer style="background-color: #11111e; padding: 4rem 2rem 2rem; color: #fff; margin-top: auto; border-top: 1px solid rgba(0,229,255,0.1);">
+    <footer style="background-color: #1A1016; padding: 4rem 2rem 2rem; color: #fff; margin-top: auto; border-top: 1px solid rgba(200,147,124,0.1);">
       <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
         
         <div>
-          <h3 style="color: #00E5FF; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
-            💈 Innovare Barber Tech
-          </h3>
+          <img src="assets/img/marca/logo-horizontal-claro.svg" alt="Saulo &amp; Amor Salón" style="height: 56px; width: auto; margin-bottom: 1rem;">
           <p style="color: #9e9eae; font-size: 0.9rem; line-height: 1.6;">
-            Tradición clásica · Innovación digital.<br>Diagnóstico capilar 3D, simulación AR y membresías digitales.
+            Cabello, color, tratamientos y uñas en Puebla.<br>Reserva en línea, diagnóstico capilar y membresías.
           </p>
           
           <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-            <a href="https://www.facebook.com/share/19bxBqUFrL/" target="_blank" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="Facebook">📘</a>
-            <a href="https://www.instagram.com/innovarebarbertech?igsh=eTdwcDVpeDVjbDlr" target="_blank" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="Instagram">📸</a>
-            <a href="https://www.tiktok.com/@innovarebarbertec?_r=1&_t=ZS-98EMg5WlDhE" target="_blank" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="TikTok">🎵</a>
-            <a href="https://wa.me/522221175554?text=Hola,%20Innovare%20Barber%20Tech,%20tengo%20una%20duda%20¿en%20qué%20pueden%20ayudarme%20hoy?" target="_blank" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="WhatsApp">💬</a>
-            <a href="mailto:innovarebarber.tech@outlook.com" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,229,255,0.1); color: #00E5FF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#11111e'" onmouseout="this.style.background='rgba(0,229,255,0.1)'; this.style.color='#00E5FF'" title="Correo Electrónico">✉️</a>
+            <a href="https://wa.me/522225054935?text=Hola,%20Saulo%20%26%20Amor%20Sal%C3%B3n,%20quiero%20informes" target="_blank" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(200,147,124,0.1); color: #C8937C; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s;" onmouseover="this.style.background='#C8937C'; this.style.color='#1A1016'" onmouseout="this.style.background='rgba(200,147,124,0.1)'; this.style.color='#C8937C'" title="WhatsApp">💬</a>
           </div>
         </div>
         
         <div>
-          <h4 style="color: #00E5FF; margin-bottom: 1rem;">Enlaces Rápidos</h4>
+          <h4 style="color: #C8937C; margin-bottom: 1rem;">Enlaces Rápidos</h4>
           <div style="display: flex; flex-direction: column; gap: 0.8rem;">
             <a href="index.html" style="color: #9e9eae; text-decoration: none; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#9e9eae'">Inicio</a>
             <a href="reservas.html" style="color: #9e9eae; text-decoration: none; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#9e9eae'">Reservar Cita</a>
@@ -207,16 +214,17 @@ function loadFooter() {
         </div>
 
         <div>
-          <h4 style="color: #00E5FF; margin-bottom: 1rem;">Horario y Ubicación</h4>
+          <h4 style="color: #C8937C; margin-bottom: 1rem;">Horario y Ubicación</h4>
           <p style="color: #9e9eae; font-size: 0.9rem; margin-bottom: 0.5rem;">Lun - Vie: 9:00 AM - 8:00 PM</p>
           <p style="color: #9e9eae; font-size: 0.9rem; margin-bottom: 0.5rem;">Sáb: 9:00 AM - 6:00 PM</p>
           <p style="color: #9e9eae; font-size: 0.9rem; margin-bottom: 1.5rem;">Dom: Cerrado</p>
-          <p style="color: #9e9eae; font-size: 0.9rem;">📍 Local PB-14, Plaza Solesta, Puebla</p>
+          <p style="color: #9e9eae; font-size: 0.9rem; margin-bottom: 0.5rem;">📍 5 Sur y 33 Poniente 316 (junto al Oxxo), Av. 33 Pte., 72420 Heroica Puebla de Zaragoza, Pue.</p>
+          <p style="color: #9e9eae; font-size: 0.9rem;">📞 <a href="tel:+522225054935" style="color: #9e9eae;">222 505 4935</a></p>
         </div>
       </div>
       
       <div style="text-align: center; color: #6e6e7e; font-size: 0.8rem; margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.5rem;">
-        &copy; ${new Date().getFullYear()} Innovare Barber Tech. Todos los derechos reservados.
+        &copy; ${new Date().getFullYear()} Saulo &amp; Amor Salón. Todos los derechos reservados.
       </div>
     </footer>`;
 }

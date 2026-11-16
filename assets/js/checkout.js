@@ -1,4 +1,4 @@
-// ===== CHECKOUT.JS - Innovare Barber Tech =====
+// ===== CHECKOUT.JS - Saulo & Amor Salón =====
 // Cálculo matemático: Servicio + Retail - Depósito
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,14 +13,14 @@ let checkoutState = {
 };
 
 const RETAIL_PRODUCTS = [
-  { id: 1, name: 'Pomada Clásica', price: 180, category: 'Pomadas', emoji: '🧴' },
-  { id: 2, name: 'Aceite para Barba', price: 220, category: 'Aceites', emoji: '🫒' },
-  { id: 3, name: 'Shampoo Especial', price: 160, category: 'Shampoos', emoji: '🧪' },
-  { id: 4, name: 'Cera Modeladora', price: 200, category: 'Ceras', emoji: '🕯️' },
-  { id: 5, name: 'Tónico Capilar', price: 190, category: 'Tónicos', emoji: '💧' },
-  { id: 6, name: 'Peine Profesional', price: 120, category: 'Accesorios', emoji: '🪮' },
-  { id: 7, name: 'Toalla Caliente', price: 50, category: 'Extras', emoji: '🧖' },
-  { id: 8, name: 'Kit Completo', price: 450, category: 'Kits', emoji: '🎁' }
+  { id: 1, name: 'Shampoo Hidratante de Argán', price: 219, category: 'Shampoos', emoji: '🧴' },
+  { id: 2, name: 'Aceite Capilar de Argán', price: 259, category: 'Tratamientos', emoji: '💧' },
+  { id: 3, name: 'Mascarilla Reparadora de Keratina', price: 289, category: 'Tratamientos', emoji: '🫙' },
+  { id: 4, name: 'Protector Térmico en Spray', price: 199, category: 'Peinado', emoji: '🌬️' },
+  { id: 5, name: 'Tónico Anticaída', price: 229, category: 'Tratamientos', emoji: '🌿' },
+  { id: 6, name: 'Cepillo Redondo Térmico', price: 189, category: 'Accesorios', emoji: '🪮' },
+  { id: 7, name: 'Aceite para Cutícula', price: 99, category: 'Uñas', emoji: '💅' },
+  { id: 8, name: 'Kit de Viaje', price: 399, category: 'Accesorios', emoji: '🎁' }
 ];
 
 async function initCheckoutPage() {
@@ -76,9 +76,9 @@ function renderAppointmentInfo() {
           </div>
         </div>
         <div class="checkout-detail-item">
-          <span class="detail-icon">💈</span>
+          <span class="detail-icon">💇</span>
           <div>
-            <small>Barbero</small>
+            <small>Estilista</small>
             <p>${apt.barber?.name || '—'}</p>
           </div>
         </div>

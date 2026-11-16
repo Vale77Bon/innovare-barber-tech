@@ -2,7 +2,9 @@
 <html lang="es-MX">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Mis Pedidos | Innovare Barber Tech</title>
+  <title>Mis Pedidos | Saulo &amp; Amor Salón</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/img/marca/favicon-64.png">
+  <link rel="apple-touch-icon" href="assets/img/marca/favicon-180.png">
   <link rel="stylesheet" href="assets/css/global.css">
   <style>
     .orders-page { padding-top: calc(70px + 2rem); min-height: 100vh; }
@@ -30,7 +32,7 @@
     .status-completado { background: rgba(0,200,83,0.12); color: #00c853; }
     .status-pendiente { background: rgba(255,214,0,0.15); color: #b8a000; }
     .status-cancelado { background: rgba(255,23,68,0.1); color: #ff1744; }
-    .order-total-header { font-weight: 700; color: #00a0b8; font-size: 1.1rem; }
+    .order-total-header { font-weight: 700; color: #8A4A68; font-size: 1.1rem; }
     .expand-icon { font-size: 0.8rem; color: #6e6e7e; transition: transform 0.3s; }
     .order-card.expanded .expand-icon { transform: rotate(180deg); }
     .order-body { display: none; padding: var(--spacing-lg); }
@@ -233,7 +235,7 @@
                   <div class="order-summary-line"><span>Subtotal</span><span>$${subtotal.toFixed(2)}</span></div>
                   <div class="order-summary-line"><span>Envío</span><span>${envio <= 0 ? 'Gratis' : '$' + envio.toFixed(2)}</span></div>
                   <div class="order-summary-line"><span>Método de pago</span><span>${paymentIcon}</span></div>
-                  <div class="order-summary-line order-summary-total"><span>Total</span><span style="color:#00a0b8;">$${Number(o.total || 0).toFixed(2)}</span></div>
+                  <div class="order-summary-line order-summary-total"><span>Total</span><span style="color:#8A4A68;">$${Number(o.total || 0).toFixed(2)}</span></div>
                 </div>
               </div>
             </div>`;

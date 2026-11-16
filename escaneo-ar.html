@@ -2,16 +2,18 @@
 <html lang="es-MX">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Smart Mirror | Innovare Barber Tech</title>
+  <title>Smart Mirror | Saulo &amp; Amor Salón</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/img/marca/favicon-64.png">
+  <link rel="apple-touch-icon" href="assets/img/marca/favicon-180.png">
   <link rel="stylesheet" href="assets/css/global.css">
   <style>
     .ar-page { padding-top: calc(70px + 2rem); min-height: 100vh; }
     .mirror-container { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
     .mirror-box { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-    .mirror-box h3 { color: #00a0b8; margin-bottom: 1rem; }
+    .mirror-box h3 { color: #8A4A68; margin-bottom: 1rem; }
     .video-frame {
       position: relative; width: 100%; aspect-ratio: 4/3; background: #1a1a2e;
-      border: 2px solid rgba(0,229,255,0.3); border-radius: 0.5rem; overflow: hidden;
+      border: 2px solid rgba(200,147,124,0.3); border-radius: 0.5rem; overflow: hidden;
     }
     .video-frame video { width: 100%; height: 100%; object-fit: cover; display: none; }
     .video-frame .ph {
@@ -23,11 +25,11 @@
     .btn-row { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
     .badge-status { display: inline-flex; align-items: center; gap: 8px; padding: 6px 20px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; }
     .badge-status.ready { background: rgba(0,200,83,0.12); border: 1px solid rgba(0,200,83,0.2); color: #00c853; }
-    .badge-status.idle { background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.2); color: #0099aa; }
+    .badge-status.idle { background: rgba(200,147,124,0.1); border: 1px solid rgba(200,147,124,0.2); color: #7A3B5E; }
     .badge-status.waiting { background: rgba(255,214,0,0.12); border: 1px solid rgba(255,214,0,0.2); color: #b8a000; }
     .badge-status::before { content: ''; width: 8px; height: 8px; border-radius: 50%; }
     .badge-status.ready::before { background: #00c853; }
-    .badge-status.idle::before { background: #00E5FF; }
+    .badge-status.idle::before { background: #C8937C; }
     .badge-status.waiting::before { background: #ffd600; animation: blink2 1s infinite; }
     @keyframes blink2 { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
@@ -36,16 +38,16 @@
     .result-card .lbl { font-size: 0.65rem; color: #9e9eae; text-transform: uppercase; letter-spacing: 1px; }
     .result-card .val { font-size: 1.05rem; font-weight: 600; color: #1a1a2e; }
     .result-card .val.good { color: #00c853; }
-    .chip { display: inline-flex; gap: 4px; padding: 6px 14px; background: rgba(0,229,255,0.1); border: 1px solid rgba(0,200,210,0.2); border-radius: 20px; font-size: 0.85rem; color: #1a1a2e; margin: 4px; }
-    .chip b { color: #00a0b8; }
+    .chip { display: inline-flex; gap: 4px; padding: 6px 14px; background: rgba(200,147,124,0.1); border: 1px solid rgba(138,74,104,0.2); border-radius: 20px; font-size: 0.85rem; color: #1a1a2e; margin: 4px; }
+    .chip b { color: #8A4A68; }
 
     .sched-bar { display: flex; justify-content: space-between; background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 0.75rem; padding: 0.6rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
     .sched-bar .dy { text-align: center; flex: 1; }
     .sched-bar .dy .nm { font-size: 0.6rem; color: #9e9eae; text-transform: uppercase; letter-spacing: 1px; }
     .sched-bar .dy .hr { font-size: 0.7rem; color: #6e6e7e; margin-top: 2px; }
     .sched-bar .dy.off { opacity: 0.3; }
-    .sched-bar .dy.td { background: rgba(0,229,255,0.1); border-radius: 6px; padding: 2px 6px; }
-    .sched-bar .dy.td .nm { color: #00a0b8; font-weight: 700; }
+    .sched-bar .dy.td { background: rgba(200,147,124,0.1); border-radius: 6px; padding: 2px 6px; }
+    .sched-bar .dy.td .nm { color: #8A4A68; font-weight: 700; }
 
     .help-box { background: rgba(255,214,0,0.06); border: 1px solid rgba(255,214,0,0.2); border-radius: 0.75rem; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: #6e6e7e; }
     .help-box strong { color: #b8a000; }
@@ -142,8 +144,8 @@
       var d = ['Alta','Media','Baja'];
       var t = ['Lisa','Ondulada','Rizada','Crespa'];
       var c = ['Normal','Seca','Grasa','Mixta'];
-      var e = ['🧑','👨','👨‍🦰','👨‍🦱','👨‍🦳'];
-      var sn = ['Degradado Clásico','Corte Texturizado','Estilo Pompadour','Undercut Moderno','Crop Top'];
+      var e = ['🧑','👩','👩‍🦰','👩‍🦱','🧑‍🦳'];
+      var sn = ['Bob en Capas','Long Bob con Ondas','Pixie Texturizado','Capas Largas','Balayage Miel'];
       var st = [], us = new Set();
       for(var i=0; i<3; i++){
         var x;
@@ -271,7 +273,7 @@
           '<div class="result-card"><div class="lbl">Salud Capilar</div><div class="val good">'+s.sc+'%</div></div>'+
           '<div class="result-card"><div class="lbl">✂️ Estilos Recomendados</div><div style="margin-top:8px;">'+s.st.map(function(x){return '<span class="chip">'+x.n+' <b>'+x.m+'%</b></span>';}).join('')+'</div></div>'+
           '<div class="result-card"><div class="lbl">💡 Recomendaciones</div><ul style="margin:8px 0 0 16px;padding:0;list-style:disc;"><li style="color:#4a4a5e;font-size:0.85rem;margin-bottom:4px;">Shampoo con biotina para fortalecer folículos</li><li style="color:#4a4a5e;font-size:0.85rem;margin-bottom:4px;">Aceite de argán para hidratación profunda</li><li style="color:#4a4a5e;font-size:0.85rem;">Evitar lavados diarios (balance natural de sebo)</li></ul></div>'+
-          '<div style="text-align:center;margin-top:1rem;"><span style="padding:3px 10px;background:rgba(0,229,255,0.1);border:1px solid rgba(0,200,210,0.2);border-radius:4px;font-size:0.65rem;color:#00a0b8;font-weight:600;">Escaneo Guardado #'+cnt+'</span></div>';
+          '<div style="text-align:center;margin-top:1rem;"><span style="padding:3px 10px;background:rgba(200,147,124,0.1);border:1px solid rgba(138,74,104,0.2);border-radius:4px;font-size:0.65rem;color:#8A4A68;font-weight:600;">Escaneo Guardado #'+cnt+'</span></div>';
         
         sStatus('✅ Escaneo #'+cnt+' completado', 'ready');
         

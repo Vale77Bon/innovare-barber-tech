@@ -2,7 +2,9 @@
 <html lang="es-MX">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Reservar Cita | Innovare Barber Tech</title>
+  <title>Reservar Cita | Saulo &amp; Amor Salón</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/img/marca/favicon-64.png">
+  <link rel="apple-touch-icon" href="assets/img/marca/favicon-180.png">
   <link rel="stylesheet" href="assets/css/global.css">
   <style>
     .reservas-page { padding-top: calc(70px + 2rem); min-height: 100vh; }
@@ -12,14 +14,14 @@
     .calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
     .calendar-header h3 { font-size: 1.1rem; color: #1a1a2e; }
     .calendar-nav { display: flex; gap: 0.5rem; }
-    .calendar-nav button { width: 36px; height: 36px; background: #f0f0f5; border: 1px solid #e0e0ea; border-radius: 8px; color: #00a0b8; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
-    .calendar-nav button:hover { background: #00E5FF; color: #fff; border-color: #00E5FF; }
+    .calendar-nav button { width: 36px; height: 36px; background: #f0f0f5; border: 1px solid #e0e0ea; border-radius: 8px; color: #8A4A68; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+    .calendar-nav button:hover { background: #C8937C; color: #fff; border-color: #C8937C; }
     .calendar-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; text-align: center; }
     .calendar-grid .day-name { font-size: 0.7rem; color: #9e9eae; text-transform: uppercase; letter-spacing: 1px; padding: 0.5rem 0; font-weight: 600; }
     .calendar-grid .day { padding: 10px 4px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; color: #1a1a2e; border: 1px solid transparent; }
-    .calendar-grid .day:hover:not(.disabled):not(.empty) { background: rgba(0,229,255,0.15); border-color: #00E5FF; }
-    .calendar-grid .day.selected { background: #00E5FF; color: #1a1a2e; font-weight: 700; border-color: #00E5FF; }
-    .calendar-grid .day.today { border-color: #00E5FF; font-weight: 600; background: rgba(0,229,255,0.08); }
+    .calendar-grid .day:hover:not(.disabled):not(.empty) { background: rgba(200,147,124,0.15); border-color: #C8937C; }
+    .calendar-grid .day.selected { background: #C8937C; color: #1a1a2e; font-weight: 700; border-color: #C8937C; }
+    .calendar-grid .day.today { border-color: #C8937C; font-weight: 600; background: rgba(200,147,124,0.08); }
     .calendar-grid .day.disabled { opacity: 0.3; cursor: not-allowed; }
     .calendar-grid .day.empty { cursor: default; }
 
@@ -27,16 +29,16 @@
     .time-slots h4 { font-size: 0.95rem; color: #1a1a2e; margin-bottom: 0.75rem; }
     .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
     .time-slot { padding: 10px 6px; text-align: center; background: #f5f6fa; border: 1px solid #e8eaf0; border-radius: 6px; cursor: pointer; transition: all 0.3s; font-size: 0.8rem; color: #1a1a2e; }
-    .time-slot:hover:not(.disabled) { background: rgba(0,229,255,0.15); border-color: #00E5FF; }
-    .time-slot.selected { background: #00E5FF; color: #1a1a2e; font-weight: 600; border-color: #00E5FF; }
+    .time-slot:hover:not(.disabled) { background: rgba(200,147,124,0.15); border-color: #C8937C; }
+    .time-slot.selected { background: #C8937C; color: #1a1a2e; font-weight: 600; border-color: #C8937C; }
     .time-slot.disabled { opacity: 0.5; cursor: not-allowed; background: #e8eaf0; color: #9e9eae; text-decoration: line-through; }
 
     .barber-selection { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-    .barber-selection h3 { color: #00a0b8; margin-bottom: 1rem; }
+    .barber-selection h3 { color: #8A4A68; margin-bottom: 1rem; }
     .barber-option { display: flex; align-items: center; gap: 1rem; padding: 0.75rem; margin-bottom: 0.5rem; background: #f8f9fc; border: 1px solid #e8eaf0; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
-    .barber-option:hover { background: rgba(0,229,255,0.08); border-color: #00E5FF; }
-    .barber-option.selected { background: rgba(0,229,255,0.12); border-color: #00E5FF; }
-    .barber-option .barber-avatar-sm { width: 44px; height: 44px; border-radius: 50%; background: rgba(0,229,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+    .barber-option:hover { background: rgba(200,147,124,0.08); border-color: #C8937C; }
+    .barber-option.selected { background: rgba(200,147,124,0.12); border-color: #C8937C; }
+    .barber-option .barber-avatar-sm { width: 44px; height: 44px; border-radius: 50%; background: rgba(200,147,124,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
     .barber-option .barber-info { flex: 1; }
     .barber-option .barber-info h4 { font-size: 0.95rem; margin-bottom: 2px; }
     .barber-option .barber-info p { font-size: 0.8rem; color: #6e6e7e; margin: 0; }
@@ -44,16 +46,16 @@
     .barber-option .barber-status::before { content: ''; width: 8px; height: 8px; background: #00c853; border-radius: 50%; }
 
     .service-selection { margin-top: 1.5rem; }
-    .service-selection h3 { color: #00a0b8; margin-bottom: 1rem; }
+    .service-selection h3 { color: #8A4A68; margin-bottom: 1rem; }
     .service-option { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; margin-bottom: 0.5rem; background: #f8f9fc; border: 1px solid #e8eaf0; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
-    .service-option:hover { background: rgba(0,229,255,0.08); border-color: #00E5FF; }
-    .service-option.selected { background: rgba(0,229,255,0.12); border-color: #00E5FF; }
+    .service-option:hover { background: rgba(200,147,124,0.08); border-color: #C8937C; }
+    .service-option.selected { background: rgba(200,147,124,0.12); border-color: #C8937C; }
     .service-option .service-name { font-weight: 500; font-size: 0.9rem; }
     .service-option .service-name small { display: block; font-weight: 400; font-size: 0.75rem; color: #6e6e7e; margin-top: 2px; }
-    .service-option .service-price { font-weight: 700; color: #00a0b8; }
+    .service-option .service-price { font-weight: 700; color: #8A4A68; }
 
-    .reservation-summary { margin-top: 1.5rem; background: rgba(0,229,255,0.04); border: 1px solid rgba(0,200,210,0.15); border-radius: 8px; padding: 1.25rem; }
-    .reservation-summary h4 { color: #00a0b8; margin-bottom: 1rem; font-size: 0.95rem; }
+    .reservation-summary { margin-top: 1.5rem; background: rgba(200,147,124,0.04); border: 1px solid rgba(138,74,104,0.15); border-radius: 8px; padding: 1.25rem; }
+    .reservation-summary h4 { color: #8A4A68; margin-bottom: 1rem; font-size: 0.95rem; }
     .summary-item { display: flex; justify-content: space-between; padding: 0.4rem 0; font-size: 0.9rem; border-bottom: 1px solid rgba(0,0,0,0.04); }
     .summary-item:last-child { border-bottom: none; }
     .summary-item .label { color: #6e6e7e; }
@@ -63,7 +65,7 @@
     .stripe-container { margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.06); }
     .stripe-container label { display:block; font-size:0.75rem; font-weight:600; color:#1a1a2e; margin-bottom:6px; text-transform:uppercase; }
     .stripe-input { background: #fff; width: 100%; padding: 10px 14px; border: 1px solid #e8eaf0; border-radius: 8px; font-size: 0.85rem; color: #1a1a2e; outline: none; margin-bottom: 12px; }
-    .stripe-input:focus { border-color: #00E5FF; }
+    .stripe-input:focus { border-color: #C8937C; }
 
     @media (max-width: 1024px) { .reservas-container { grid-template-columns: 1fr; } .time-grid { grid-template-columns: repeat(3,1fr); } }
     @media (max-width: 768px) {
@@ -91,7 +93,7 @@
   <main class="reservas-page">
     <section class="section-title">
       <h2>📅 Reserva tu Cita</h2>
-      <p>Selecciona fecha, hora, barbero y servicio para agendar</p>
+      <p>Selecciona fecha, hora, estilista y servicio para agendar</p>
     </section>
     <div class="reservas-container">
       <div>
@@ -114,8 +116,8 @@
       </div>
       <div>
         <div class="barber-selection">
-          <h3>💈 Elige tu Barbero</h3>
-          <div id="barber-list"><p style="color:#6e6e7e; font-size: 0.85rem;">Cargando barberos...</p></div>
+          <h3>💇 Elige a tu Estilista</h3>
+          <div id="barber-list"><p style="color:#6e6e7e; font-size: 0.85rem;">Cargando estilistas...</p></div>
           <div class="service-selection">
             <h3>✂️ Selecciona Servicio</h3>
             <div id="service-list"><p style="color:#6e6e7e; font-size: 0.85rem;">Cargando servicios...</p></div>
@@ -124,12 +126,12 @@
             <h4>📋 Resumen de Reserva</h4>
             <div class="summary-item"><span class="label">Fecha</span><span class="value" id="summary-date">—</span></div>
             <div class="summary-item"><span class="label">Hora</span><span class="value" id="summary-time">—</span></div>
-            <div class="summary-item"><span class="label">Barbero</span><span class="value" id="summary-barber">—</span></div>
+            <div class="summary-item"><span class="label">Estilista</span><span class="value" id="summary-barber">—</span></div>
             <div class="summary-item"><span class="label">Servicio</span><span class="value" id="summary-service">—</span></div>
             <div class="summary-item"><span class="label">Precio Base</span><span class="value" id="summary-price">—</span></div>
-            <div class="summary-item" id="summary-discount-row" style="display:none;"><span class="label" id="summary-discount-name" style="color:#00c853;font-weight:600;">👑 Descuento VIP</span><span class="value" id="summary-discount" style="color:#00c853;font-weight:700;">—</span></div>
-            <div class="summary-item"><span class="label">Depósito requerido (10%)</span><span class="value" id="summary-deposit" style="color:#00a0b8;">—</span></div>
-            <div class="summary-item" style="border-bottom:none;"><span class="label" style="font-weight:700;">Total a Pagar hoy</span><span class="value" id="summary-total" style="font-weight:700; font-size:1.1rem; color:#00E5FF;">—</span></div>
+            <div class="summary-item" id="summary-discount-row" style="display:none;"><span class="label" id="summary-discount-name" style="color:#00c853;font-weight:600;">👑 Beneficio de membresía</span><span class="value" id="summary-discount" style="color:#00c853;font-weight:700;">—</span></div>
+            <div class="summary-item"><span class="label">Depósito requerido (10%)</span><span class="value" id="summary-deposit" style="color:#8A4A68;">—</span></div>
+            <div class="summary-item" style="border-bottom:none;"><span class="label" style="font-weight:700;">Total a Pagar hoy</span><span class="value" id="summary-total" style="font-weight:700; font-size:1.1rem; color:#C8937C;">—</span></div>
             
             <!-- Formulario STRIPE Dinámico -->
             <div id="stripe-payment-form" class="stripe-container" style="display:none;">
@@ -202,9 +204,9 @@
         barbersData = await InnovareDB.getBarbers();
         servicesData = await InnovareDB.getServices();
         
-        // NUEVO: Extraemos de Supabase todas las citas para poder bloquear las horas
+        // Horarios ocupados (sin datos de otros clientes) para bloquear las horas
         if (window.sb) {
-          const { data, error } = await window.sb.from('citas').select('fecha, hora, barbero_id, estado');
+          const { data, error } = await window.sb.rpc('horarios_ocupados');
           if (!error && data) citasData = data;
         }
 
@@ -219,7 +221,7 @@
       const container = document.getElementById('barber-list');
       container.innerHTML = barbersData.map(b => `
         <div class="barber-option" onclick="selectBarber('${b.id}')" id="barber-${b.id}">
-          <div class="barber-avatar-sm">💈</div>
+          <div class="barber-avatar-sm">💇</div>
           <div class="barber-info"><h4>${b.nombre}</h4><p>${b.especialidad}</p></div>
           <div class="barber-status">Disponible</div>
         </div>
@@ -268,7 +270,7 @@
       
       // Bloqueo Inicial: Si no hay fecha o barbero, pedir que seleccionen
       if (!state.date || !state.barberId) {
-        grid.innerHTML = '<p style="grid-column: 1/-1; color: #9e9eae; font-size: 0.85rem; padding: 1rem; text-align: center;">Por favor, selecciona un Barbero y un Día en el calendario para ver su disponibilidad.</p>';
+        grid.innerHTML = '<p style="grid-column: 1/-1; color: #9e9eae; font-size: 0.85rem; padding: 1rem; text-align: center;">Selecciona estilista y día en el calendario para ver su disponibilidad.</p>';
         return;
       }
 
@@ -320,7 +322,7 @@
       state.barberId = id; 
       document.querySelectorAll('.barber-option').forEach(el => el.classList.remove('selected')); 
       document.getElementById('barber-' + id).classList.add('selected'); 
-      state.time = null; // Reiniciar hora al cambiar barbero (su agenda es distinta)
+      state.time = null; // Reiniciar hora al cambiar de estilista (su agenda es distinta)
       renderTimes(); 
       updateSummary(); 
     }
@@ -336,6 +338,24 @@
       document.querySelectorAll('.service-option').forEach(el => el.classList.remove('selected')); 
       document.getElementById('service-' + id).classList.add('selected'); 
       updateSummary(); 
+    }
+
+    // Membresías: Amor VIP = 15% en todos los servicios;
+    // Amor Esencial = brushing y diagnóstico capilar sin costo.
+    function aplicarMembresia(service, price) {
+      try {
+        const mem = JSON.parse(localStorage.getItem('innovare_membership') || 'null');
+        if (mem && mem.status === 'active') {
+          const nombre = service.nombre.toLowerCase();
+          if (mem.name === 'Amor VIP') {
+            return { finalPrice: price * 0.85, discountName: '👑 Beneficio Amor VIP (15%)' };
+          }
+          if (mem.name === 'Amor Esencial' && (nombre.includes('brushing') || nombre.includes('diagnóstico capilar'))) {
+            return { finalPrice: 0, discountName: '👑 Beneficio Amor Esencial (sin costo)' };
+          }
+        }
+      } catch (e) { /* sin membresía */ }
+      return { finalPrice: price, discountName: '' };
     }
 
     // 8. Actualizar Resumen y Habilitar Botón
@@ -358,26 +378,10 @@
         price = parseFloat(service.precio);
         finalPrice = price;
         
-        // Membresía VIP Tech o Regular
-        const memStr = localStorage.getItem('innovare_membership');
-        if (memStr) {
-          const mem = JSON.parse(memStr);
-          if (mem.status === 'active') {
-            const servNameLower = service.nombre.toLowerCase();
-            const servCat = service.categoria ? service.categoria.toLowerCase() : '';
-            
-            if (mem.name === 'VIP Tech') {
-              finalPrice = price * 0.85; // 15% OFF
-              discountName = '👑 Beneficio VIP Tech (15%)';
-            } 
-            else if (mem.name === 'The Regular') {
-              if (servCat.includes('corte') || servCat.includes('barba') || servNameLower.includes('corte') || servNameLower.includes('perfilado')) {
-                finalPrice = 0; 
-                discountName = '👑 Beneficio The Regular (Gratis)';
-              }
-            }
-          }
-        }
+        // Beneficio de membresía (Amor Esencial o Amor VIP)
+        const beneficio = aplicarMembresia(service, price);
+        finalPrice = beneficio.finalPrice;
+        discountName = beneficio.discountName;
         
         discountAmount = price - finalPrice;
         let finalDeposit = finalPrice * 0.10;
@@ -431,20 +435,7 @@
       const service = servicesData.find(s => s.id === state.serviceId);
       const price = parseFloat(service.precio);
       
-      let finalPrice = price;
-      const memStr = localStorage.getItem('innovare_membership');
-      if (memStr) {
-        const mem = JSON.parse(memStr);
-        if (mem.status === 'active') {
-          const sName = service.nombre.toLowerCase();
-          const sCat = service.categoria ? service.categoria.toLowerCase() : '';
-          if (mem.name === 'VIP Tech') {
-            finalPrice = price * 0.85;
-          } else if (mem.name === 'The Regular' && (sCat.includes('corte') || sCat.includes('barba') || sName.includes('corte') || sName.includes('perfilado'))) {
-            finalPrice = 0;
-          }
-        }
-      }
+      const finalPrice = aplicarMembresia(service, price).finalPrice;
 
       const finalDeposit = finalPrice * 0.10;
       const pendiente = finalPrice - finalDeposit;
@@ -475,7 +466,11 @@
 
       } catch (error) {
         console.error("Error al agendar cita:", error);
-        alert("❌ Error: " + error.message);
+        if (error && error.code === '23505') {
+          alert("⏰ Ese horario se acaba de ocupar. Elige otra hora, por favor.");
+        } else {
+          alert("❌ Error: " + error.message);
+        }
         btn.disabled = false;
         btn.textContent = finalDeposit > 0 ? `💳 Pagar Depósito ($${finalDeposit.toFixed(2)})` : '✅ Confirmar Reserva';
       }
